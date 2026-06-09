@@ -117,6 +117,37 @@ MatchAnything's pretraining priors are tuned for multi-view scene pairs
 homographic warps of generic textures. **Don't draw H1 conclusions from
 this table.** The real comparison runs the moment AmalgaMatch is on disk.
 
+## AmalgaMatch on disk + loader rewrite (2026-06-09)
+
+The real release (Fordatis DOI 10.24406/fordatis/436) is extracted under
+`data/AmalgaMatch/`: 19 subset directories, 187 registration pairs total —
+exactly matching the paper's counts. `cma/data/amalgamatch.py` was rewritten
+for the real layout (per-subset `eval_indexs/*.npz` pickled dicts carrying
+`image_paths` / `image_metadata` / `pair_infos` / `gt_2D_matches`).
+
+Conventions validated against the data itself:
+
+- GT columns are `[x_i, y_i, x_j, y_j]` in `pair_infos` index order
+  (confirmed by per-image resolution bounds on all 19 subclasses).
+- The loader orients each pair so `source` = larger physical FOV, swapping
+  GT columns when needed; the GT-implied affine scale then agrees with the
+  pixel-size ratio (median deviation 2.8% over all 187 pairs).
+
+**Important GT-quality finding** (`scripts/check_gt_consistency.py`): the
+hand-annotated GT correspondences fit a *global affine* only to a median
+residual of **10.3 px** (p90 31 px, max 58 px on Ta-AM-Spalled). Unless the
+deformation is genuinely non-affine (serial sectioning, distortion) and a
+model captures it, **μ_err < 1.5 px against this GT is not achievable with
+affine/homography fits** — the success-gate metric needs rethinking
+(per-point matching metrics, or comparing against the GT-fit residual floor
+as the oracle).
+
+First real end-to-end run (`scripts/run_real_pair.py`, SE/BSE same-slice
+pair, SIFT backbone): pipeline runs clean (15 tiles, 732 correspondences,
+5 s) but registration fails (μ_err ≈ 8300 px) — consistent with the
+synthetic finding that cross-detector contrast kills SIFT. Control A
+zero-shot baselines (Phase 1.3) are now unblocked.
+
 ## Backbone wiring state (2026-06-04)
 
 | backbone        | status                          | weights                  |

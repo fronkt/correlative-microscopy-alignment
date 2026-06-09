@@ -1,5 +1,21 @@
 # Lessons (project-internal)
 
+## Unanchored .gitignore `data/` silently untracked src/cma/data/
+
+Same trap as the tar lesson below, git flavor: a bare `data/` in
+.gitignore matches every directory named `data` at any depth, so
+`src/cma/data/` was never committed and the public repo shipped without
+the entire data module for two commits. Anchor project-artifact ignores
+to the root (`/data/`) and, after any .gitignore edit, verify with
+`git status --ignored --short src` that nothing under src/ is ignored.
+
+## Windows MAX_PATH bites real datasets
+
+Several AmalgaMatch file paths exceed 260 chars; `Path.exists()` /
+`cv2.imread` silently fail with LongPathsEnabled=0. Loader-level fix:
+`\\?\`-prefixed absolute paths for all IO + `cv2.imdecode` on bytes
+instead of `cv2.imread`. Don't require users to flip the registry.
+
 ## Tar exclude pattern matches by basename
 
 `tar --exclude=data` matches **every** path component named `data`, not

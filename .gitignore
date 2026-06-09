@@ -8,8 +8,8 @@ dist/
 venv/
 .env
 
-# project artifacts
-data/
+# project artifacts (root-anchored: a bare `data/` would also ignore src/cma/data/)
+/data/
 checkpoints/
 reports/figs/
 outputs/
