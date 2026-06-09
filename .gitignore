@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# project artifacts
+data/
+checkpoints/
+reports/figs/
+outputs/
+.hydra/
+
+# results: keep CSVs + README, drop binary dumps and image renders
+results/**/*.png
+results/**/*.npy
+results/**/*.npz
+results/**/*.pth
+results/**/*.parquet
+
+# editors
+.vscode/
+.idea/
+*.swp
+
+# os
+.DS_Store
+Thumbs.db

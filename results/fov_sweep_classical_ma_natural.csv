@@ -1,0 +1,41 @@
+backbone,fov_ratio,seed,success,failure_reason,mu_err,med_err,p_match_at_1,p_match_at_3,p_match_at_5,p_match_at_10,n_tiles,n_correspondences,runtime_s,extra_transform_family
+classical_matchanything,0.5,0,True,,52.549501055183164,48.06699481176674,0.0,0.0,0.0,0.03125,1,4656,0.550184952095151,homography
+classical_matchanything,0.5,1,True,,91.81957050407448,83.5358217134396,0.0,0.0,0.0,0.0,1,4687,0.11923209798987955,homography
+classical_matchanything,0.5,2,True,,176.01244916852437,152.1943633894847,0.0,0.0,0.0,0.015625,1,4652,0.12042161403223872,homography
+classical_matchanything,0.5,3,True,,173.7263465657629,163.5690827808586,0.0,0.0,0.0,0.0,1,4649,0.11863359005656093,homography
+classical_matchanything,0.5,4,True,,181.85564288772096,176.10417235515837,0.0,0.0,0.0,0.0,1,4670,0.11936994700226933,homography
+classical_matchanything,0.5,5,True,,202.99393384417994,202.990922763887,0.0,0.0,0.0,0.0,1,4682,0.12192863808013499,affine
+classical_matchanything,0.5,6,True,,140.6280762544165,130.1958356951579,0.0,0.0,0.0,0.0,1,4664,0.12018197390716523,homography
+classical_matchanything,0.5,7,True,,152.4386650288061,150.71161134377542,0.0,0.0,0.0,0.0,1,4654,0.11936323693953454,affine
+classical_matchanything,0.25,0,True,,188.9983338806291,178.93871750146246,0.0,0.0,0.0,0.0,1,2325,0.11293913098052144,homography
+classical_matchanything,0.25,1,True,,249.87419256060875,243.4140411223438,0.0,0.0,0.0,0.0,1,2321,0.11305018898565322,homography
+classical_matchanything,0.25,2,True,,147.21018712386882,140.0874144647774,0.0,0.0,0.0,0.03125,1,2311,0.11440961493644863,homography
+classical_matchanything,0.25,3,True,,182.97005908541348,182.974648883635,0.0,0.0,0.0,0.0,1,2342,0.1107799569144845,affine
+classical_matchanything,0.25,4,True,,66.79942463436274,64.42509390890507,0.0,0.0,0.0,0.03125,1,2205,0.11586464906577021,homography
+classical_matchanything,0.25,5,True,,117.80836178796228,104.33758229681936,0.0,0.0,0.0,0.046875,1,2164,0.11235188296996057,homography
+classical_matchanything,0.25,6,True,,51.9390790845492,45.403588904728565,0.0,0.0,0.015625,0.046875,1,2341,0.11422591400332749,homography
+classical_matchanything,0.25,7,True,,73.38962285573481,67.61729029631073,0.0,0.0,0.0,0.015625,1,2268,0.11339645902626216,homography
+classical_matchanything,0.1,0,True,,41.20136966174347,40.98765479512098,0.0,0.0,0.015625,0.0625,1,231,0.10647507198154926,affine
+classical_matchanything,0.1,1,True,,131.3522398545135,118.83320213948059,0.0,0.0,0.015625,0.046875,1,257,0.10501218703575432,affine
+classical_matchanything,0.1,2,True,,138.62702542511505,125.23822338612177,0.0,0.0,0.015625,0.0625,1,535,0.18823060195427388,affine
+classical_matchanything,0.1,3,True,,151.72932015950502,141.3179244602515,0.0,0.0,0.0,0.015625,1,335,0.10459947003982961,affine
+classical_matchanything,0.1,4,True,,18.735272395426648,15.496069847986401,0.0,0.0,0.0625,0.34375,1,262,0.10698957100976259,homography
+classical_matchanything,0.1,5,True,,78.015209551286,41.80640109832437,0.0,0.015625,0.03125,0.078125,1,175,0.1045520791085437,homography
+classical_matchanything,0.1,6,True,,131.96822044398604,118.73070884456584,0.0,0.0,0.015625,0.046875,1,427,0.10767424793448299,affine
+classical_matchanything,0.1,7,True,,160.78277944792177,141.08300221499246,0.0,0.0,0.015625,0.03125,1,225,0.10473319794982672,affine
+classical_matchanything,0.05,0,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.0960220699198544,
+classical_matchanything,0.05,1,False,matcher returned only 1 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09361217904370278,
+classical_matchanything,0.05,2,True,,605.501079816298,519.6693304607369,0.0,0.0,0.0,0.0,1,16,0.10175981791689992,affine
+classical_matchanything,0.05,3,True,,1938.8375873105178,1837.2510769538842,0.0,0.0,0.0,0.0,1,5,0.09911038901191205,affine
+classical_matchanything,0.05,4,False,matcher returned only 3 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09628433908801526,
+classical_matchanything,0.05,5,True,,534.6693809709016,561.4374698689369,0.0,0.0,0.0,0.0,1,7,0.0987061889609322,homography
+classical_matchanything,0.05,6,True,,927.5211771880836,110.71735445663606,0.0,0.0,0.0,0.0,1,4,0.10084315203130245,homography
+classical_matchanything,0.05,7,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09390912693925202,
+classical_matchanything,0.02,0,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.10472194792237133,
+classical_matchanything,0.02,1,False,matcher returned only 3 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09306033002212644,
+classical_matchanything,0.02,2,False,matcher returned only 1 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09579209994990379,
+classical_matchanything,0.02,3,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09326813009101897,
+classical_matchanything,0.02,4,False,matcher returned only 1 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09644516801927239,
+classical_matchanything,0.02,5,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09376857697498053,
+classical_matchanything,0.02,6,False,matcher returned only 0 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09636994800530374,
+classical_matchanything,0.02,7,False,matcher returned only 2 correspondences (<4),nan,nan,nan,nan,nan,nan,0,0,0.09343638806603849,

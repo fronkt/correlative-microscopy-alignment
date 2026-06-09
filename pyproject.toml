@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cma"
+version = "0.0.1"
+description = "Multi-scale alignment of correlative materials microscopy via foundational dense matchers."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Frank Cai" }]
+dependencies = [
+    "numpy>=1.26",
+    "opencv-python>=4.9",
+    "scikit-image>=0.22",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+torch = [
+    "torch>=2.2",
+    "kornia>=0.7",
+]
+dev = [
+    "pytest>=8",
+    "pytest-xdist>=3",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -m 'not slow'"
+markers = [
+    "slow: tests that load heavy foundational models (RoMa, etc.); run with `pytest -m slow`",
+]
