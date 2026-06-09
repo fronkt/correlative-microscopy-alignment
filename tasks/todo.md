@@ -55,18 +55,27 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 ---
 
 ## Success Gates (block release until met)
-- [ ] P_match @ 5 px > 85% on AmalgaMatch test
-- [ ] mu_err < 1.5 px on AmalgaMatch test
-- [ ] >= 35% relative mu_err improvement vs best zero-shot at FOV <= 5%
+Revised 2026-06-09 to match the AmalgaMatch paper protocol (Durmaz et al.):
+mean Euclidean distance (ED) of TPS-projected GT target points in source
+coords; Success Rate (SR) = fraction of pairs with mean ED below threshold.
+Paper pipeline: RANSAC homography @ 5.5 px reproj -> TPS on inliers.
+Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
+
+- [ ] SR@10px (mean ED, TPS) beats the paper's best MA-RoMa variant overall
+- [ ] >= 35% relative mean-ED improvement vs best zero-shot baseline at FOV <= 5%
 - [ ] FOV breakdown curves logged for every backbone
+- [ ] ~~P_match@5px > 85% / mu_err < 1.5 px~~ retired: GT-affine floor is
+      ~10 px median (see Open Questions); per-point sub-pixel gates are
+      unattainable against hand-clicked GT
 
 ## Open Questions / Risks (track here, resolve before release)
 - [x] AmalgaMatch GT correspondence coverage — 8-61 hand-annotated points per pair (see results/README.md 2026-06-09)
-- [ ] **GT-quality ceiling (NEW, blocking the μ_err<1.5px gate):** GT only fits a
-      global affine to median 10.3 px residual (p90 31 px, max 58 px). Either the
-      true deformation is non-affine, or annotation noise is ~10 px. Re-derive the
-      success gates relative to the GT-fit residual floor, or adopt the original
-      paper's evaluation protocol. `scripts/check_gt_consistency.py` has per-pair numbers.
+- [x] **GT-quality ceiling — resolved 2026-06-09** by adopting the paper's protocol:
+      GT only fits a global affine to median 10.3 px residual, but the paper
+      evaluates mean ED after *TPS* refinement (elastic, absorbs non-affine
+      deformation) with SR thresholds at 5/10/20 px — not sub-pixel. Success
+      gates revised accordingly. `scripts/check_gt_consistency.py` has per-pair
+      numbers; H3 (affine sufficient?) is now directly testable against TPS.
 - [ ] Modality pairs with near-zero mutual information — separate reporting agreed?
 - [ ] Scale metadata missingness rate — does fallback estimator hold up?
 
