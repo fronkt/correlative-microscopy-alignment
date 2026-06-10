@@ -22,7 +22,9 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
       Follow-up: Control A2 with paper-style stretch/pad resize for MatchAnything.
 - [x] 1.4 Control B: SIFT + MMI on all 187 real pairs (2026-06-10, `results/baselines_B.csv`):
       med ED 824 px (vs 903 plain SIFT), SR unchanged — MMI cannot rescue bad init.
-- [ ] 1.5 Baseline plots in `reports/figs/baselines/`
+- [x] 1.5 Baseline plots (2026-06-10): `scripts/plot_baselines.py` -> SR bars,
+      group heatmap, FOV curves in `reports/figs/baselines/` (gitignored;
+      regenerate from committed CSVs)
 
 ## Phase 2 — Pyramidal Wrapper
 - [x] 2.1 `pyramid.build(...)` + back-projection metadata
