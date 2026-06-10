@@ -101,6 +101,8 @@ def classical_register(
 
 def _mi_at_h(source: np.ndarray, target: np.ndarray, H: np.ndarray) -> float:
     """Warp source into target's frame using H and compute MI vs target."""
+    source = _to_gray(source)
+    target = _to_gray(target)
     h, w = target.shape[:2]
     H_inv = np.linalg.inv(H)
     warped = cv2.warpPerspective(
@@ -111,6 +113,13 @@ def _mi_at_h(source: np.ndarray, target: np.ndarray, H: np.ndarray) -> float:
         borderMode=cv2.BORDER_REFLECT_101,
     )
     return mutual_information(warped, target)
+
+
+def _to_gray(img: np.ndarray) -> np.ndarray:
+    """MI operates on single-channel intensity; collapse RGB(A) if present."""
+    if img.ndim == 3:
+        return cv2.cvtColor(img[..., :3].astype(np.float32), cv2.COLOR_RGB2GRAY)
+    return img
 
 
 def _refine_mi(

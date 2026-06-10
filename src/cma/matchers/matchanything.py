@@ -36,24 +36,36 @@ class MatchAnythingMatcher(Matcher):
         device: str = "cuda",
         confidence_threshold: float = 0.2,
         max_long_side: int = 832,
+        resize_mode: str = "long_side",
     ) -> None:
+        """resize_mode:
+        - "long_side": cap each image's long side at max_long_side, keeping
+          aspect ratio (asymmetric: a wide source shrinks more than a narrow
+          target, amplifying their effective scale gap).
+        - "stretch": warp BOTH images to (max_long_side, max_long_side) as in
+          the AmalgaMatch paper's MA variants; per-axis scales are undone on
+          the returned keypoints.
+        """
         if not _TRANSFORMERS_AVAILABLE:
             raise MatcherNotInstalled(
                 "MatchAnythingMatcher needs `transformers`, `torchvision`, and "
                 "`Pillow`. `pip install -e .[torch] && pip install transformers torchvision`."
             )
+        if resize_mode not in ("long_side", "stretch"):
+            raise ValueError(f"resize_mode must be 'long_side' or 'stretch', got {resize_mode}")
         self.repo_id = repo_id
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         self.confidence_threshold = float(confidence_threshold)
         self.max_long_side = int(max_long_side)
+        self.resize_mode = resize_mode
         self._processor = AutoImageProcessor.from_pretrained(repo_id)
         self._model = AutoModelForKeypointMatching.from_pretrained(repo_id).to(
             self.device
         ).eval()
 
     def match(self, image_a: np.ndarray, image_b: np.ndarray) -> Correspondences:
-        pil_a, scale_a = _to_pil(image_a, self.max_long_side)
-        pil_b, scale_b = _to_pil(image_b, self.max_long_side)
+        pil_a, scale_a = _to_pil(image_a, self.max_long_side, self.resize_mode)
+        pil_b, scale_b = _to_pil(image_b, self.max_long_side, self.resize_mode)
 
         inputs = self._processor([pil_a, pil_b], return_tensors="pt").to(self.device)
         with torch.inference_mode():
@@ -82,10 +94,12 @@ class MatchAnythingMatcher(Matcher):
         return Correspondences(a_xy=kp_a, b_xy=kp_b, confidence=conf)
 
 
-def _to_pil(img: np.ndarray, max_long_side: int) -> tuple["Image.Image", np.ndarray]:
-    """Convert a float [0, 1] numpy image to a PIL RGB image, downscaling so
-    that the long side is at most `max_long_side`. Returns (pil, scale_xy)
-    where scale_xy is (scale_x, scale_y) applied from input to PIL coords.
+def _to_pil(
+    img: np.ndarray, max_long_side: int, resize_mode: str = "long_side"
+) -> tuple[Image.Image, np.ndarray]:
+    """Convert a float [0, 1] numpy image to a PIL RGB image. Returns
+    (pil, scale_xy) where scale_xy is (scale_x, scale_y) applied from input
+    to PIL coords.
     """
     arr = np.asarray(img)
     if arr.ndim == 2:
@@ -97,15 +111,19 @@ def _to_pil(img: np.ndarray, max_long_side: int) -> tuple["Image.Image", np.ndar
         arr = arr.astype(np.uint8)
 
     h, w = arr.shape[:2]
-    long_side = max(h, w)
-    if long_side > max_long_side:
-        scale = max_long_side / long_side
-        new_h = max(1, int(round(h * scale)))
-        new_w = max(1, int(round(w * scale)))
+    if resize_mode == "stretch":
+        new_h = new_w = max_long_side
         pil = Image.fromarray(arr).resize((new_w, new_h), Image.BILINEAR)
     else:
-        pil = Image.fromarray(arr)
-        new_h, new_w = h, w
+        long_side = max(h, w)
+        if long_side > max_long_side:
+            scale = max_long_side / long_side
+            new_h = max(1, int(round(h * scale)))
+            new_w = max(1, int(round(w * scale)))
+            pil = Image.fromarray(arr).resize((new_w, new_h), Image.BILINEAR)
+        else:
+            pil = Image.fromarray(arr)
+            new_h, new_w = h, w
     scale_xy = np.array([new_w / w, new_h / h], dtype=np.float64)
     return pil, scale_xy
 

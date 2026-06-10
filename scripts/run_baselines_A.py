@@ -54,6 +54,11 @@ def make_matcher(name: str, device: str):
     if name == "matchanything":
         from cma.matchers import MatchAnythingMatcher
         return MatchAnythingMatcher(device=device)
+    if name == "matchanything_stretch":
+        from cma.matchers import MatchAnythingMatcher
+        m = MatchAnythingMatcher(device=device, resize_mode="stretch")
+        m.name = "matchanything_stretch"  # distinct rows in the results CSV
+        return m
     raise ValueError(f"unknown backbone: {name}")
 
 

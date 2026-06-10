@@ -103,7 +103,7 @@ def _has_local_corr_kernel() -> bool:
 
 def _save_for_roma(
     img: np.ndarray, path: Path, max_long_side: int
-) -> tuple["Image.Image", np.ndarray, tuple[int, int]]:
+) -> tuple[Image.Image, np.ndarray, tuple[int, int]]:
     """Save numpy image to disk as RGB PNG; downscale if long side > max."""
     arr = np.asarray(img)
     if arr.ndim == 2:
