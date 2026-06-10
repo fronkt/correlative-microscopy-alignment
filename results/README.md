@@ -210,6 +210,34 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## Phase 4 final: pyramid wrapper fails for dense matchers; A2 stretch does not rescue MA (2026-06-10)
+
+All GPU sweeps complete (1309 rows in `baselines_A.csv`). Full comparison,
+TPS-refined mean ED per pair, failures counted as non-successes:
+
+| method                  | ok/187 | med ED (px) | SR@5 | SR@10 | SR@20 |
+|-------------------------|-------:|------------:|-----:|------:|------:|
+| RoMa direct             |    187 |          76 | 0.05 |  0.10 |  0.23 |
+| LoFTR direct            |    183 |         270 | 0.03 |  0.06 |  0.10 |
+| MA stretch (Control A2) |    175 |         434 | 0.01 |  0.01 |  0.02 |
+| MA direct (long_side)   |    177 |         510 | 0.01 |  0.01 |  0.02 |
+| MA pyramid              |    149 |         494 | 0.01 |  0.01 |  0.03 |
+| SIFT direct             |    169 |         908 | 0.01 |  0.02 |  0.02 |
+| RoMa pyramid            |     81 |        1794 | 0.00 |  0.01 |  0.02 |
+
+**H1 verdict (current design): rejected.** The pyramid wrapper degrades or
+flatlines both cross-modal-capable backbones. RoMa collapses (med ED 76 ->
+1794 px) with 106/187 pairs failing outright; MatchAnything is unchanged
+within noise. No FOV stratum benefits — including severe mismatch (area
+ratio < 0.25), where all methods remain at SR@10 = 0.00.
+
+**Control A2 verdict: the asymmetric-downscale hypothesis is mostly
+refuted.** Paper-style stretch resizing improves MA's median ED (510 ->
+434 px) but leaves SR flat at 0.01. MA-ELoFTR is genuinely weak on this
+data zero-shot — consistent with the paper, where MA-ELoFTR also trails
+MA-RoMa by a wide margin. The remaining gap to the paper's MA-RoMa hero
+is the backbone (cross-modal fine-tuned RoMa), not the resize protocol.
+
 ## Phase 4 interim: pyramid wrapper DEGRADES RoMa (2026-06-10)
 
 RoMa-pyramid completed all 187 pairs before a maintenance window took the

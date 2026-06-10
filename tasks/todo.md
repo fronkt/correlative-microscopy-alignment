@@ -37,8 +37,15 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 - [x] 3.4 Synthetic-pair test recovers H to <2 px via SIFT (oracle path consensus-only)
 
 ## Phase 4 — Full Evaluation
-- [ ] 4.1 Experimental run on test split for all 3 backbones
-- [ ] 4.2 Headline table (Control A / B / Exp) per group
+- [x] 4.1 Experimental run: pyramid mode for RoMa + MA on all 187 pairs (2026-06-10).
+      **H1 rejected for the current design** — pyramid degrades RoMa (76->1794 px,
+      106/187 outright failures) and flatlines MA. Root cause: dense matchers never
+      abstain; tile pooling floods RANSAC. See results/README.md "Phase 4 final".
+- [ ] 4.1b Aggregator redesign for dense matchers (per-tile RANSAC + best-tile
+      selection, or certainty gating) — re-run pyramid after. This is now the
+      core research direction.
+- [ ] 4.2 Headline table (Control A / A2 / B / Exp) per group — A/A2/Exp done,
+      awaiting Control B (running on box, downsampled-MI protocol)
 - [ ] 4.3 Paired-bootstrap CIs + significance markers
 - [ ] 4.4 Draft results section
 
