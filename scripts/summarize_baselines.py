@@ -73,14 +73,27 @@ for g in groups:
         cells.append(f"{s['sr10']:>13.2f}/{s['n']:<2}")
     print(f"{g:<30}" + "".join(cells))
 
-print("\n=== SR@10 (TPS) by FOV-ratio bin ===")
-bins = [(0.0, 0.05), (0.05, 0.10), (0.10, 0.25), (0.25, 0.50), (0.50, 10.0)]
+fov_path = path.parent / "fov_ratios.csv"
+if fov_path.exists():
+    area = {r["pair_id"]: float(r["fov_area_ratio"])
+            for r in csv.DictReader(fov_path.open(newline="", encoding="utf-8"))}
+    label = "area FOV ratio (results/fov_ratios.csv)"
+else:
+    area = None
+    label = "width FOV ratio (CSV fov_ratio column)"
+
+print(f"\n=== SR@10 (TPS) by FOV bin — {label} ===")
+bins = [(0.0, 0.05), (0.05, 0.25), (0.25, 0.50), (0.50, 10.0)]
 print(f"{'fov bin':<14}" + "".join(f"{bb:>16}" for bb in sorted(by_backbone)))
 for lo, hi in bins:
     cells = []
     for bb in sorted(by_backbone):
-        rws = [dict(r, mu_ed_tps=r["mu_ed_tps"] or r["mu_ed"]) for r in by_backbone[bb]
-               if r["fov_ratio"] and lo <= float(r["fov_ratio"]) < hi]
+        rws = []
+        for r in by_backbone[bb]:
+            ratio = area.get(r["pair_id"]) if area else (
+                float(r["fov_ratio"]) if r["fov_ratio"] else None)
+            if ratio is not None and lo <= ratio < hi:
+                rws.append(dict(r, mu_ed_tps=r["mu_ed_tps"] or r["mu_ed"]))
         s = summarize(rws, "mu_ed_tps")
         cells.append(f"{s['sr10']:>13.2f}/{s['n']:<2}" if rws else f"{'-':>16}")
     print(f"{lo:.2f}-{hi:.2f}    " + "".join(cells))
