@@ -20,7 +20,8 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
       `results/baselines_A.csv` (CSV not parquet: results/*.parquet is gitignored,
       CSV is the project's committed-results convention). RoMa best: SR@10 0.10.
       Follow-up: Control A2 with paper-style stretch/pad resize for MatchAnything.
-- [x] 1.4 Control B: SIFT + MMI (classical_register) — synthetic numbers logged; AmalgaMatch run pending
+- [x] 1.4 Control B: SIFT + MMI on all 187 real pairs (2026-06-10, `results/baselines_B.csv`):
+      med ED 824 px (vs 903 plain SIFT), SR unchanged — MMI cannot rescue bad init.
 - [ ] 1.5 Baseline plots in `reports/figs/baselines/`
 
 ## Phase 2 — Pyramidal Wrapper
@@ -44,8 +45,9 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 - [ ] 4.1b Aggregator redesign for dense matchers (per-tile RANSAC + best-tile
       selection, or certainty gating) — re-run pyramid after. This is now the
       core research direction.
-- [ ] 4.2 Headline table (Control A / A2 / B / Exp) per group — A/A2/Exp done,
-      awaiting Control B (running on box, downsampled-MI protocol)
+- [x] 4.2 Headline table (Control A / A2 / B / Exp) — complete 2026-06-10, see
+      results/README.md "Phase 4 final" + Control B note. Per-group plots still
+      pending (1.5).
 - [ ] 4.3 Paired-bootstrap CIs + significance markers
 - [ ] 4.4 Draft results section
 

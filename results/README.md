@@ -231,6 +231,13 @@ flatlines both cross-modal-capable backbones. RoMa collapses (med ED 76 ->
 within noise. No FOV stratum benefits — including severe mismatch (area
 ratio < 0.25), where all methods remain at SR@10 = 0.00.
 
+**Control B (SIFT + MMI, `baselines_B.csv`, 2026-06-10):** 169/187 ok;
+Nelder-Mead MMI refinement accepted (MI improved) on 122 pairs but moves
+median ED only 903 -> 824 px with SR unchanged (0.01/0.02/0.02). MMI is a
+local refiner — it cannot rescue a SIFT initialization that is hundreds of
+pixels off. Protocol note: MI evaluated at <=1024 px long side (capped in
+`classical.py`); full benchmark table is now A / A2 / B / Exp complete.
+
 **Control A2 verdict: the asymmetric-downscale hypothesis is mostly
 refuted.** Paper-style stretch resizing improves MA's median ED (510 ->
 434 px) but leaves SR flat at 0.01. MA-ELoFTR is genuinely weak on this
