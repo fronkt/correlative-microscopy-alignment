@@ -1,5 +1,30 @@
 # Lessons (project-internal)
 
+## PowerShell strips inner double quotes from ssh remote commands
+
+`ssh host 'nohup bash -c "cmd1 && cmd2" &'` from PowerShell delivers the
+remote string WITHOUT the inner double quotes, so `bash -c` takes only the
+first word as its script and the rest runs as separate shell syntax — cmd1
+silently becomes a no-op (this cost us a missing MA-pyramid pass; it also
+broke an earlier python -c). Rules: (1) one command per ssh call needs no
+inner quoting — prefer that; (2) anything compound goes in a script file,
+scp'd over, `sed -i 's/\r$//'`, then `bash file`; (3) never nest double
+quotes inside an ssh arg from PowerShell.
+
+## pkill -f from an ssh one-liner kills its own shell
+
+The remote `bash -c` cmdline contains the pattern text, so
+`pkill -f run_baselines_A` matches it and drops the connection (exit 255)
+even when the target was also killed. Split the pattern in the source
+string (`pkill -f "run_base""lines_A"`) and treat exit 255 after a pkill
+as expected.
+
+## Runner hangs at exit after GPU backbones
+
+The sweep process reliably wedges after writing its last CSV row (teardown
+of CUDA/transformers threads), surviving indefinitely. Don't wait for a
+clean exit: treat "all expected rows present" as done, then pkill.
+
 ## Unanchored .gitignore `data/` silently untracked src/cma/data/
 
 Same trap as the tar lesson below, git flavor: a bare `data/` in
