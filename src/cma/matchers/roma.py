@@ -48,8 +48,16 @@ class RoMaMatcher(Matcher):
         self.variant = variant
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         self.max_long_side = int(max_long_side)
-        loader = roma_outdoor if variant == "outdoor" else tiny_roma_v1_outdoor
-        self._model = loader(device=self.device)
+        if variant == "outdoor":
+            # PyPI romatch defaults use_custom_corr=True on Linux but does not
+            # ship the compiled `local_corr` CUDA extension; without this guard
+            # every match() raises ModuleNotFoundError. The native-torch
+            # fallback path is slower but correct.
+            self._model = roma_outdoor(
+                device=self.device, use_custom_corr=_has_local_corr_kernel()
+            )
+        else:
+            self._model = tiny_roma_v1_outdoor(device=self.device)
         if sample_thresh is not None:
             self._model.sample_thresh = float(sample_thresh)
 
@@ -83,6 +91,14 @@ class RoMaMatcher(Matcher):
         if kp_a.shape[0] == 0:
             return _empty()
         return Correspondences(a_xy=kp_a, b_xy=kp_b, confidence=conf)
+
+
+def _has_local_corr_kernel() -> bool:
+    try:
+        import local_corr  # noqa: F401
+    except ImportError:
+        return False
+    return True
 
 
 def _save_for_roma(
