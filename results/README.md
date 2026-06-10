@@ -210,6 +210,47 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## Pyramid v2: verified coarse-to-fine recovers the wrapper concept (2026-06-10)
+
+`register_v2` replaces blind tile pooling with verified stages (direct ->
+optional tile search on weak support -> zoom refinement), every candidate
+gated by an MI-on-overlap appearance verifier. Results for RoMa over all
+187 pairs (`mode=pyramid_v2` rows in `baselines_A.csv`):
+
+| roma             | med ED (px) | SR@5 | SR@10 | SR@20 |
+|------------------|------------:|-----:|------:|------:|
+| direct           |        76.3 | 0.05 |  0.10 |  0.23 |
+| pyramid v1       |        1794 | 0.00 |  0.01 |  0.02 |
+| **pyramid v2**   |    **74.0** | 0.05 | **0.12** | **0.25** |
+
+- **No successful pair was lost** (4 gained / 0 lost at SR@10) — the
+  verification gate delivers its never-worse-than-direct construction in
+  practice, not just by design. (Caveat: the guarantee is under the
+  verifier's judgement; on already-failed pairs the verifier sometimes
+  swaps one garbage transform for another, which is harmless to SR.)
+- **First success ever recorded in the severe-FOV stratum** (area ratio
+  0.05-0.25): SR@10 0.00 -> 0.03. The flagship gain is the 5842WCu
+  Multiscale pair (area ratio ~0.06): 37.5 -> 6.5 px, via the zoom stage.
+- Stage usage: direct kept on 149 pairs, zoom accepted on 37, tile on 1.
+  The zoom stage is where the value lives; the tile search rarely beats
+  the verifier's incumbent.
+- Biggest single save: a TEM dislocation pair improved by 7240 px.
+
+**MatchAnything under v2** (same protocol): SR@10 0.01 -> 0.02 (1 gained /
+0 lost), med ED unchanged. The tile-search fallback fires on 55/187 pairs
+(MA's direct support is weak almost everywhere) and occasionally lands a
+huge save (one SerialSectioning pair improved 19,449 px), but the backbone
+is too weak zero-shot for the wrapper to convert searches into successes.
+The no-regression property held for both backbones: 0 lost pairs total.
+
+**H1 status after v2:** the wrapper now helps instead of hurting, but the
+lift is modest (+2 SR points overall) — far from the >=35% aspiration.
+The bottleneck has moved from aggregation (fixed) to the backbone itself:
+zero-shot RoMa simply cannot match most cross-modal pairs at any scale.
+Next levers, in order of expected value: (1) certainty-gating sweep (knob
+exists, untested at scale), (2) iterated zoom, (3) a cross-modal
+fine-tuned backbone (the paper's own MA-RoMa direction).
+
 ## Phase 4 final: pyramid wrapper fails for dense matchers; A2 stretch does not rescue MA (2026-06-10)
 
 All GPU sweeps complete (1309 rows in `baselines_A.csv`). Full comparison,

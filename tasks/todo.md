@@ -44,9 +44,12 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
       **H1 rejected for the current design** — pyramid degrades RoMa (76->1794 px,
       106/187 outright failures) and flatlines MA. Root cause: dense matchers never
       abstain; tile pooling floods RANSAC. See results/README.md "Phase 4 final".
-- [ ] 4.1b Aggregator redesign for dense matchers (per-tile RANSAC + best-tile
-      selection, or certainty gating) — re-run pyramid after. This is now the
-      core research direction.
+- [x] 4.1b Aggregator redesign DONE (2026-06-10): `register_v2` = verified
+      coarse-to-fine (direct -> tile fallback -> zoom, MI gate). RoMa SR@10
+      0.10 -> 0.12, SR@20 0.23 -> 0.25, first severe-stratum success, 0 pairs
+      lost across both backbones. See results/README.md "Pyramid v2".
+- [ ] 4.1c Certainty-gating sweep (knob exists in register_v2, untested at
+      scale) + iterated zoom. Bigger lever: cross-modal fine-tuned backbone.
 - [x] 4.2 Headline table (Control A / A2 / B / Exp) — complete 2026-06-10, see
       results/README.md "Phase 4 final" + Control B note. Per-group plots still
       pending (1.5).
