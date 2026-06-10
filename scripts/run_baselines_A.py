@@ -90,9 +90,9 @@ def run_pair(pair, rec, matcher, mode: str) -> dict:
         result = register(pair.source, pair.target, matcher, pair.scale_ratio,
                           ransac_threshold_px=RANSAC_PX)
         H = result.H_target_to_source
-        # register() pools tile correspondences internally; refit to recover
-        # the inlier set for TPS is not exposed -> TPS skipped in pyramid mode.
-        inl_src = inl_tgt = None
+        mask = result.transform.inliers
+        inl_src = result.src_xy[mask]
+        inl_tgt = result.tgt_xy[mask]
         row["n_matches"] = result.n_correspondences
         row["n_inliers"] = result.transform.n_inliers
         row["family"] = result.transform.family

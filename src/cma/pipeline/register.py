@@ -18,6 +18,11 @@ class RegistrationResult:
     transform: EstimatedTransform
     n_tiles: int
     n_correspondences: int
+    # Pooled correspondences across tiles, back-projected to original frames;
+    # transform.inliers indexes into these. Needed by downstream non-parametric
+    # refinement (e.g. TPS in the eval protocol).
+    src_xy: np.ndarray | None = None
+    tgt_xy: np.ndarray | None = None
     H_target_to_source: np.ndarray = field(init=False)
 
     def __post_init__(self) -> None:
@@ -81,4 +86,6 @@ def register(
         transform=transform,
         n_tiles=len(tiles),
         n_correspondences=int(len(src_xy)),
+        src_xy=src_xy,
+        tgt_xy=tgt_xy,
     )
