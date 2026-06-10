@@ -100,6 +100,17 @@ def run_pair(pair, rec, matcher, mode: str) -> dict:
         row["n_matches"] = result.n_correspondences
         row["n_inliers"] = result.transform.n_inliers
         row["family"] = result.transform.family + ("+mmi" if result.refined else "")
+    elif mode == "pyramid_v2":
+        from cma.pipeline import register_v2
+        result = register_v2(pair.source, pair.target, matcher, pair.scale_ratio,
+                             ransac_threshold_px=RANSAC_PX)
+        H = result.H_target_to_source
+        mask = result.transform.inliers
+        inl_src = result.src_xy[mask]
+        inl_tgt = result.tgt_xy[mask]
+        row["n_matches"] = result.n_correspondences
+        row["n_inliers"] = result.transform.n_inliers
+        row["family"] = f"{result.transform.family}@{result.stage}"
     elif mode == "pyramid":
         result = register(pair.source, pair.target, matcher, pair.scale_ratio,
                           ransac_threshold_px=RANSAC_PX)
@@ -147,7 +158,8 @@ def main() -> None:
     ap.add_argument("--root", default="data/AmalgaMatch")
     ap.add_argument("--out", default="results/baselines_A.csv")
     ap.add_argument("--backbones", default="sift")
-    ap.add_argument("--mode", default="direct", choices=["direct", "pyramid", "classical"])
+    ap.add_argument("--mode", default="direct",
+                    choices=["direct", "pyramid", "pyramid_v2", "classical"])
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--limit", type=int, default=0, help="stop after N pairs per backbone")
     ap.add_argument("--subclasses", default="", help="comma-separated filter")
