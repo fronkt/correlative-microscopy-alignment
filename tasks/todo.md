@@ -16,7 +16,10 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 ## Phase 1 — Baselines
 - [x] 1.1 Dataset loader yields (I_s, I_t, K_gt, scale_meta, group, subclass) — rewritten 2026-06-09 for real layout; 187 pairs load, integration tests green
 - [x] 1.2 Metric harness (P_match@{1,3,5,10}, mu_err, med_err, success) — runtime/mem deferred
-- [ ] 1.3 Control A: zero-shot each backbone, persist to `results/baselines_A.parquet`
+- [x] 1.3 Control A: zero-shot all 4 backbones on 187 real pairs (2026-06-09) —
+      `results/baselines_A.csv` (CSV not parquet: results/*.parquet is gitignored,
+      CSV is the project's committed-results convention). RoMa best: SR@10 0.10.
+      Follow-up: Control A2 with paper-style stretch/pad resize for MatchAnything.
 - [x] 1.4 Control B: SIFT + MMI (classical_register) — synthetic numbers logged; AmalgaMatch run pending
 - [ ] 1.5 Baseline plots in `reports/figs/baselines/`
 
@@ -111,16 +114,19 @@ unattainable; needs re-derivation against the GT-fit floor or the original
 paper's protocol. Read the Durmaz et al. AmalgaMatch paper evaluation section
 before running Phase 1.3 headline numbers.
 
+**Update (2026-06-09, late):** steps 1-2 DONE. Paper protocol adopted (gates
+revised above); Control A swept on a vast.ai 5090 (45.29.62.115:20225, box has
+repo at /root/cma, dataset extracted, /venv/main ready). Results + analysis in
+`results/README.md`. RoMa zero-shot is the bar to beat: SR@10 0.10 / SR@20 0.23.
+
 **Concrete next steps, in order:**
-1. Read the AmalgaMatch paper's evaluation protocol; align `registration_metrics`
-   usage (which direction, which points, what error normalization) and revisit
-   the success gates in this file.
-2. Phase 1.3 Control A: zero-shot SIFT / LoFTR / RoMa / MatchAnything over all
-   187 pairs → `results/baselines_A.parquet`. GPU box recommended for RoMa/MA
-   (CPU pyramid+RoMa took ~47 min/pair locally). Mind lessons.md tar exclude
-   pattern when shipping data; better: re-download the zip on the box.
-3. Phase 1.4 Control B on real data (classical_register).
-4. Baseline plots (1.5) + first real FOV-stratified breakdown.
+1. Decide the FOV-ratio definition (paper likely uses *area* ratio; our width
+   ratio leaves only 5 pairs under 0.25) — needed before any FOV<=5% claims.
+2. Phase 4 experimental: pyramid mode for RoMa + MatchAnything on the same 187
+   pairs (`run_baselines_A.py --mode pyramid`), same CSV. This is the H1 test.
+3. Control A2: paper-style stretch/pad resize for MatchAnything (its zero-shot
+   number is likely understated by the wrapper's asymmetric downscale).
+4. Phase 1.4 Control B on real data (classical_register) + 1.5 baseline plots.
 
 **Other live state at handoff:**
 - gh 2.93.0 installed. To use, run: `gh auth login -h github.com -p ssh -w`
