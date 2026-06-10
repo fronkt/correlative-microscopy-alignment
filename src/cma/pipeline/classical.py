@@ -34,7 +34,7 @@ class ClassicalResult:
         refined: bool,
         mi_initial: float,
         mi_refined: float,
-    ) -> "ClassicalResult":
+    ) -> ClassicalResult:
         return cls(
             transform=transform,
             n_correspondences=n_correspondences,
@@ -99,12 +99,23 @@ def classical_register(
     )
 
 
-def _mi_at_h(source: np.ndarray, target: np.ndarray, H: np.ndarray) -> float:
-    """Warp source into target's frame using H and compute MI vs target."""
-    source = _to_gray(source)
-    target = _to_gray(target)
+def _mi_at_h(
+    source: np.ndarray, target: np.ndarray, H: np.ndarray, max_side: int = 1024
+) -> float:
+    """Warp source into target's frame using H and compute MI vs target.
+
+    MI is a global intensity statistic, so both images are evaluated at a
+    capped resolution (`max_side`) with H rescaled accordingly — full-res
+    warps made MMI refinement ~10x slower for no metric benefit.
+    """
+    source, f_s = _gray_capped(source, max_side)
+    target, f_t = _gray_capped(target, max_side)
+    # H maps target -> source in full-res coords; rescale to capped coords.
+    S_s = np.diag([f_s, f_s, 1.0])
+    S_t_inv = np.diag([1.0 / f_t, 1.0 / f_t, 1.0])
+    H_capped = S_s @ H @ S_t_inv
     h, w = target.shape[:2]
-    H_inv = np.linalg.inv(H)
+    H_inv = np.linalg.inv(H_capped)
     warped = cv2.warpPerspective(
         source.astype(np.float32),
         H_inv,
@@ -120,6 +131,17 @@ def _to_gray(img: np.ndarray) -> np.ndarray:
     if img.ndim == 3:
         return cv2.cvtColor(img[..., :3].astype(np.float32), cv2.COLOR_RGB2GRAY)
     return img
+
+
+def _gray_capped(img: np.ndarray, max_side: int) -> tuple[np.ndarray, float]:
+    """Grayscale + cap long side at `max_side`; returns (image, scale factor)."""
+    g = _to_gray(img)
+    h, w = g.shape[:2]
+    f = min(1.0, max_side / max(h, w))
+    if f < 1.0:
+        g = cv2.resize(g, (max(1, round(w * f)), max(1, round(h * f))),
+                       interpolation=cv2.INTER_AREA)
+    return g, f
 
 
 def _refine_mi(
