@@ -210,6 +210,44 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## Phase 4 interim: pyramid wrapper DEGRADES RoMa (2026-06-10)
+
+RoMa-pyramid completed all 187 pairs before a maintenance window took the
+box down (MatchAnything-pyramid still pending). The result is a strong
+*negative* for H1 as currently implemented:
+
+| roma            | med ED (px) | SR@5 | SR@10 | SR@20 |
+|-----------------|------------:|-----:|------:|------:|
+| direct (zero-shot) |       76 | 0.05 |  0.10 |  0.23 |
+| pyramid         |        1794 | 0.00 |  0.01 |  0.02 |
+
+Worse in every FOV stratum, including severe mismatch (area ratio < 0.25)
+where direct RoMa already failed — the pyramid did not rescue those pairs,
+and it broke the pairs direct RoMa was winning.
+
+**Mechanism (confirmed in the row diagnostics):** median RANSAC inlier
+fraction collapses from 0.114 (direct) to 0.005 (pyramid). Dense matchers
+return ~10k confident correspondences for *every* tile, including tiles
+that do not overlap the target at all — RoMa hallucinates rather than
+abstains. Pooling all tiles floods MAGSAC++ with structured garbage it
+cannot reject. Example (AF9628 SameSlice pair): direct = 3527/10000
+inliers, 12.8 px; pyramid = 45/10000 inliers, 2708 px.
+
+Candidate causes to separate with a single-pair trace (next session):
+1. **Tile pooling** — the aggregator was designed for sparse matchers
+   (SIFT abstains on non-matching tiles; dense matchers never abstain).
+   Fix direction: per-tile RANSAC + best-tile selection, or certainty
+   gating before pooling.
+2. **Pyramid scale normalization** — downscaling source levels to the
+   target's scale may discard texture RoMa needs, and RoMa already handles
+   moderate scale gaps internally; normalizing could be strictly harmful
+   for scale_ratio near 1 (most SameSlice pairs).
+
+**Implication for H1:** the pyramid wrapper *as designed* does not lift
+foundational matchers on AmalgaMatch — it must be redesigned around
+dense-matcher behavior (abstention does not exist; certainty must be used)
+before H1 gets a fair test.
+
 ## Backbone wiring state (2026-06-04)
 
 | backbone        | status                          | weights                  |

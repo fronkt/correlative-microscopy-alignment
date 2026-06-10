@@ -119,14 +119,23 @@ revised above); Control A swept on a vast.ai 5090 (45.29.62.115:20225, box has
 repo at /root/cma, dataset extracted, /venv/main ready). Results + analysis in
 `results/README.md`. RoMa zero-shot is the bar to beat: SR@10 0.10 / SR@20 0.23.
 
+**Update (2026-06-10):** FOV decision made — severe stratum = area ratio <= 0.25
+(n=37; only 3-4 pairs sit below 5% under any definition). RoMa-pyramid swept all
+187 pairs: **pyramid degrades RoMa catastrophically** (med ED 76 -> 1794 px; see
+results/README.md "Phase 4 interim"). Root cause: dense matchers never abstain,
+so tile pooling floods RANSAC (inlier frac 0.114 -> 0.005). Box recycled once
+(new instance, port changes); resetup is scripted (`scripts/box_resetup_and_sweep.sh`).
+
 **Concrete next steps, in order:**
-1. Decide the FOV-ratio definition (paper likely uses *area* ratio; our width
-   ratio leaves only 5 pairs under 0.25) — needed before any FOV<=5% claims.
-2. Phase 4 experimental: pyramid mode for RoMa + MatchAnything on the same 187
-   pairs (`run_baselines_A.py --mode pyramid`), same CSV. This is the H1 test.
-3. Control A2: paper-style stretch/pad resize for MatchAnything (its zero-shot
-   number is likely understated by the wrapper's asymmetric downscale).
-4. Phase 1.4 Control B on real data (classical_register) + 1.5 baseline plots.
+1. Single-pair trace to separate tile-pooling vs scale-normalization as the
+   pyramid failure mechanism (results/README.md lists both hypotheses).
+2. Redesign the aggregator for dense matchers: per-tile RANSAC + best-tile
+   selection, or certainty gating before pooling. Re-run roma/pyramid.
+3. Finish MatchAnything-pyramid + Control A2 (matchanything_stretch, direct)
+   on the box after maintenance (~21:15 UTC); resume logic handles both.
+4. Finish Control B locally (~30/187 done; MMI is ~5 min/pair on stitched
+   images — consider downsampled-MI protocol if it cannot finish overnight).
+5. Headline table + plots once all rows land.
 
 **Other live state at handoff:**
 - gh 2.93.0 installed. To use, run: `gh auth login -h github.com -p ssh -w`

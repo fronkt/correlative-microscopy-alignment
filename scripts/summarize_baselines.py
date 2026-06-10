@@ -46,7 +46,8 @@ def summarize(rows: list[dict], ed_key: str) -> dict:
 
 by_backbone: dict[str, list[dict]] = defaultdict(list)
 for r in rows:
-    by_backbone[r["backbone"]].append(r)
+    key = r["backbone"] if r["mode"] == "direct" else f"{r['backbone']}/{r['mode']}"
+    by_backbone[key].append(r)
 
 for ed_key, label in (("mu_ed", "parametric fit"), ("mu_ed_tps", "TPS refined")):
     print(f"=== mean ED per pair, {label} ===")
