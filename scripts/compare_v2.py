@@ -1,6 +1,7 @@
-"""Compare pyramid_v2 against direct per backbone: headline, strata, stages.
+"""Compare a pyramid_v2 variant against direct per backbone: headline, strata, stages.
 
-Usage: python scripts/compare_v2.py <csv> [backbone]
+Usage: python scripts/compare_v2.py <csv> [backbone] [v2_mode]
+v2_mode defaults to "pyramid_v2"; tagged sweeps use e.g. "pyramid_v2+z3".
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import numpy as np
 
 path = Path(sys.argv[1] if len(sys.argv) > 1 else "results/baselines_A.csv")
 backbone = sys.argv[2] if len(sys.argv) > 2 else "roma"
+v2_mode = sys.argv[3] if len(sys.argv) > 3 else "pyramid_v2"
 
 with path.open(newline="", encoding="utf-8") as f:
     rows = list(csv.DictReader(f))
@@ -38,10 +40,10 @@ def table(sel: list[dict], label: str) -> None:
 
 
 direct = [r for r in rows if r["backbone"] == backbone and r["mode"] == "direct"]
-v2 = [r for r in rows if r["backbone"] == backbone and r["mode"] == "pyramid_v2"]
-print(f"=== {backbone}: direct vs pyramid_v2 ===")
+v2 = [r for r in rows if r["backbone"] == backbone and r["mode"] == v2_mode]
+print(f"=== {backbone}: direct vs {v2_mode} ===")
 table(direct, "direct")
-table(v2, "pyramid_v2")
+table(v2, v2_mode)
 
 print("\n--- by FOV stratum (SR@10) ---")
 for lo, hi, lab in [(0, 0.05, "<0.05"), (0.05, 0.25, "0.05-0.25"),
