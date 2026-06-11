@@ -103,7 +103,28 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-11)
+## Resume from here (handoff 2026-06-11, evening)
+
+**4.1c DONE — both knobs rejected.** Iterated zoom (z3): no significant
+gain vs direct (p=0.22), borderline worse than plain v2. Certainty gate
+(c50): significantly worse than plain v2 at SR@10 and SR@20. **Plain
+pyramid_v2 is the final wrapper config** (SR@10 0.12 vs direct 0.10).
+Full analysis in results/README.md "4.1c" section; all 374 new rows in
+results/baselines_A.csv (2270 lines total, modes pyramid_v2+z3/+c50).
+
+**Box note:** 142.171.48.138:44563 is SHARED with a symmc-flow session
+(16G disk; it evicted our dataset once — see tasks/lessons.md). Sweep ran
+subset-at-a-time from /dev/shm (scripts/box_41c_subsets.sh); our shm data
+is cleaned up, nothing unique of ours remains on the box. Leave it to
+symmc-flow.
+
+**Next:** the only remaining H1 lever is a cross-modal fine-tuned
+backbone (paper's MA-RoMa direction). Then Phase 5 ablations (bootstrap
+CIs done for v2/z3/c50), plots (1.5), Phase 6 writeup.
+
+---
+
+## Previous handoff (2026-06-11, morning)
 
 **State:** full benchmark complete and written up (Control A/A2/B, pyramid
 v1+v2, all in results/README.md). Pyramid v2 (verified coarse-to-fine,

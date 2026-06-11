@@ -210,6 +210,44 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## 4.1c: iterated zoom and certainty gating do NOT improve pyramid v2 (2026-06-11)
+
+Both remaining wrapper knobs swept on RoMa over all 187 pairs
+(`mode=pyramid_v2+z3` and `pyramid_v2+c50` rows in `baselines_A.csv`):
+
+| roma                     | med ED (px) | SR@5 | SR@10 | SR@20 |
+|--------------------------|------------:|-----:|------:|------:|
+| direct                   |        76.3 | 0.05 |  0.10 |  0.23 |
+| pyramid v2 (single zoom) |    **74.0** | 0.05 | **0.12** | **0.25** |
+| v2 + iterated zoom (z3)  |        77.3 | 0.05 |  0.11 |  0.23 |
+| v2 + certainty 0.5 (c50) |        80.6 | 0.05 |  0.10 |  0.21 |
+
+- **Iterated zoom (z3)**: not significant vs direct (delta SR@10 +0.011,
+  95% CI [-0.011, +0.032], p=0.22) and pairwise-noisy (68 better / 79
+  worse). vs plain v2 it is borderline *worse* at SR@10 (-0.011, CI
+  [-0.027, 0.000]). Chaining zooms multiplies the verifier's error rate:
+  each extra iteration is another chance for the MI gate to accept a
+  drifted transform (worst single regression +3809 px).
+- **Certainty gating (c50)**: strictly harmful. vs plain v2 it is
+  significantly worse at SR@10 (-0.021, CI [-0.043, -0.005]) and SR@20
+  (-0.037, CI [-0.070, -0.011]). Discarding low-certainty matches starves
+  MAGSAC++ on exactly the hard pairs where every match is low-certainty.
+- The severe-FOV success of plain v2 (0.03 in the 0.05-0.25 stratum)
+  disappears under c50 and survives under z3 only at 0.03 with extra
+  churn elsewhere.
+
+**Verdict: plain pyramid_v2 (single verified zoom, no certainty gate) is
+the final wrapper configuration.** The 4.1 design space is exhausted; the
+wrapper ceiling with a zero-shot backbone is +2 SR@10 points. The only
+lever left for H1 is the backbone itself (cross-modal fine-tune, the
+paper's MA-RoMa direction). Ops note: this sweep ran subset-at-a-time
+from /dev/shm on a shared 16G-disk box after the first attempt's dataset
+was evicted mid-run by a co-tenant session (see tasks/lessons.md); the
+153 z3 rows salvaged from that first attempt
+(`baselines_A_box41c_partial.csv`) were carried forward verbatim by the
+runner's resume logic; only the remaining 34 z3 + all 187 c50 pairs were
+computed in the rerun.
+
 ## Pyramid v2: verified coarse-to-fine recovers the wrapper concept (2026-06-10)
 
 `register_v2` replaces blind tile pooling with verified stages (direct ->
