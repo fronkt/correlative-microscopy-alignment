@@ -103,7 +103,32 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-09, evening)
+## Resume from here (handoff 2026-06-11)
+
+**State:** full benchmark complete and written up (Control A/A2/B, pyramid
+v1+v2, all in results/README.md). Pyramid v2 (verified coarse-to-fine,
+`register_v2`) lifts RoMa SR@10 0.10 -> 0.12 — statistically significant
+(paired bootstrap: +0.021, 95% CI [+0.005, +0.043], p=0.017), 0 pairs lost.
+Iterated zoom (zoom_iters=3) + certainty CLI knob implemented and committed
+but NOT yet swept.
+
+**Next action, ready to fire:** the 4.1c sweeps are one command on a GPU box:
+`bash scripts/box_run_41c.sh` (re-downloads dataset if absent, then runs
+roma pyramid_v2 --tag z3 and --tag c50). Compare with
+`python scripts/compare_v2.py results/baselines_A.csv roma` (note: tags make
+new mode keys, adapt the mode filter) and `scripts/bootstrap_ci.py`.
+
+**Box at handoff:** vast instance at 45.29.62.115:20424, idle, dataset
+CLEARED (local zip verified bit-for-bit; Fordatis DOI is canonical). The box
+holds nothing unique — destroy it freely; re-setup is
+scripts/box_resetup_and_sweep.sh (~15 min). Ports change on recycle.
+
+**After 4.1c:** bigger lever is a cross-modal fine-tuned backbone (the
+paper's MA-RoMa direction). Then Phase 5 ablations + Phase 6 writeup.
+
+---
+
+## Previous handoff (2026-06-09, evening)
 
 **Last action:** AmalgaMatch extracted (19 subsets, 187 pairs — exact match to
 paper counts). Loader rewritten from scratch for the real layout
