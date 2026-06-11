@@ -1,5 +1,17 @@
 # Lessons (project-internal)
 
+## Two agent sessions on one vast box will fight over disk
+
+A second Claude session (symmc-flow) shared the 16G box at 142.171.48.138
+and our 9.3G AmalgaMatch extraction was deleted mid-sweep (z3 died at
+153/187 pairs; c50 never started). The other session had installed a 7.5G
+system-python torch stack; combined footprints exceeded the disk, and the
+dataset was the biggest evictable thing. Rules: (1) on any "new" box, run
+`ls -lat /root` and `df -h /` FIRST and look for foreign project dirs;
+(2) before a multi-GB download, confirm headroom for BOTH tenants;
+(3) treat sudden FileNotFoundError mid-sweep on a shared box as eviction,
+not as a code bug — check `ls data/` before debugging the loader.
+
 ## PowerShell strips inner double quotes from ssh remote commands
 
 `ssh host 'nohup bash -c "cmd1 && cmd2" &'` from PowerShell delivers the
