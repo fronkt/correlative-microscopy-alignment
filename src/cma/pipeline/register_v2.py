@@ -71,6 +71,7 @@ def register_v2(
     certainty_threshold: float | None = None,
     zoom: bool = True,
     zoom_margin: float = 0.3,
+    zoom_iters: int = 3,
     tile_fallback: bool = True,
     weak_support_inliers: int = 50,
     tile_overlap: float = 0.5,
@@ -121,18 +122,27 @@ def register_v2(
     if best is None:
         raise RuntimeError("no stage produced a verifiable transform")
 
-    # ---- Stage Z: zoom refinement --------------------------------------
+    # ---- Stage Z: iterated zoom refinement ------------------------------
     if zoom:
-        roi = _target_footprint_roi(best.transform.as_3x3(), source, target, zoom_margin)
-        if roi is not None:
+        prev_roi: tuple[int, int, int, int] | None = None
+        for _ in range(max(0, zoom_iters)):
+            roi = _target_footprint_roi(
+                best.transform.as_3x3(), source, target, zoom_margin
+            )
+            if roi is None or roi == prev_roi:
+                break
+            prev_roi = roi
             x0, y0, x1, y1 = roi
             crop = source[y0:y1, x0:x1]
             corr_z = _gated(matcher.match(crop, target), certainty_threshold)
-            if len(corr_z) >= 4:
-                src_xy = corr_z.a_xy + np.array([x0, y0], dtype=np.float64)
-                cand = fit(src_xy, corr_z.b_xy, best.stage + "+zoom")
-                if cand is not None and cand.score >= best.score:
-                    best = cand
+            if len(corr_z) < 4:
+                break
+            src_xy = corr_z.a_xy + np.array([x0, y0], dtype=np.float64)
+            stage = best.stage if best.stage.endswith("+zoom") else best.stage + "+zoom"
+            cand = fit(src_xy, corr_z.b_xy, stage)
+            if cand is None or cand.score < best.score:
+                break  # verifier stopped improving; keep the incumbent
+            best = cand
 
     return RegistrationV2Result(
         transform=best.transform,
