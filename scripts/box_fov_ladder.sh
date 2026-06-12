@@ -4,7 +4,10 @@
 # (9.3G of 31G), so no subset cycling and zero overlay-disk footprint.
 set -euo pipefail
 cd /root/cma
-git pull -q
+# The box is a pure results-producer: its CSV appends always reach origin
+# via local before the next run, so a hard reset is the correct sync (a
+# plain pull aborts on the locally-modified CSV every time).
+git fetch -q && git reset --hard -q origin/main
 
 export HF_HOME=/dev/shm/hf
 
