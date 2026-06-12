@@ -4,6 +4,11 @@ RoMa is a dense robust matcher that outputs a per-pixel warp plus a
 certainty mask, then sparsifies via `model.sample(...)`. We expose the
 standard `Matcher` ABC so it composes with the pyramid pipeline.
 
+The `ma_outdoor` variant loads MatchAnything-RoMa (He et al. 2025,
+cross-modal-trained) weights into the identical roma_outdoor
+architecture: the released checkpoint is key-for-key compatible after
+stripping the `matcher.model.` prefix (verified 603/603 tensors).
+
 Install: `pip install romatch`. Pretrained weights download on first use.
 """
 
@@ -43,19 +48,25 @@ class RoMaMatcher(Matcher):
                 "RoMaMatcher needs `romatch`. `pip install romatch` (with the "
                 "project's torch already installed)."
             )
-        if variant not in ("outdoor", "tiny_outdoor"):
-            raise ValueError(f"variant must be 'outdoor' or 'tiny_outdoor', got {variant}")
+        if variant not in ("outdoor", "ma_outdoor", "tiny_outdoor"):
+            raise ValueError(
+                f"variant must be 'outdoor', 'ma_outdoor' or 'tiny_outdoor', got {variant}"
+            )
         self.variant = variant
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         self.max_long_side = int(max_long_side)
-        if variant == "outdoor":
+        if variant in ("outdoor", "ma_outdoor"):
             # PyPI romatch defaults use_custom_corr=True on Linux but does not
             # ship the compiled `local_corr` CUDA extension; without this guard
             # every match() raises ModuleNotFoundError. The native-torch
             # fallback path is slower but correct.
+            weights = _load_ma_roma_weights() if variant == "ma_outdoor" else None
             self._model = roma_outdoor(
-                device=self.device, use_custom_corr=_has_local_corr_kernel()
+                device=self.device, weights=weights,
+                use_custom_corr=_has_local_corr_kernel(),
             )
+            if variant == "ma_outdoor":
+                self.name = "ma_roma"
         else:
             self._model = tiny_roma_v1_outdoor(device=self.device)
         if sample_thresh is not None:
@@ -91,6 +102,19 @@ class RoMaMatcher(Matcher):
         if kp_a.shape[0] == 0:
             return _empty()
         return Correspondences(a_xy=kp_a, b_xy=kp_b, confidence=conf)
+
+
+_MA_ROMA_REPO = "image-matching-models/matchanything-roma"
+
+
+def _load_ma_roma_weights() -> dict:
+    """MatchAnything-RoMa state dict, repo-prefix stripped, hf-hub cached."""
+    from huggingface_hub import hf_hub_download
+    from safetensors.torch import load_file
+
+    path = hf_hub_download(_MA_ROMA_REPO, "model.safetensors")
+    prefix = "matcher.model."
+    return {k.removeprefix(prefix): v for k, v in load_file(path).items()}
 
 
 def _has_local_corr_kernel() -> bool:

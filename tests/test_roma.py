@@ -43,6 +43,19 @@ def test_self_match_recovers_identity(matcher):
     assert d.mean() < 1.0, f"self-match mean displacement {d.mean():.3f}px exceeds 1px"
 
 
+def test_ma_roma_loads_and_self_matches():
+    """MA-RoMa weights are key-compatible with roma_outdoor and produce
+    sane dense matches. Inversion robustness is checked in
+    scripts/smoke_ma_roma.py (too slow for the suite)."""
+    m = RoMaMatcher(variant="ma_outdoor", device="cpu", max_long_side=256)
+    assert m.name == "ma_roma"
+    img = natural_source_image(256)
+    corr = m.match(img, img)
+    assert len(corr) > 1000, f"expected dense correspondences, got {len(corr)}"
+    d = np.linalg.norm(corr.a_xy - corr.b_xy, axis=1)
+    assert d.mean() < 1.0, f"self-match mean displacement {d.mean():.3f}px exceeds 1px"
+
+
 def test_warped_pair_recovers_homography(matcher):
     pair, _ = synthesize_pair(
         source_size=512,

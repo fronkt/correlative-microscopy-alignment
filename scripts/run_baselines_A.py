@@ -51,6 +51,9 @@ def make_matcher(name: str, device: str):
     if name == "roma":
         from cma.matchers import RoMaMatcher
         return RoMaMatcher(device=device)
+    if name == "ma_roma":
+        from cma.matchers import RoMaMatcher
+        return RoMaMatcher(device=device, variant="ma_outdoor")
     if name == "matchanything":
         from cma.matchers import MatchAnythingMatcher
         return MatchAnythingMatcher(device=device)
