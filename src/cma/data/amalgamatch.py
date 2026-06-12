@@ -106,6 +106,10 @@ class AmalgaMatchLoader:
     def __iter__(self) -> Iterator[tuple[ImagePair, AmalgaMatchRecord]]:
         return self.iter(groups=None, subclasses=None)
 
+    def load_pair(self, rec: AmalgaMatchRecord) -> ImagePair:
+        """Load a single pair's images + GT for an already-indexed record."""
+        return self._load_pair(rec)
+
     def iter(
         self,
         groups: list[str] | None = None,
