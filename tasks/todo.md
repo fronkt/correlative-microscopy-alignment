@@ -103,7 +103,23 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-11, night)
+## Resume from here (handoff 2026-06-11, late night)
+
+**Phases 5 + 6 DONE — project complete through the planned scope.**
+- Figures regenerated (`scripts/plot_baselines.py`, now excludes rejected
+  +z3/+c50 variants; FOV panel curated): reports/figs/baselines/*.png.
+- H3 readout (`scripts/h3_family_readout.py`): affine picked on 69% of
+  well-registered pairs (82/118), homography 31% — H3 mostly supported,
+  keep automatic BIC selection.
+- **Final report at `reports/final_report.md`**: all hypothesis verdicts
+  (H1 rejected / H2 supported / H3 mostly), headline table (verified
+  against CSV), pyramid v1→v2 story, backbone lever, limitations.
+- Possible future work (out of scope): materials-domain fine-tuning for
+  severe FOV; learned verifier to replace MI gate.
+
+---
+
+## Previous handoff (2026-06-11, night)
 
 **Phase 4.2 DONE — H1 FINAL: REJECTED, with the project's first
 significant headline win.** MA-RoMa (cross-modal weights in the

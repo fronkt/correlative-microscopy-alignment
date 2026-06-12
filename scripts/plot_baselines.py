@@ -43,7 +43,10 @@ def ed(r: dict) -> float:
 
 by_method: dict[str, list[dict]] = defaultdict(list)
 for r in rows:
-    by_method[method(r)].append(r)
+    # the 4.1c tag variants (pyramid_v2+z3 / +c50) were rejected; keep
+    # figures to the un-tagged configurations
+    if "+" not in r["mode"]:
+        by_method[method(r)].append(r)
 methods = sorted(by_method, key=lambda m: np.median([ed(r) for r in by_method[m]]))
 
 # --- Figure 1: SR bars at 5/10/20 px --------------------------------------
@@ -80,10 +83,15 @@ fig.tight_layout()
 fig.savefig(out_dir / "group_heatmap.png", dpi=150)
 
 # --- Figure 3: SR@10 vs FOV area-ratio bin ---------------------------------
+# curated to the narrative methods; the full set makes the panel unreadable
+FOV_METHODS = [
+    "sift", "matchanything", "roma", "roma/pyramid",
+    "roma/pyramid_v2", "ma_roma", "ma_roma/pyramid_v2",
+]
 bins = [(0.0, 0.05), (0.05, 0.25), (0.25, 0.5), (0.5, 10.0)]
 labels = ["<0.05", "0.05-0.25", "0.25-0.5", ">=0.5"]
 fig, ax = plt.subplots(figsize=(7.5, 4.5))
-for m in methods:
+for m in [m for m in FOV_METHODS if m in by_method]:
     ys = []
     for lo, hi in bins:
         sel = [r for r in by_method[m] if lo <= fov.get(r["pair_id"], 1.0) < hi]
