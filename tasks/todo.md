@@ -103,7 +103,26 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-11, late night)
+## Resume from here (handoff 2026-06-12)
+
+**FOV ladder DONE (Aim 3 closed) — the wrapper is vindicated under
+controlled conditions.** Cropping base-matchable real pairs to sweep FOV
+with appearance fixed: direct failure FOV is 0.25-0.1; at FOV 0.1,
+ma_roma+pyramid_v2 holds SR@10 0.23 vs 0.07 direct (+0.150, CI
+[+0.050,+0.275], p=0.0014, n=40); floor at 0.02. Real severe-FOV pairs
+stay unsolved because appearance failure dominates there. Data:
+results/fov_ladder.csv; figure: reports/figs/baselines/fov_ladder.png;
+write-ups in results/README.md + reports/final_report.md (new section 6;
+limitation 1 revised). The ladder doubles as the testbed for any future
+fine-tuned model's FOV envelope.
+
+**Nothing scheduled next.** Open ideas: materials-domain fine-tuning on
+the unused train split; cycle-consistency verifier; publication angles
+(see final_report.md section 7 and session notes).
+
+---
+
+## Previous handoff (2026-06-11, late night)
 
 **Phases 5 + 6 DONE — project complete through the planned scope.**
 - Figures regenerated (`scripts/plot_baselines.py`, now excludes rejected

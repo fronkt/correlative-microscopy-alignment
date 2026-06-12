@@ -210,6 +210,45 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## FOV ladder (Aim 3): the pyramid's value is real — the real dataset just couldn't show it (2026-06-12)
+
+Real severe-FOV pairs confound FOV with appearance (and n=4 below 0.05).
+The ladder decouples them: crop the *target* of every base-matchable pair
+(direct mu_ed < 20 px; 36-40 pairs per backbone) to absolute area ratios
+{0.5, 0.25, 0.1, 0.05, 0.02}, keeping appearance, modality gap and pixel
+sizes fixed. All GT is kept — out-of-crop points test the global
+transform's extrapolation, the practical "locate the small view in the
+wide map" task. Transform-based mu_ed only (TPS extrapolates badly).
+Data: results/fov_ladder.csv; figure: reports/figs/baselines/
+fov_ladder.png; runner: scripts/run_fov_ladder.py.
+
+SR@10 (median mu_ed px) per rung, on each backbone's matchable set:
+
+| config | base | 0.5 | 0.25 | 0.1 | 0.05 | 0.02 |
+|---|---|---|---|---|---|---|
+| roma | 0.40 (11) | 0.38 (19) | 0.28 (93) | 0.06 (790) | 0.03 (688) | 0.00 |
+| roma/pyramid_v2 | 0.38 (12) | 0.35 (21) | 0.33 (201) | 0.08 (642) | 0.08 (873) | 0.00 |
+| ma_roma | 0.44 (11) | 0.50 (10) | 0.28 (22) | 0.07 (365) | 0.00 | 0.00 |
+| **ma_roma/pyramid_v2** | 0.47 (10) | **0.53 (9)** | 0.30 (15) | **0.23 (325)** | 0.03 | 0.00 |
+
+- **Failure FOV for direct backbones is between 0.25 and 0.1**: SR holds
+  near base through 0.5 (ma_roma even improves — cropping removes
+  distracting context), bends at 0.25, and collapses at 0.1.
+- **The wrapper's designed value finally appears, large and significant:
+  at FOV 0.1, ma_roma/pyramid_v2 holds SR@10 0.23 vs 0.07 direct**
+  (paired bootstrap: +0.150, 95% CI [+0.050, +0.275], p=0.0014, n=40).
+  That is a >3x relative gain at exactly the regime H1 targeted — with
+  appearance held fixed. At 0.05 the edge shrinks to n.s. (+0.025,
+  p=0.36); at 0.02 everything is dead (hard floor).
+- **Interpretation for H1**: the pyramid mechanism works for *scale*;
+  on the real distribution it never showed because real low-FOV pairs
+  are also the most appearance-divergent, and appearance failure
+  dominates. H1-as-stated stays rejected on real pairs, but Aim 3 is now
+  answered properly: usable-FOV extends from ~0.25 (direct) to ~0.1
+  (wrapped, strong backbone), floor at ~0.02.
+- ma_roma's median-ED profile is striking: it holds 10-22 px down to
+  0.25 where plain roma is already at 93-201 px.
+
 ## Phase 4.2 / H1 FINAL: cross-modal MA-RoMa backbone delivers the gain the wrapper couldn't (2026-06-11)
 
 MatchAnything-RoMa (He et al. 2025) weights loaded key-for-key into the
