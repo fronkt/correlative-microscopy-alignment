@@ -42,6 +42,8 @@ class RoMaMatcher(Matcher):
         device: str = "cuda",
         sample_thresh: float | None = None,
         max_long_side: int = 832,
+        weights_path: str | None = None,
+        model=None,
     ) -> None:
         if not _ROMATCH_AVAILABLE:
             raise MatcherNotInstalled(
@@ -55,20 +57,31 @@ class RoMaMatcher(Matcher):
         self.variant = variant
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         self.max_long_side = int(max_long_side)
-        if variant in ("outdoor", "ma_outdoor"):
+        if model is not None:
+            # Inject an existing RegressionMatcher (e.g. the in-training model
+            # during fine-tuning validation). Caller owns device placement and
+            # train/eval mode.
+            self._model = model
+        elif variant in ("outdoor", "ma_outdoor"):
             # PyPI romatch defaults use_custom_corr=True on Linux but does not
             # ship the compiled `local_corr` CUDA extension; without this guard
             # every match() raises ModuleNotFoundError. The native-torch
             # fallback path is slower but correct.
-            weights = _load_ma_roma_weights() if variant == "ma_outdoor" else None
+            if weights_path is not None:
+                weights = torch.load(weights_path, map_location="cpu",
+                                     weights_only=True)
+            elif variant == "ma_outdoor":
+                weights = _load_ma_roma_weights()
+            else:
+                weights = None
             self._model = roma_outdoor(
                 device=self.device, weights=weights,
                 use_custom_corr=_has_local_corr_kernel(),
             )
-            if variant == "ma_outdoor":
-                self.name = "ma_roma"
         else:
             self._model = tiny_roma_v1_outdoor(device=self.device)
+        if variant == "ma_outdoor":
+            self.name = "ma_roma_ft" if weights_path is not None else "ma_roma"
         if sample_thresh is not None:
             self._model.sample_thresh = float(sample_thresh)
 

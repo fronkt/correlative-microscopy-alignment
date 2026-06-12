@@ -130,33 +130,33 @@ pyramid_v2, paired bootstrap on test pairs).
    regression at finer scales, local masking via prev_epe,
    alpha=0.5 c=1e-4 ce_weight=0.01 local_dist {1:4,2:4,4:8,8:8}.
 
+**DONE 2026-06-12 (this session) — build complete, smoked locally:**
+4. ✅ `src/cma/train/finetune.py` + `scripts/finetune_ma_roma.py`: decoder-only
+   trainer exactly per plan (frozen encoder under no_grad AND kept in eval
+   mode — it has BatchNorms whose running stats must not drift; decoder
+   train(True) via `set_train_mode`). AdamW 2e-5/wd 1e-4, cosine, GradScaler
+   + clip 1.0 (train_step pattern, scale clamped >=1), val every 100 steps =
+   direct-match med-mu-ED over val split via RoMaMatcher(model=<in-training>),
+   best sd -> checkpoints/ma_roma_ft.pth, log CSV.
+5. ✅ RoMaMatcher accepts `model=` (injection) and `weights_path=` (local sd,
+   name auto "ma_roma_ft"); runner has backbone ma_roma_ft + --ft-weights.
+6. ✅ `scripts/smoke_finetune.py` passed: warp visualization sane
+   (results/smoke_warp{,_aug}.png — SEM-SE stitch grid maps onto full EBSD
+   frame, consistent gradient), 2 CPU steps ran (loss ~7-8, scales
+   {16,8,4,2,1}), grads ONLY in decoder (311 tensors, 307 nonzero; decoder
+   = 100.7M of 111.3M registered params). 43 fast tests still green.
+
 **TODO, in order:**
-4. `src/cma/train/finetune.py` + `scripts/finetune_ma_roma.py`:
-   - model = roma_outdoor(device, weights=<MA sd from
-     cma.matchers.roma._load_ma_roma_weights()>); freeze ALL, unfreeze
-     model.decoder; forward = encoder features under torch.no_grad()
-     (mirror RegressionMatcher.forward batched=True: encoder on
-     cat(im_A,im_B), chunk(2), then model.decoder(f_q, f_s)) — saves the
-     encoder graph.
-   - AdamW(decoder params, lr 2e-5, wd 1e-4), cosine to 0, GradScaler
-     pattern copied from romatch.train.train_step (grad_clip 1.0), batch 4,
-     ~1000-1500 steps (131-pair dataset -> heavy reuse, aug carries it).
-   - Val every ~100 steps: direct-match val pairs (RoMaMatcher with the
-     in-training model injected — needs a small refactor: let RoMaMatcher
-     accept an existing model instance), med-ED over val; keep best sd ->
-     checkpoints/ma_roma_ft.pth (gitignored; scp back; ~1.7 GB).
-5. Wrapper: RoMaMatcher(variant="ma_outdoor", weights_path=...) loads a
-   local sd; name "ma_roma_ft". Runner: backbone "ma_roma_ft" + --ft-weights.
-6. Smoke locally (CPU, 1-2 steps, batch 1): dataset sample sanity (visualize
-   warp on a real pair!), loss runs, grads flow only in decoder.
-7. Box: train (~30-60 min on 5090) via a box_finetune.sh patterned on
-   box_fov_ladder.sh (dataset in /dev/shm, HF_HOME=/dev/shm/hf, git
-   fetch+reset NOT pull). Then sweep ma_roma_ft direct+pyramid_v2 on all
-   187 (analysis restricts to test), pull CSV + checkpoint.
-8. Analysis: test-split table ma_roma vs ma_roma_ft (+ optionally FOV
+7. Box: `scripts/box_finetune.sh` is ready (train 1500 steps + sweep
+   ma_roma_ft direct+pyramid_v2 on all 187; checkpoint in /dev/shm/cma_ckpt).
+   NEEDS A GPU BOX — nothing of ours is provisioned; old shared box
+   142.171.48.138:44563 may be gone/recycled. After run: scp back
+   ma_roma_ft.pth (~1.7 GB -> E:\), results/baselines_A.csv,
+   results/finetune_log.csv.
+8. Analysis: test-split-only table ma_roma vs ma_roma_ft (+ optionally FOV
    ladder with ft model — ladder script accepts backbones). Paired
    bootstrap. Write up; this is the make-or-break for the appearance
-   bottleneck claim.
+   bottleneck claim. Headline = 28 TEST pairs only.
 
 **Gotchas already learned for this build:** romatch RobustLosses/train
 import wandb and log unconditionally — do NOT import romatch.losses or

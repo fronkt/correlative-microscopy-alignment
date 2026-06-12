@@ -41,7 +41,7 @@ FIELDS = [
 RANSAC_PX = 5.5  # paper protocol
 
 
-def make_matcher(name: str, device: str):
+def make_matcher(name: str, device: str, ft_weights: str | None = None):
     if name == "sift":
         from cma.matchers import SIFTMatcher
         return SIFTMatcher()
@@ -54,6 +54,12 @@ def make_matcher(name: str, device: str):
     if name == "ma_roma":
         from cma.matchers import RoMaMatcher
         return RoMaMatcher(device=device, variant="ma_outdoor")
+    if name == "ma_roma_ft":
+        if not ft_weights:
+            raise ValueError("backbone ma_roma_ft requires --ft-weights")
+        from cma.matchers import RoMaMatcher
+        return RoMaMatcher(device=device, variant="ma_outdoor",
+                           weights_path=ft_weights)
     if name == "matchanything":
         from cma.matchers import MatchAnythingMatcher
         return MatchAnythingMatcher(device=device)
@@ -168,6 +174,8 @@ def main() -> None:
     ap.add_argument("--certainty", type=float, default=None,
                     help="certainty gate threshold for pyramid_v2")
     ap.add_argument("--device", default="cuda")
+    ap.add_argument("--ft-weights", default=None,
+                    help="local state-dict path for backbone ma_roma_ft")
     ap.add_argument("--limit", type=int, default=0, help="stop after N pairs per backbone")
     ap.add_argument("--subclasses", default="", help="comma-separated filter")
     args = ap.parse_args()
@@ -190,7 +198,7 @@ def main() -> None:
         if write_header:
             writer.writeheader()
         for backbone in args.backbones.split(","):
-            matcher = make_matcher(backbone, args.device)
+            matcher = make_matcher(backbone, args.device, ft_weights=args.ft_weights)
             n_done = 0
             for pair, rec in loader.iter(subclasses=subclasses):
                 if (rec.pair_id, backbone, mode) in done:
