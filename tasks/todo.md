@@ -103,7 +103,73 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-12)
+## Resume from here (handoff 2026-06-12, MID-BUILD: MA-RoMa fine-tuning)
+
+**Goal:** fine-tune MA-RoMa on the train split (the plan's unused 70/15/15)
+to attack the appearance bottleneck. Eval discipline: headline numbers come
+from the 28 TEST pairs only; val (28) is for model selection; test stays
+untouched until the final comparison (ma_roma_ft vs ma_roma, direct +
+pyramid_v2, paired bootstrap on test pairs).
+
+**DONE (committed, but dataset/loss are NOT yet executed even once):**
+1. `scripts/make_split.py` + `results/split.json` — scene-level split
+   (pairs within a scene share images -> pair-level split would leak).
+   131/28/28 pairs over 18/10/7 scenes; greedy pair-count balancing;
+   groups covered in val (6/6) and test (5/6). Committed file is canonical.
+2. `src/cma/train/dataset.py` — WarpPairDataset: densifies sparse GT
+   (TPS >=16 pts, else lstsq affine) into an A-grid->B warp (140x140 grid,
+   full-A coverage), supervised only inside GT-support bbox +10% margin
+   where mapped point lands in B. Warp in RoMa pixel-center convention
+   coord = 2*(px+0.5)/size - 1. Aug: random target FOV crop (area 0.15-0.8,
+   anchored on a random GT point, warp geometry updated) + per-image
+   gamma/brightness/contrast. Images: 560x560 stretch + ImageNet norm via
+   romatch get_tuple_transform_ops (matches inference path exactly).
+3. `src/cma/train/loss.py` — SparseGTRobustLoss: RobustLosses skeleton
+   with get_gt_warp(depth,pose) replaced by batch["gt_warp"/"gt_prob"]
+   (interpolated per scale), wandb stripped. gm_cls at scale 16 + robust
+   regression at finer scales, local masking via prev_epe,
+   alpha=0.5 c=1e-4 ce_weight=0.01 local_dist {1:4,2:4,4:8,8:8}.
+
+**TODO, in order:**
+4. `src/cma/train/finetune.py` + `scripts/finetune_ma_roma.py`:
+   - model = roma_outdoor(device, weights=<MA sd from
+     cma.matchers.roma._load_ma_roma_weights()>); freeze ALL, unfreeze
+     model.decoder; forward = encoder features under torch.no_grad()
+     (mirror RegressionMatcher.forward batched=True: encoder on
+     cat(im_A,im_B), chunk(2), then model.decoder(f_q, f_s)) — saves the
+     encoder graph.
+   - AdamW(decoder params, lr 2e-5, wd 1e-4), cosine to 0, GradScaler
+     pattern copied from romatch.train.train_step (grad_clip 1.0), batch 4,
+     ~1000-1500 steps (131-pair dataset -> heavy reuse, aug carries it).
+   - Val every ~100 steps: direct-match val pairs (RoMaMatcher with the
+     in-training model injected — needs a small refactor: let RoMaMatcher
+     accept an existing model instance), med-ED over val; keep best sd ->
+     checkpoints/ma_roma_ft.pth (gitignored; scp back; ~1.7 GB).
+5. Wrapper: RoMaMatcher(variant="ma_outdoor", weights_path=...) loads a
+   local sd; name "ma_roma_ft". Runner: backbone "ma_roma_ft" + --ft-weights.
+6. Smoke locally (CPU, 1-2 steps, batch 1): dataset sample sanity (visualize
+   warp on a real pair!), loss runs, grads flow only in decoder.
+7. Box: train (~30-60 min on 5090) via a box_finetune.sh patterned on
+   box_fov_ladder.sh (dataset in /dev/shm, HF_HOME=/dev/shm/hf, git
+   fetch+reset NOT pull). Then sweep ma_roma_ft direct+pyramid_v2 on all
+   187 (analysis restricts to test), pull CSV + checkpoint.
+8. Analysis: test-split table ma_roma vs ma_roma_ft (+ optionally FOV
+   ladder with ft model — ladder script accepts backbones). Paired
+   bootstrap. Write up; this is the make-or-break for the appearance
+   bottleneck claim.
+
+**Gotchas already learned for this build:** romatch RobustLosses/train
+import wandb and log unconditionally — do NOT import romatch.losses or
+romatch.train in our loop (our loss.py is standalone). model(batch) needs
+im_A/im_B already resized+normalized. Box git: fetch+reset, never pull.
+
+**Box note:** shared 142.171.48.138:44563 (symmc-flow co-tenant, 16G disk
+— keep everything in /dev/shm). Ports change on recycle; nothing of ours
+on the box right now.
+
+---
+
+## Previous handoff (2026-06-12, FOV ladder)
 
 **FOV ladder DONE (Aim 3 closed) — the wrapper is vindicated under
 controlled conditions.** Cropping base-matchable real pairs to sweep FOV
