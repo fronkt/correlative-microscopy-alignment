@@ -103,7 +103,26 @@ Paper context: SIFT succeeds on only 3/187 pairs; MA-RoMa is their best.
 
 ---
 
-## Resume from here (handoff 2026-06-11, evening)
+## Resume from here (handoff 2026-06-11, night)
+
+**Phase 4.2 DONE — H1 FINAL: REJECTED, with the project's first
+significant headline win.** MA-RoMa (cross-modal weights in the
+roma_outdoor arch, backbone `ma_roma`) direct beats roma direct at SR@10
+(+0.032, p=0.018), entirely in the >=0.5 FOV stratum. Wrapper on top:
+flat SR@10, keeps severe-stratum 0.03, but no-regression property broke
+(2 gained/2 lost, all threshold-straddlers). Best config 0.13 vs 0.10
+bar (~+32% relative overall); FOV<=5% still 0.00. Full analysis in
+results/README.md "Phase 4.2 / H1 FINAL". CSV now 2644 rows (ma_roma
+direct + pyramid_v2 complete).
+
+**Remaining:** Phase 5 — plots (1.5; plot_baselines.py needs the new
+modes), H3 family readout (h3_family_readout.py on final CSV). Phase 6 —
+writeup vs docs/research_plan.md (H1 rejected / H2 supported / H3 from
+readout). No GPU needed for either; box can be released.
+
+---
+
+## Previous handoff (2026-06-11, evening)
 
 **4.1c DONE — both knobs rejected.** Iterated zoom (z3): no significant
 gain vs direct (p=0.22), borderline worse than plain v2. Certainty gate

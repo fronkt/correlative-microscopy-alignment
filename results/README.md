@@ -210,6 +210,48 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## Phase 4.2 / H1 FINAL: cross-modal MA-RoMa backbone delivers the gain the wrapper couldn't (2026-06-11)
+
+MatchAnything-RoMa (He et al. 2025) weights loaded key-for-key into the
+roma_outdoor architecture (`ma_roma` backbone; 603/603 tensors, all
+retrained — see src/cma/matchers/roma.py). Direct + pyramid_v2 over all
+187 pairs:
+
+| config              | med ED (px) | SR@5 | SR@10 | SR@20 |
+|---------------------|------------:|-----:|------:|------:|
+| roma direct         |        76.3 | 0.05 |  0.10 |  0.23 |
+| roma pyramid_v2     |        74.0 | 0.05 |  0.12 |  0.25 |
+| ma_roma direct      |        84.0 | 0.04 | **0.13** |  0.24 |
+| ma_roma pyramid_v2  |    **72.7** | 0.05 | **0.13** |  0.24 |
+
+- **The backbone lever works: ma_roma direct vs roma direct is the first
+  significant headline SR@10 gain of the project** (+0.032, 95% CI
+  [+0.005, +0.064], p=0.018). All of it comes from the >=0.5 FOV stratum
+  (0.13 -> 0.18): cross-modal training fixes *appearance*, not FOV. The
+  gain profile is sharp-when-it-works: SR@5 is slightly *worse* (-0.011,
+  CI touching 0) and med ED higher (84 vs 76) — MA-RoMa either locks on
+  or misses entirely.
+- **The wrapper adds little on top of the stronger backbone**: SR@10
+  flat (delta 0.000), SR@5 +0.016 marginal (p=0.048), med ED 84 -> 72.7
+  (n.s.). The severe-FOV recovery (0.00 -> 0.03 in the 0.05-0.25
+  stratum) is preserved. The v1->v2 "never worse than direct" property
+  did NOT carry over: 2 pairs gained / 2 lost at SR@10 (all four are
+  7-13 px threshold-straddlers — verifier-gate noise, not blowups).
+- Best config vs the original zero-shot bar (roma direct): +0.032 SR@10
+  (p=0.016), i.e. **~+32% relative** — tantalizingly close to H1's >=35%
+  aspiration *overall*, but H1 demanded it at FOV <= 5%, where every
+  config still scores 0.00 (n=4).
+
+**H1 verdict: REJECTED as written.** Decomposition across the project:
+aggregation redesign (pyramid v2) +2 SR@10 points, backbone swap
+(MA-RoMa) +3 points, tuning knobs (4.1c) +0; ceiling reached 0.13 vs the
+0.10 zero-shot bar, and 0.00 at severe FOV. The honest conclusion for
+the writeup: scale mismatch (the pyramid's job) was never the binding
+constraint on AmalgaMatch — cross-modal appearance is, and even a
+cross-modal-trained backbone only moves pairs that were nearly matchable
+anyway. H2 (RoMa > ELoFTR-family at low FOV) is supported: roma-family
+configs dominate matchanything(-ELoFTR) everywhere including low FOV.
+
 ## 4.1c: iterated zoom and certainty gating do NOT improve pyramid v2 (2026-06-11)
 
 Both remaining wrapper knobs swept on RoMa over all 187 pairs
