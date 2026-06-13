@@ -24,7 +24,9 @@ import numpy as np
 
 RUNGS = (0.5, 0.25, 0.10, 0.05, 0.02)
 CONFIGS = [("roma", "direct"), ("roma", "pyramid_v2"),
-           ("ma_roma", "direct"), ("ma_roma", "pyramid_v2")]
+           ("ma_roma", "direct"), ("ma_roma", "pyramid_v2"),
+           ("ma_roma_ft", "direct"), ("ma_roma_ft", "pyramid_v2")]
+BACKBONES = ("roma", "ma_roma", "ma_roma_ft")
 
 
 def mu(r: dict) -> float:
@@ -36,12 +38,18 @@ with open("results/baselines_A.csv", newline="", encoding="utf-8") as f:
 with open("results/fov_ladder.csv", newline="", encoding="utf-8") as f:
     ladder = list(csv.DictReader(f))
 
+# the ladder testbed (pairs actually swept) — used to keep every backbone's
+# matchable set on the same fixed population (ma_roma_ft's direct rows would
+# otherwise expand its base-matchable set beyond what the ladder covers).
+testbed = {r["pair_id"] for r in ladder}
+
 # per-backbone matchable set + base-FOV stats over that set
 matchable: dict[str, set[str]] = {}
 base_stat: dict[tuple[str, str], tuple[float, float]] = {}
-for bb in ("roma", "ma_roma"):
+for bb in BACKBONES:
     matchable[bb] = {r["pair_id"] for r in base_rows
-                     if r["backbone"] == bb and r["mode"] == "direct" and mu(r) < 20}
+                     if r["backbone"] == bb and r["mode"] == "direct" and mu(r) < 20
+                     and r["pair_id"] in testbed}
     for mode in ("direct", "pyramid_v2"):
         sel = [r for r in base_rows
                if r["backbone"] == bb and r["mode"] == mode

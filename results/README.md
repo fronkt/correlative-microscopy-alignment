@@ -262,6 +262,45 @@ The per-subclass cut explains the contradiction (test medians, direct):
    (mix natural-image or zero-shot-distilled batches), LoRA-style
    low-rank updates, per-modality experts, or simply more data.
 
+### FOV ladder with ma_roma_ft (same 63-pair testbed, 2026-06-13)
+
+Ran the Aim-3 ladder on the fine-tuned backbone, restricted to the
+identical 63 base-matchable pairs (ft's direct rows would otherwise
+expand the eligible set to 120 — `run_fov_ladder.py --restrict-pairs-csv`).
+SR@10 / median mu_ed (transform, NOT TPS) per cropped FOV area ratio,
+each backbone on its own base-matchable subset of the testbed:
+
+| config                | base | 0.5  | 0.25 | 0.10 | 0.05 | 0.02 |
+|-----------------------|-----:|-----:|-----:|-----:|-----:|-----:|
+| ma_roma direct        | 0.46 | 0.50 | 0.28 | 0.07 | 0.00 | 0.00 |
+| ma_roma /pyramid_v2   | 0.49 | 0.53 | 0.30 | 0.23 | 0.03 | 0.00 |
+| ma_roma_ft direct     | 0.43 | 0.36 | 0.37 | 0.08 | 0.00 | 0.00 |
+| ma_roma_ft/pyramid_v2 | 0.42 | 0.38 | 0.39 | 0.16 | 0.00 | 0.00 |
+
+(fig: `reports/figs/baselines/fov_ladder.png`; ft n=47-51 per rung vs
+ma_roma n=36-40, since ft is base-matchable on more of the testbed.)
+
+Two findings:
+
+1. **Fine-tuning helps the *moderate*-FOV regime.** At rung 0.25 ft holds
+   SR@10 0.37-0.39 (median 13-14 px) vs ma_roma's 0.28-0.30 (median
+   15-22 px) — the best of any config there. The appearance fix buys
+   matchability as long as FOV isn't extreme.
+2. **The wrapper's scale benefit is backbone-agnostic but smaller on the
+   fine-tuned model.** At the severe 0.1 rung the pyramid lifts ft SR@10
+   +0.078 (direct 0.078 -> pyr 0.157, CI [+0.020,+0.157], p=0.0154,
+   n=51) — significant, confirming the scale mechanism is real on a
+   different backbone — but roughly half the lift it gives plain ma_roma
+   (+0.150, p=0.0014; reproduced exactly here as a sanity check). Likely
+   because ft already raises direct performance at moderate crops,
+   leaving less headroom, and the two interventions address overlapping
+   scale/appearance failure modes.
+3. Below 0.05 every config collapses to SR@10 0.00 — neither fine-tuning
+   nor the wrapper extends the failure floor (still ~0.02, as before).
+
+Tools: `scripts/fov_ladder_bootstrap.py <rung> <backbone...>`,
+`scripts/plot_fov_ladder.py` (now includes ma_roma_ft).
+
 Ops: pipeline ran end-to-end on a fresh shared 5090 box (16G overlay,
 everything in /dev/shm via `scripts/box_finetune.sh`); 1500 steps + 15
 val passes took 91 min, both 187-pair sweeps ~20 min, zero failed rows

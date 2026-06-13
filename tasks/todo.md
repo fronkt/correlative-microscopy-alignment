@@ -160,10 +160,19 @@ pyramid_v2, paired bootstrap on test pairs).
    significantly worse, SR@10 +0.036 n.s., med ED -31.8 n.s.** Full
    write-up in results/README.md "MA-RoMa fine-tuning" section.
 
+**FOV ladder with ma_roma_ft DONE (2026-06-13):** ran on the same 63-pair
+testbed (run_fov_ladder.py --restrict-pairs-csv; ft direct rows would
+expand eligible to 120). Findings (results/README.md FOV-ladder subsection):
+(1) ft helps the moderate-FOV regime — rung 0.25 SR@10 0.37-0.39 vs
+ma_roma 0.28-0.30; (2) the pyramid's scale lift persists on ft and is
+significant at rung 0.1 (+0.078, p=0.0154, n=51) but ~half of plain
+ma_roma's +0.150 (p=0.0014, reproduced exactly); (3) below 0.05 all
+configs collapse. Tools: scripts/fov_ladder_bootstrap.py,
+plot_fov_ladder.py (now includes ma_roma_ft).
+
 **Open follow-ups (not scheduled):** forgetting mitigation (replay of
-zero-shot outputs / LoRA / per-modality experts) or more data; FOV
-ladder with ma_roma_ft (ladder accepts backbones, box still up); fold
-the fine-tuning verdict into reports/final_report.md future-work.
+zero-shot outputs / LoRA / per-modality experts) or more data; fold the
+fine-tuning + ft-ladder verdicts into reports/final_report.md future-work.
 
 **Gotchas already learned for this build:** romatch RobustLosses/train
 import wandb and log unconditionally — do NOT import romatch.losses or
