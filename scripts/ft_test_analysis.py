@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import csv
 import json
+from pathlib import Path
 
 import numpy as np
 
@@ -23,9 +24,10 @@ def ed(r: dict) -> float:
 
 
 def main() -> None:
-    split = json.load(open("results/split.json"))
+    split = json.loads(Path("results/split.json").read_text())
     test = set(split["test"])
-    rows = list(csv.DictReader(open("results/baselines_A.csv", encoding="utf-8")))
+    with open("results/baselines_A.csv", newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
 
     print(f"{'method':30s} {'SR@5':>6s} {'SR@10':>6s} {'SR@20':>6s} "
           f"{'medED':>8s}   (28 test pairs, tps-refined)")
