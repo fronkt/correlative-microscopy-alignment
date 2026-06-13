@@ -1,10 +1,15 @@
 # Multi-Scale Alignment of Correlative Materials Microscopy with Foundational Dense Matchers — Final Report
 
 *Project: correlative-microscopy-alignment. Data: AmalgaMatch (Durmaz et
-al., DOI 10.24406/fordatis/436), 187 pairs, 19 subsets. All numbers
-regenerable from `results/baselines_A.csv` via `scripts/compare_v2.py`,
-`scripts/bootstrap_ci.py`, `scripts/h3_family_readout.py`; figures via
-`scripts/plot_baselines.py` (written to `reports/figs/baselines/`).*
+al., DOI 10.24406/fordatis/436), 187 pairs, 19 subsets. Zero-shot/wrapper
+numbers regenerable from `results/baselines_A.csv` via
+`scripts/compare_v2.py`, `scripts/bootstrap_ci.py`,
+`scripts/h3_family_readout.py`; the FOV ladder (incl. fine-tuned backbone)
+from `results/fov_ladder.csv` via `scripts/plot_fov_ladder.py` and
+`scripts/fov_ladder_bootstrap.py`; the fine-tuning experiment (section 7)
+via `scripts/finetune_ma_roma.py` + `scripts/ft_test_analysis.py`
+(split `results/split.json`, log `results/finetune_log.csv`). Figures in
+`reports/figs/baselines/`.*
 
 ## 1. Summary
 
@@ -26,10 +31,17 @@ over all 187 AmalgaMatch pairs:
   BIC-style selector picks affine on 69% of well-registered pairs;
   homography still wins the remaining 31%, so automatic selection (not
   a hard affine restriction) is the right protocol.
-- **The largest single lever was none of the above: swapping in
-  cross-modal-trained weights (MatchAnything-RoMa) gave the project's
-  only significant headline gain over the zero-shot bar** (SR@10
+- **The largest single lever among off-the-shelf options was none of the
+  above: swapping in cross-modal-trained weights (MatchAnything-RoMa)
+  gave the project's only significant zero-shot-bar headline gain** (SR@10
   0.10 -> 0.13, +0.032, 95% CI [+0.005, +0.064], p=0.018).
+- **Materials-domain fine-tuning confirms appearance is the lever, but
+  131 pairs trade coverage for depth (section 7).** Decoder-only
+  fine-tuning of MA-RoMa cut median error on in-distribution TEM pairs
+  5.2x (321 -> 62 px, the largest movement any intervention produced) yet
+  *regressed* SR@20 overall (0.393 -> 0.250, CI [-0.286, -0.036]) by
+  catastrophically forgetting an unseen modality combo. The direction is
+  right; the data budget is not.
 
 The structural conclusion: **on AmalgaMatch, cross-modal appearance —
 not scale mismatch — is the binding constraint.** The pyramid solves the
@@ -138,15 +150,80 @@ Findings:
   but the usable-FOV envelope extends from ~0.25 (direct) to ~0.1
   (wrapped, strong backbone).
 
-## 7. Limitations and what we would do next
+## 7. Materials-domain fine-tuning: the appearance lever, tested
 
-1. **Severe FOV on real pairs remains unsolved — and the ladder shows
-   why.** Appearance failure dominates: the same wrapper that triples
-   success at controlled 10% FOV moves real severe-FOV pairs barely at
-   all, because those pairs fail on appearance first. Materials-domain
-   fine-tuning (synthetic cross-modal augmentation on SEM/EBSD/TEM
-   data) is the credible path; the ladder additionally provides the
-   controlled testbed to measure such a model's FOV envelope.
+Section 6 left appearance as the binding constraint and named
+materials-domain fine-tuning as the credible path. We tested it directly.
+A scene-level 131/28/28 split (within-scene pairs share images, so a
+pair-level split would leak; `results/split.json`) gives a held-out test
+set; **headline numbers are the 28 test pairs only, val drives selection,
+test is touched once.** Fine-tuning is decoder-only — the VGG+DINOv2
+encoder is frozen in eval mode (its BatchNorm stats must not drift),
+~100M decoder params trained on densified sparse GT (sparse correspondences
+splined into a dense A->B warp, supervised inside the GT-support region),
+with FOV-crop + photometric augmentation. AdamW 2e-5, 1500 steps on a
+5090 (~90 min incl. validation); selection by median val ED picked step
+900 (val med 17.55 vs 21.69 zero-shot). (`scripts/finetune_ma_roma.py`,
+`src/cma/train/`; checkpoint local-only, 445 MB.)
+
+**Test result (direct, TPS-refined ED, paired bootstrap B=10k):**
+
+| method | SR@5 | SR@10 | SR@20 | med ED |
+|---|---:|---:|---:|---:|
+| MA-RoMa zero-shot | 0.000 | 0.214 | 0.393 | 83.5 |
+| MA-RoMa fine-tuned | 0.000 | 0.250 | 0.250 | 51.6 |
+
+SR@10 +0.036 (n.s.); **SR@20 -0.143, CI [-0.286, -0.036] — significantly
+worse**; med ED -31.8 px (n.s.). The aggregate hides two opposite effects
+that the per-subclass cut separates:
+
+- **In-distribution, fine-tuning works, hard.** The 16 TEM dislocation
+  test pairs (50 TEM pairs in train) improved median ED 320.8 -> 61.8 px,
+  a 5.2x cut and the single largest metric movement in the project — but
+  mostly from ~320 to ~60 px, still above the 20 px bar, so SR barely
+  registers it. EBSD subclasses held.
+- **Off-distribution, it forgets catastrophically.** C103 SEM-SE<->LOM-
+  height has zero train pairs (the subclass exists only in val/test);
+  zero-shot MA-RoMa solved all 4 test pairs (7-16 px), the fine-tuned
+  decoder broke 3 outright (109/375/953 px). These four pairs *are* the
+  entire SR@20 regression. With 2 C103 pairs in val, a median selection
+  metric could not see the damage.
+
+**FOV ladder on the fine-tuned backbone** (same 63-pair testbed, via
+`run_fov_ladder.py --restrict-pairs-csv`; its direct rows would otherwise
+expand the eligible set to 120) sharpens the picture:
+
+- Fine-tuning **helps the moderate-FOV regime**: at rung 0.25 the
+  fine-tuned model holds SR@10 0.37-0.39 (median 13-14 px) vs MA-RoMa's
+  0.28-0.30 (15-22 px) — best there.
+- The **pyramid's scale lift is backbone-agnostic but smaller** on the
+  fine-tuned model: at the severe 0.1 rung the wrapper adds SR@10 +0.078
+  (CI [+0.020, +0.157], p=0.0154, n=51) — significant, the mechanism is
+  real on a second backbone — but roughly half the +0.150 (p=0.0014) it
+  gives plain MA-RoMa. Fine-tuning and the wrapper address overlapping
+  scale/appearance failures, so they don't fully stack.
+- Below 0.05, every config still collapses to zero.
+
+**Verdict.** Appearance is attackable with domain data — but 131 pairs
+over 12 subclasses buy depth on trained modalities at the cost of
+forgetting untrained ones. A deployable fine-tune needs forgetting
+mitigation (replay of zero-shot/natural-image batches, LoRA-style
+low-rank updates, or per-modality experts) and, above all, broader
+modality coverage. Fine-tuning and the pyramid wrapper are complementary
+but partly redundant: the former extends the matchable-appearance
+envelope, the latter the scale envelope.
+
+## 8. Limitations and what we would do next
+
+1. **Severe FOV on real pairs remains unsolved, and appearance is why.**
+   The wrapper that triples success at controlled 10% FOV moves real
+   severe-FOV pairs barely at all, because those pairs fail on appearance
+   first. Section 7 shows materials-domain fine-tuning *can* attack
+   appearance (5.2x on in-distribution TEM) but, at this data budget,
+   forgets untrained modality combos. The next concrete step is a
+   forgetting-robust fine-tune (replay / LoRA / per-modality experts) on
+   broader modality coverage, evaluated on the same held-out test split
+   and FOV ladder used here.
 2. **Verifier ceiling.** MI-on-overlap cannot rank transforms within
    ~10 px of each other; a learned verifier or GT-free residual proxy
    would let v2's stage machinery (and iterated zoom) pay off.
