@@ -64,10 +64,22 @@ def main() -> None:
     ap.add_argument("--backbones", default="roma,ma_roma")
     ap.add_argument("--modes", default="direct,pyramid_v2")
     ap.add_argument("--device", default="cuda")
+    ap.add_argument("--ft-weights", default=None,
+                    help="local state-dict path for backbone ma_roma_ft")
+    ap.add_argument("--restrict-pairs-csv", default=None,
+                    help="only run pairs already present in this ladder CSV "
+                         "(fixes the testbed when a new backbone's direct rows "
+                         "would otherwise expand the base-matchable set)")
     ap.add_argument("--limit", type=int, default=0, help="max eligible pairs (smoke)")
     args = ap.parse_args()
 
     chosen = eligible_pairs(Path(args.baselines))
+    if args.restrict_pairs_csv:
+        restrict = Path(args.restrict_pairs_csv)
+        with restrict.open(newline="", encoding="utf-8") as f:
+            keep = {r["pair_id"] for r in csv.DictReader(f)}
+        chosen &= keep
+        print(f"restricted to {len(keep)} testbed pairs from {restrict.name}")
     ratios = base_ratios(Path(args.fov_ratios))
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -113,7 +125,8 @@ def main() -> None:
                         f.flush()
                         continue
                     if matcher is None:
-                        matcher = make_matcher(bb, args.device)
+                        matcher = make_matcher(bb, args.device,
+                                               ft_weights=args.ft_weights)
                     try:
                         row = run_pair(cut.pair, rec, matcher, mode)
                     except Exception as e:  # noqa: BLE001 — record, keep sweeping
