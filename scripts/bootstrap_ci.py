@@ -6,11 +6,14 @@ bootstrap p-value for "B is no better than A".
 
 Usage:
   python scripts/bootstrap_ci.py results/baselines_A.csv roma:direct roma:pyramid_v2
+  python scripts/bootstrap_ci.py results/baselines_A.csv ma_roma:direct \
+      ma_roma_ft:direct --split results/split.json:test
 """
 
 from __future__ import annotations
 
 import csv
+import json
 import sys
 from pathlib import Path
 
@@ -36,10 +39,19 @@ def load(path: Path, spec: str) -> dict[str, float]:
 
 
 def main() -> None:
-    path = Path(sys.argv[1])
-    spec_a, spec_b = sys.argv[2], sys.argv[3]
+    args = list(sys.argv[1:])
+    keep = None
+    if "--split" in args:
+        i = args.index("--split")
+        split_path, split_name = args[i + 1].rsplit(":", 1)
+        keep = set(json.loads(Path(split_path).read_text())[split_name])
+        del args[i:i + 2]
+    path = Path(args[0])
+    spec_a, spec_b = args[1], args[2]
     a, b = load(path, spec_a), load(path, spec_b)
     ids = sorted(set(a) & set(b))
+    if keep is not None:
+        ids = [i for i in ids if i in keep]
     if not ids:
         raise SystemExit(f"no common pairs between {spec_a} and {spec_b}")
     ea = np.array([a[i] for i in ids])

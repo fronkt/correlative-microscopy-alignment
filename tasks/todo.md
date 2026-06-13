@@ -146,17 +146,24 @@ pyramid_v2, paired bootstrap on test pairs).
    {16,8,4,2,1}), grads ONLY in decoder (311 tensors, 307 nonzero; decoder
    = 100.7M of 111.3M registered params). 43 fast tests still green.
 
-**TODO, in order:**
-7. Box: `scripts/box_finetune.sh` is ready (train 1500 steps + sweep
-   ma_roma_ft direct+pyramid_v2 on all 187; checkpoint in /dev/shm/cma_ckpt).
-   NEEDS A GPU BOX — nothing of ours is provisioned; old shared box
-   142.171.48.138:44563 may be gone/recycled. After run: scp back
-   ma_roma_ft.pth (~1.7 GB -> E:\), results/baselines_A.csv,
-   results/finetune_log.csv.
-8. Analysis: test-split-only table ma_roma vs ma_roma_ft (+ optionally FOV
-   ladder with ft model — ladder script accepts backbones). Paired
-   bootstrap. Write up; this is the make-or-break for the appearance
-   bottleneck claim. Headline = 28 TEST pairs only.
+**DONE 2026-06-12/13 — EXPERIMENT COMPLETE, verdict mixed and interesting:**
+7. ✅ Ran on fresh shared 5090 box 199.126.134.31:34941 (symmc-flow
+   co-tenant again; we stayed in /dev/shm). 1500 steps + 15 vals in 91
+   min, both sweeps ~20 min, 374/374 rows ok. Best ckpt step 900 (val
+   med 17.55 vs 21.69 zero-shot). Pulled: checkpoints/ma_roma_ft.pth
+   (445 MB — NOT 1.7G; DINOv2 isn't in the state dict),
+   results/finetune_log.csv, results/baselines_A.csv (2805 rows).
+8. ✅ Test-split analysis (scripts/ft_test_analysis.py + bootstrap_ci.py
+   --split): **in-distribution TEM med ED 320.8 -> 61.8 px (5.2x); but
+   catastrophic forgetting on C103 SEM<->LOM (0 train pairs): 12.4 ->
+   241.9 px, all four SR@20 losses; net SR@20 0.393 -> 0.250
+   significantly worse, SR@10 +0.036 n.s., med ED -31.8 n.s.** Full
+   write-up in results/README.md "MA-RoMa fine-tuning" section.
+
+**Open follow-ups (not scheduled):** forgetting mitigation (replay of
+zero-shot outputs / LoRA / per-modality experts) or more data; FOV
+ladder with ma_roma_ft (ladder accepts backbones, box still up); fold
+the fine-tuning verdict into reports/final_report.md future-work.
 
 **Gotchas already learned for this build:** romatch RobustLosses/train
 import wandb and log unconditionally — do NOT import romatch.losses or

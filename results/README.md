@@ -210,6 +210,63 @@ and slip partitioning are near-zero for every zero-shot method.
    `src/cma/matchers/roma.py`). Windows silently took the fallback all
    along, which is why local tests never caught it.
 
+## MA-RoMa fine-tuning: big in-distribution gains, catastrophic forgetting off-distribution (2026-06-12)
+
+Decoder-only fine-tune of MA-RoMa on the 131 train pairs (scene-level
+split, `results/split.json`; densified sparse-GT warps, FOV-crop +
+photometric aug; AdamW 2e-5, 1500 steps, batch 4 on a 5090, ~25 min).
+Val selection (median mu-ED over the 28 val pairs, every 100 steps)
+picked step 900: val med 17.55 vs 21.69 zero-shot, SR@10 0.393 vs 0.321,
+SR@20 0.536 vs 0.464 (`results/finetune_log.csv`). Checkpoint:
+`checkpoints/ma_roma_ft.pth` (445 MB, local only; DINOv2 is fetched
+separately and was never trained).
+
+Headline — 28 TEST pairs only (val was burned on selection), direct mode,
+TPS-refined ED, paired bootstrap B=10k:
+
+| method                | SR@5  | SR@10 | SR@20 | med ED (finite) |
+|-----------------------|------:|------:|------:|----------------:|
+| roma direct           | 0.000 | 0.107 | 0.107 | 73.7 |
+| ma_roma direct        | 0.000 | 0.214 | 0.393 | 83.5 |
+| ma_roma_ft direct     | 0.000 | 0.250 | 0.250 | 51.6 |
+| ma_roma_ft pyramid_v2 | 0.000 | 0.250 | 0.250 | 56.7 |
+
+ma_roma_ft vs ma_roma (direct): SR@10 +0.036 (CI [-0.071,+0.143], n.s.);
+**SR@20 -0.143 (CI [-0.286,-0.036]) — significantly WORSE**; med ED
+-31.8 px (CI [-72.5,+35.1], n.s.). Wrapper on top of ft: flat (identical
+SRs, med +5.0 n.s.) — consistent with Phase 4.2.
+
+The per-subclass cut explains the contradiction (test medians, direct):
+
+| test subclass (n)                       | zero-shot | fine-tuned |
+|-----------------------------------------|----------:|-----------:|
+| MoTaTiZrHf-900C TEM dislocation (16)    | 320.8     | **61.8**   |
+| In718-SS SEM-SE/EBSD (4)                | 9.0       | 7.1        |
+| AF9628 SEM-SE-Stitch/EBSD (3)           | 7.5       | 7.8        |
+| C103 SEM-SE/LOM-height fracture (4)     | 12.4      | **241.9**  |
+| 5842WCu SEM-SE/SEM-BSE multiscale (1)   | 115.0     | 260.0      |
+
+1. **The appearance bottleneck is attackable with domain data**: TEM
+   pairs (50 in train) improved 5.2x in median ED — by far the largest
+   movement any intervention has produced on this dataset — but mostly
+   from ~320 px to ~60 px, i.e. still above the 20 px success bar, so SR
+   metrics barely see it.
+2. **Catastrophic forgetting on unseen modality combos**: C103
+   SEM-SE<->LOM-height has ZERO train pairs (subclass exists only in
+   val/test), and zero-shot MA-RoMa solved all 4 test pairs (7-16 px);
+   the fine-tuned decoder broke 3 of them outright (109/375/953 px).
+   All four SR@20 losses are this one subclass. Val (2 C103 pairs of 28)
+   could not protect them via a median selection metric.
+3. Net verdict: with 131 pairs over 12 subclasses, fine-tuning trades
+   coverage for depth. Follow-ups if pursued: replay/regularization
+   (mix natural-image or zero-shot-distilled batches), LoRA-style
+   low-rank updates, per-modality experts, or simply more data.
+
+Ops: pipeline ran end-to-end on a fresh shared 5090 box (16G overlay,
+everything in /dev/shm via `scripts/box_finetune.sh`); 1500 steps + 15
+val passes took 91 min, both 187-pair sweeps ~20 min, zero failed rows
+(374/374 ok).
+
 ## FOV ladder (Aim 3): the pyramid's value is real — the real dataset just couldn't show it (2026-06-12)
 
 Real severe-FOV pairs confound FOV with appearance (and n=4 below 0.05).
