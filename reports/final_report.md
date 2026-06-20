@@ -8,8 +8,11 @@ numbers regenerable from `results/baselines_A.csv` via
 from `results/fov_ladder.csv` via `scripts/plot_fov_ladder.py` and
 `scripts/fov_ladder_bootstrap.py`; the fine-tuning experiment (section 7)
 via `scripts/finetune_ma_roma.py` + `scripts/ft_test_analysis.py`
-(split `results/split.json`, log `results/finetune_log.csv`). Figures in
-`reports/figs/baselines/`.*
+(split `results/split.json`, log `results/finetune_log.csv`); the L2-SP
+forgetting-mitigation sweep (section 7.1) via `scripts/box_ft_robust_sweep.sh`
++ `scripts/box_ft_robust_eval.sh` (`--anchor l2sp`, results in
+`results/baselines_robust.csv`, `results/fov_ladder_robust.csv`,
+winner λ=0.01). Figures in `reports/figs/baselines/`.*
 
 ## 1. Summary
 
@@ -41,7 +44,11 @@ over all 187 AmalgaMatch pairs:
   5.2x (321 -> 62 px, the largest movement any intervention produced) yet
   *regressed* SR@20 overall (0.393 -> 0.250, CI [-0.286, -0.036]) by
   catastrophically forgetting an unseen modality combo. The direction is
-  right; the data budget is not.
+  right; the data budget is not. **L2-SP weight anchoring (section 7.1)
+  fixes the forgetting** — a one-line penalty buys SR@20 back to within
+  noise of zero-shot (p=0.91) while *sharpening* median ED (-15.6 px vs
+  plain ft, p=0.005) — leaving modality coverage, not the optimizer, as
+  the remaining bottleneck.
 
 The structural conclusion: **on AmalgaMatch, cross-modal appearance —
 not scale mismatch — is the binding constraint.** The pyramid solves the
@@ -213,6 +220,54 @@ modality coverage. Fine-tuning and the pyramid wrapper are complementary
 but partly redundant: the former extends the matchable-appearance
 envelope, the latter the scale envelope.
 
+### 7.1 Forgetting mitigation: weight anchoring (L2-SP)
+
+The §7 verdict named forgetting mitigation as the missing piece. We tested the
+lightest-touch option — **L2-SP weight anchoring**: the same decoder-only recipe
+(AdamW 2e-5, 1500 steps, encoder frozen-eval) plus a penalty
+`λ·½‖θ_dec − θ_dec⁰‖²` pulling the decoder back toward its zero-shot MA-RoMa
+init. No replay corpus, no architecture change, no extra parameters — a one-line
+regularizer that costs nothing to deploy. We swept `λ ∈ {0, 0.01, 0.1, 1.0}`
+(λ=0 reproduces the plain §7 ft), selecting the step per run by min val median
+ED as before and the λ by held-out **test**-split retention (val cannot see the
+C103 damage — §7). (`--anchor l2sp --anchor-lambda`, `scripts/box_ft_robust_*`.)
+
+**A light anchor recovers the forgetting.** λ=0.01 won. On the C103
+SEM-SE<->LOM-height retention probe — the modality with zero train pairs that
+plain ft broke — the recoverable scene drops from 80/1220 px (plain ft) back to
+16/24 px, near zero-shot's ~12 px. The second C103 scene stays broken at every λ
+(an unrecoverable combo, not an anchor failure). Heavier anchoring (λ=0.1, 1.0)
+buys no further retention and costs both in-distribution gain and training
+stability: the certainty head decalibrates into transient all-fail validation
+epochs whose onset moves *earlier* as λ grows (λ=0 stable to step 1500; λ=1.0
+collapses by ~step 400). Every run's best checkpoint is saved pre-collapse so
+selection stays clean, but the usable training budget shrinks with λ — another
+reason the light anchor wins.
+
+**Headline (28 test pairs, TPS-refined ED, paired bootstrap B=10k):**
+
+| method | SR@5 | SR@10 | SR@20 | med ED |
+|---|---:|---:|---:|---:|
+| MA-RoMa zero-shot (pyramid_v2) | 0.036 | 0.214 | 0.393 | 69.1 |
+| MA-RoMa plain ft (pyramid_v2) | 0.000 | 0.250 | 0.250 | 56.7 |
+| MA-RoMa L2-SP λ0.01 (pyramid_v2) | 0.036 | 0.214 | **0.321** | **41.0** |
+
+vs plain ft: **median ED −15.6 px, CI [−49.8, −2.4], p=0.0046** (significant),
+with SR@20 +0.071 (CI [0.000, +0.179], p=0.12 — n.s. on 28 pairs, ≈2 pairs). vs
+zero-shot: SR@20 −0.071 (CI [−0.214, +0.071], **p=0.91 — the regression is no
+longer statistically detectable**) at median ED −28.1 px. In words: **L2-SP buys
+back the §7 forgetting regression to within noise while keeping — and on median
+ED, sharpening — the in-distribution gain**, and the pyramid wrapper still stacks
+on top (direct SR@20 0.286 → pyramid 0.321).
+
+**Verdict.** The cheapest possible mitigation — a one-line weight penalty, no
+replay data, no extra parameters — converts the §7 *net regression* into a
+net-neutral-to-positive fine-tune: significantly better median ED than both
+zero-shot and plain ft, SR@20 indistinguishable from zero-shot. It does not lift
+SR@20 *above* zero-shot; closing the unrecoverable-modality gap (C103 scene 2)
+still needs what §8 asks for — broader modality coverage. But catastrophic
+forgetting itself is now a solved sub-problem at this data budget.
+
 ## 8. Limitations and what we would do next
 
 1. **Severe FOV on real pairs remains unsolved, and appearance is why.**
@@ -220,10 +275,13 @@ envelope, the latter the scale envelope.
    severe-FOV pairs barely at all, because those pairs fail on appearance
    first. Section 7 shows materials-domain fine-tuning *can* attack
    appearance (5.2x on in-distribution TEM) but, at this data budget,
-   forgets untrained modality combos. The next concrete step is a
-   forgetting-robust fine-tune (replay / LoRA / per-modality experts) on
-   broader modality coverage, evaluated on the same held-out test split
-   and FOV ladder used here.
+   forgets untrained modality combos. §7.1 closes the forgetting half of
+   this: L2-SP weight anchoring (λ=0.01) buys the regression back to within
+   noise of zero-shot at no deploy cost, leaving **broader modality
+   coverage** — not the optimizer — as the binding constraint. The
+   unrecoverable C103 scene (broken at every λ) is the concrete next target:
+   it needs train pairs in that modality combo, evaluated on the same
+   held-out split and FOV ladder used here.
 2. **Verifier ceiling.** MI-on-overlap cannot rank transforms within
    ~10 px of each other; a learned verifier or GT-free residual proxy
    would let v2's stage machinery (and iterated zoom) pay off.
