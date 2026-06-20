@@ -30,3 +30,6 @@ results/**/*.parquet
 # os
 .DS_Store
 Thumbs.db
+
+# manuscript kept in a separate PRIVATE repo (paper/ has its own .git)
+/paper/
