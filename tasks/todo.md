@@ -3,6 +3,49 @@
 Track in this file. Check items off as completed.
 Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
+## Phase 9 — Forgetting-robust fine-tune (2026-06-19)
+
+**Why:** §7/§8.1. MA-RoMa decoder-only ft won 5.2x on in-distribution TEM
+but catastrophically forgot C103 SEM↔LOM (med ED 12.4→241.9 px, 0 train
+pairs), so net test SR@20 went *down* (0.393→0.250). Goal: keep the
+appearance gain without regressing untrained modalities.
+
+**Mechanism (primary): L2-SP weight anchoring.** Penalize decoder drift
+from its zero-shot init: `L = L_task + λ·mean((θ_dec − θ_dec⁰)²)`.
+Data-free, one knob, directly limits the drift that causes forgetting.
+`λ=0` exactly reproduces the existing plain ft (control/sanity).
+Chosen over alternatives because replay needs an external natural-image
+corpus on the box, LoRA is invasive in romatch's decoder internals we
+don't own, and EWC needs a Fisher pass. Fallback if L2-SP can't hold
+C103 without killing the TEM gain: functional KD self-distillation
+(anchor student decoder output to a frozen teacher, +1 forward pass).
+
+**Code (minimal, all reuse):**
+- [ ] 9.1 `train/finetune.py`: snapshot `theta0` of trainable decoder
+      params at init; add `anchor` / `anchor_lambda` args; add the L2-SP
+      penalty each step; log it separately.
+- [ ] 9.2 `finetune.py::evaluate_direct`: also return pair_ids aligned
+      with errs so the train loop can log **retention sub-metrics**
+      (C103/SEM-LOM val pair vs TEM val pairs) next to the global val
+      median — λ selection must see forgetting, which the median hides.
+- [ ] 9.3 `scripts/finetune_ma_roma.py`: pass `--anchor` / `--anchor-lambda`.
+- [ ] 9.4 Calibrate λ grid (local CPU smoke): pick λ so the penalty is
+      ~0.1–1× task loss early; sweep a log grid incl. λ=0.
+- [ ] 9.5 `scripts/box_finetune_robust.sh`: train per-λ (1500 steps, val
+      every 100, retention logged), keep per-λ ckpt+log; select λ by net
+      val SR@20 with a C103-retention floor; run full 187×{direct,
+      pyramid_v2} test sweep + FOV ladder for the winner ONLY. Reuse
+      box_finetune.sh /dev/shm handling; num-workers=4 (256-core box).
+- [ ] 9.6 Eval identical to §7 for comparability: `ft_test_analysis.py`
+      (28 test pairs), `bootstrap_ci.py --split results/split.json:test`,
+      `run_fov_ladder.py` on the fixed 63-pair testbed.
+- [ ] 9.7 Fold verdict into `reports/final_report.md` §7 (new
+      "forgetting mitigation" subsection) + update §8.1; push.
+
+**Box:** vast 47.186.21.5:55861, RTX 5090 32G, `/venv/main`. Verified
+reachable 2026-06-19. **GPU budget:** ~3–4 short trainings (cheap
+val-only inner loop) + one full sweep+ladder for the winner ≈ a few hours.
+
 ## Phase 0 — Setup
 - [x] 0.1 Repo scaffold + lint (ruff configured; CI deferred)
 - [x] 0.2 Pinned env (`pyproject.toml` w/ dev + torch extras)

@@ -32,6 +32,10 @@ def main() -> None:
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--log", default="results/finetune_log.csv")
+    ap.add_argument("--anchor", default="none", choices=["none", "l2sp"],
+                    help="forgetting mitigation: l2sp anchors decoder to init")
+    ap.add_argument("--anchor-lambda", type=float, default=0.0,
+                    help="strength of the L2-SP penalty (0 = plain ft)")
     args = ap.parse_args()
 
     finetune(
@@ -39,7 +43,7 @@ def main() -> None:
         steps=args.steps, batch_size=args.batch_size, lr=args.lr,
         weight_decay=args.weight_decay, val_every=args.val_every,
         num_workers=args.num_workers, device=args.device, seed=args.seed,
-        log_path=args.log,
+        log_path=args.log, anchor=args.anchor, anchor_lambda=args.anchor_lambda,
     )
 
 
