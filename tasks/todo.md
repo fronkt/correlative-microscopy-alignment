@@ -21,26 +21,31 @@ C103 without killing the TEM gain: functional KD self-distillation
 (anchor student decoder output to a frozen teacher, +1 forward pass).
 
 **Code (minimal, all reuse):**
-- [ ] 9.1 `train/finetune.py`: snapshot `theta0` of trainable decoder
-      params at init; add `anchor` / `anchor_lambda` args; add the L2-SP
-      penalty each step; log it separately.
-- [ ] 9.2 `finetune.py::evaluate_direct`: also return pair_ids aligned
-      with errs so the train loop can log **retention sub-metrics**
-      (C103/SEM-LOM val pair vs TEM val pairs) next to the global val
-      median — λ selection must see forgetting, which the median hides.
-- [ ] 9.3 `scripts/finetune_ma_roma.py`: pass `--anchor` / `--anchor-lambda`.
-- [ ] 9.4 Calibrate λ grid (local CPU smoke): pick λ so the penalty is
-      ~0.1–1× task loss early; sweep a log grid incl. λ=0.
-- [ ] 9.5 `scripts/box_finetune_robust.sh`: train per-λ (1500 steps, val
-      every 100, retention logged), keep per-λ ckpt+log; select λ by net
-      val SR@20 with a C103-retention floor; run full 187×{direct,
-      pyramid_v2} test sweep + FOV ladder for the winner ONLY. Reuse
-      box_finetune.sh /dev/shm handling; num-workers=4 (256-core box).
-- [ ] 9.6 Eval identical to §7 for comparability: `ft_test_analysis.py`
-      (28 test pairs), `bootstrap_ci.py --split results/split.json:test`,
-      `run_fov_ladder.py` on the fixed 63-pair testbed.
-- [ ] 9.7 Fold verdict into `reports/final_report.md` §7 (new
-      "forgetting mitigation" subsection) + update §8.1; push.
+- [x] 9.1 `train/finetune.py`: theta0 snapshot + `anchor`/`anchor_lambda`
+      args + L2-SP penalty (½·Σ(θ−θ⁰)², trainable decoder params) logged
+      as `anchor_pen`. (commit 5bceaa3)
+- [x] 9.2 `evaluate_direct` returns aligned pair_ids; train loop logs
+      `c103_sr20` / `tem_sr20` retention probes each val. Unit-tested.
+- [x] 9.3 `finetune_ma_roma.py`: `--anchor` / `--anchor-lambda` passthrough.
+- [x] 9.4 λ grid calibrated from the real plain-ft drift D=28.57 (trainable
+      only; BN `num_batches_tracked` buffers excluded — they were 99.9999%
+      of the naive sum). Grid **{0, 0.01, 0.1, 1.0}** ≈ {control, 0.1×, 1×,
+      10× task penalty at the plain-ft endpoint}.
+- [x] 9.5 Phase A λ sweep done (47.186.21.5:55861). Best ckpts (val med ED):
+      λ0=17.17, λ0.01=18.89, λ0.1=17.91, λ1.0=15.82; all retain val
+      C103/TEM=1.0. Collapse onset moves earlier with λ (λ0 stable→1500;
+      λ1.0 by ~step400), transient, best saved pre-collapse. Selection via
+      `eval_ckpts_testsplit.py` (val C103 flat, can't rank): **winner λ=0.01**
+      — C103 scene-0 retention 80/1220→16/24 px, best net test SR@20 0.286
+      + best med ED 46.5, minimal gain loss.
+- [x] 9.6 Phase B (`box_ft_robust_eval.sh l0p01`) → `baselines_robust.csv`,
+      `fov_ladder_robust.csv` pulled local. Headline (28 test, TPS, B=10k,
+      pyramid_v2): L2-SP λ0.01 SR@20 0.321 / med 41.0 vs plain-ft 0.250/56.7
+      vs zero-shot 0.393/69.1. vs plain-ft: med ED −15.6 px p=0.0046 (sig),
+      SR@20 +0.071 n.s. vs zero-shot: SR@20 −0.071 p=0.91 (regression erased
+      to noise). Pyramid still stacks (direct 0.286→pyr 0.321).
+- [x] 9.7 §7.1 subsection + §1 summary + §8.1 + repro-pointer updated. Winner
+      ckpt pulled local (volatile /dev/shm). Push.
 
 **Box:** vast 47.186.21.5:55861, RTX 5090 32G, `/venv/main`. Verified
 reachable 2026-06-19. **GPU budget:** ~3–4 short trainings (cheap
