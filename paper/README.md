@@ -13,7 +13,8 @@ Single English abstract, Results→Discussion→Methods order, numbered referenc
 |------|---------|
 | `main.tex` | Manuscript in Scientific Reports LaTeX (`wlscirep.cls`). |
 | `references.bib` | 17 references, all verified against primary sources. |
-| `paper.md` | Human-readable full render (tables inline, figures listed). |
+| `paper.md` | Human-readable full render (tables + figures inline). |
+| `paper.docx` | Word version (figures embedded), built from `paper.md` via `pandoc paper.md -o paper.docx --resource-path=.`. |
 | `make_schematic.py` | Regenerates Fig. 1 (method schematic). |
 | `figs/` | `method_schematic.{png,pdf}` (generated) + 4 result figures copied from `reports/figs/baselines/`. |
 

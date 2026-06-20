@@ -175,12 +175,22 @@ This research received no specific grant from any funding agency in the public, 
 
 ## Figures
 
-**Figure 1.** Method overview — (a) verified coarse-to-fine wrapper (pyramid v2); (b) FOV-ladder protocol. (`figs/method_schematic.png`)
+![Figure 1](figs/method_schematic.png)
 
-**Figure 2.** Success rates across all configurations on AmalgaMatch. (`figs/sr_bars.png`)
+**Figure 1.** Method overview — (a) verified coarse-to-fine wrapper (pyramid v2); (b) FOV-ladder protocol.
 
-**Figure 3.** Per-task-group success rates. (`figs/group_heatmap.png`)
+![Figure 2](figs/sr_bars.png)
 
-**Figure 4.** Success rate versus FOV stratum on native pairs. (`figs/fov_curves.png`)
+**Figure 2.** Success rates across all configurations on AmalgaMatch.
 
-**Figure 5.** Controlled FOV ladder with appearance fixed. (`figs/fov_ladder.png`)
+![Figure 3](figs/group_heatmap.png)
+
+**Figure 3.** Per-task-group success rates.
+
+![Figure 4](figs/fov_curves.png)
+
+**Figure 4.** Success rate versus FOV stratum on native pairs.
+
+![Figure 5](figs/fov_ladder.png)
+
+**Figure 5.** Controlled FOV ladder with appearance fixed.
