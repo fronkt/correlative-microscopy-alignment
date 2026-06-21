@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import time
 import traceback
 from pathlib import Path
@@ -178,7 +179,20 @@ def main() -> None:
                     help="local state-dict path for backbone ma_roma_ft")
     ap.add_argument("--limit", type=int, default=0, help="stop after N pairs per backbone")
     ap.add_argument("--subclasses", default="", help="comma-separated filter")
+    ap.add_argument("--only-pairs", default="",
+                    help="path to JSON restricting eval to specific pair_ids: either a bare "
+                         "list, or a dict with key given by --only-pairs-key (default 'test', "
+                         "e.g. results/split.json)")
+    ap.add_argument("--only-pairs-key", default="test",
+                    help="key to read when --only-pairs points to a dict")
     args = ap.parse_args()
+
+    only_pairs: set[str] = set()
+    if args.only_pairs:
+        _op = json.loads(Path(args.only_pairs).read_text())
+        if isinstance(_op, dict):
+            _op = _op[args.only_pairs_key]
+        only_pairs = set(_op)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -201,6 +215,8 @@ def main() -> None:
             matcher = make_matcher(backbone, args.device, ft_weights=args.ft_weights)
             n_done = 0
             for pair, rec in loader.iter(subclasses=subclasses):
+                if only_pairs and rec.pair_id not in only_pairs:
+                    continue
                 if (rec.pair_id, backbone, mode) in done:
                     continue
                 try:
