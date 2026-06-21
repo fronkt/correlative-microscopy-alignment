@@ -68,6 +68,29 @@ multi-seed replication, formal equivalence test on a larger held-out set, LoRA-s
 continual-learning baseline, native-low-FOV/appearance-swept control, quantitative
 never-abstain figure.
 
+## Re-review residuals (round 4, applied — no GPU)
+
+Verification re-review (re-review mode) upgraded the decision from Major to **Minor
+Revision**: the critical multi-seed item was judged substantively resolved, blocked
+from Accept only by single-seed coverage of the recommended pyramid config plus a few
+cosmetic consistency fixes. Applied the four no-GPU residuals + the one-sentence #5 fix:
+
+- **NEW-1** — un-bolded the single-run L2-SP cells in Table 3 (they no longer signal a
+  "winner" while the text says the gap is within seed noise).
+- **NEW-2** — harmonised the Discussion's "5.2×" to "~5× (5.2× in the seed-0 run,
+  seed-robust in direction)"; the Results body keeps the precise single-run figure.
+- **NEW-3** — added Table 4, the six per-seed runs underlying Table 2's mean ± SD, with
+  min–max ranges, so the spread is shown rather than assumed Gaussian.
+- **NEW-4** — Contribution 4 reordered to foreground the diagnostic finding (coverage,
+  not optimiser/anchor) ahead of the recipe.
+- **#5** — Limitations now states the recommended deployment config (wrapper-on-fine-tune)
+  is characterised only at seed 0 and should be assumed to inherit the direct-protocol
+  spread until the pyramid multi-seed (P1-1b) is run.
+
+`paper.docx` rebuilt. Still open: **P1-1b** — pyramid-protocol multi-seed replication
+(deferred to next free GPU slot); plus LoRA baseline, native-low-FOV control, never-abstain
+figure (all P2/P3, disclosed as future work).
+
 ## Style pass (round 2, applied)
 
 - Full em-dash / sentence-rhythm de-AI pass across the whole body of `main.tex`
