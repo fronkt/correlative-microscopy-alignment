@@ -28,9 +28,10 @@ panel (decision: Major Revision, favourable). Applied to `main.tex` + `paper.md`
 All deferred items are disclosed in the manuscript's Limitations as "planned and
 not yet run"; no result is reported as completed that was not actually run.
 
-## Not done (optional, available on request)
+## Style pass (round 2, applied)
 
-- Full em-dash / sentence-rhythm de-AI pass across the whole body. This round
-  cut intensifiers and reduced em-dashes in the abstract and edited sections;
-  a complete pass over every paragraph was not applied to avoid churn. Say the
-  word and I will do it.
+- Full em-dash / sentence-rhythm de-AI pass across the whole body of `main.tex`
+  and `paper.md`. Prose em-dashes went from ~45 to 0 (the only remaining `—`
+  are the two "not applicable" cells in Table 1). Antithesis cadence
+  ("not X but Y") broken up, paragraph-ending aphorisms varied, intensifiers
+  trimmed. All numbers, citations, and tables unchanged. `paper.docx` rebuilt.
