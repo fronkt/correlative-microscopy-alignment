@@ -28,6 +28,46 @@ panel (decision: Major Revision, favourable). Applied to `main.tex` + `paper.md`
 All deferred items are disclosed in the manuscript's Limitations as "planned and
 not yet run"; no result is reported as completed that was not actually run.
 
+## Multi-seed experiment (round 3, applied — GPU box)
+
+Reviewer R1's critical-for-acceptance item ("multi-seed the fine-tune + L2-SP tables,
+≥3 seeds, report variance") is now run, not deferred. Six runs on an RTX 5090
+(3 seeds × {λ=0 plain, λ=0.01 L2-SP}), identical decoder-only recipe (AdamW 2e-5,
+1500 steps, min-val-medED checkpoint selection), direct-match eval on the 28-pair
+test split.
+
+| Config | SR@10 | SR@20 | median ED (px) |
+|---|---|---|---|
+| zero-shot (deterministic) | 0.214 | 0.393 | 83.5 |
+| plain fine-tune (λ=0), 3 seeds | 0.095 ± 0.021 | 0.298 ± 0.041 | 46.0 ± 3.9 |
+| L2-SP (λ=0.01), 3 seeds | 0.095 ± 0.021 | 0.274 ± 0.021 | 56.3 ± 6.2 |
+
+**What the seeds showed (and how the paper changed):**
+
+- Across seeds the plain and L2-SP fine-tunes are **statistically indistinguishable**
+  on every test metric (overlapping ±SD). The single-run L2-SP median-ED edge
+  (−15.6 px, pyramid mode) does **not** survive as a cross-seed effect.
+- The originally reported single-run SR@10 (0.25) sat **well above** the 3-seed mean
+  (0.095 ± 0.021): 28-pair SR is high-variance, and the single run was an optimistic
+  draw. Table 2 (direct) is now reported as mean ± SD over 3 seeds; Table 3 (pyramid)
+  is kept but relabelled as a single seed-0 run with a pointer to Table 2.
+- **Robust finding (all 6 runs):** the second C103 SEM-SE↔LOM-height scene is
+  unrecoverable (370–1400 px) at every seed and every λ → a modality-*coverage* gap,
+  not an optimiser artifact. The "plain ft catastrophically forgets, L2-SP rescues"
+  sub-narrative was largely a seed-0 event: seeds 1–3 plain ft retains the recoverable
+  scene (≤31 px); L2-SP destabilises it in 2 of 3 seeds.
+- Edits: abstract, contributions (4th), fine-tuning + L2-SP Results subsections,
+  Tables 2–3 + captions, methods ("weight-anchored variant", 3-seed note), practical
+  recommendation (iii), and Limitations (multi-seed "not yet run" → done; pyramid
+  multi-seed / equivalence test / LoRA still pending). L2-SP reframed from
+  "removes the forgetting" to a zero-cost floor that does not worsen the fine-tune.
+  `paper.docx` rebuilt.
+
+Still deferred (require more GPU and were not done in this pass): pyramid-protocol
+multi-seed replication, formal equivalence test on a larger held-out set, LoRA-style
+continual-learning baseline, native-low-FOV/appearance-swept control, quantitative
+never-abstain figure.
+
 ## Style pass (round 2, applied)
 
 - Full em-dash / sentence-rhythm de-AI pass across the whole body of `main.tex`
