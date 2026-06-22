@@ -98,3 +98,42 @@ figure (all P2/P3, disclosed as future work).
   are the two "not applicable" cells in Table 1). Antithesis cadence
   ("not X but Y") broken up, paragraph-ending aphorisms varied, intensifiers
   trimmed. All numbers, citations, and tables unchanged. `paper.docx` rebuilt.
+
+## P1-1b: pyramid-protocol multi-seed replication (round 5, applied — GPU)
+
+Closed the last open item. Retrained the plain (λ=0) and L2-SP (λ=0.01) decoder-only
+fine-tunes at seeds 1–3 and evaluated each checkpoint under **both** the direct and the
+pyramid-v2 protocol on the 28-pair held-out test split (`run_p11b.sh`, RTX 5090 box;
+metric identical to `ft_test_analysis.py` — mu_ed_tps→mu_ed fallback, SR@k = mean(ed<k),
+medED = median of finite ED over 28 pairs). The original multi-seed checkpoints had been
+deleted, so these are a fresh independent draw of the same recipe.
+
+Three-seed pyramid result (seeds 1–3, mean ± SD):
+
+- plain ft:  SR@10 0.226 ± 0.021, SR@20 0.262 ± 0.021, medED 49.6 ± 3.1 px
+- L2-SP:     SR@10 0.250 ± 0.000, SR@20 0.274 ± 0.021, medED 50.9 ± 3.6 px
+- direct (same checkpoints): plain SR@20 0.262 ± 0.021, L2-SP SR@20 0.274 ± 0.021
+
+Two findings folded into the paper:
+
+- **The seed-0 L2-SP pyramid advantage does not replicate.** Earlier-draft seed-0 numbers
+  (SR@20 0.321, medED 41 px) were one favourable draw; across seeds 1–3 L2-SP and the plain
+  fine-tune are indistinguishable, matching the direct-protocol conclusion.
+- **The wrapper does not stack on the fine-tune** on the real test split (pyramid SR@20 =
+  direct SR@20 within each config), consistent with the FOV-ladder finding that scale and
+  appearance failures are confounded in the real distribution.
+
+**Reproducibility caveat surfaced as a result, not hidden.** Fixed-seed decoder fine-tuning
+is not bit-reproducible on this stack (non-deterministic CUDA kernels + multi-worker data
+loading): this independent draw lands at direct SR@10 0.250 vs Table 2's 0.095 ± 0.021, i.e.
+run-to-run scatter exceeds seed-to-seed scatter at 28 pairs. Table 3 is therefore reported as
+a self-contained block where the controlled comparison is *within* the table (each direct/
+pyramid pair shares a checkpoint); Table 2 (orig multiseed, direct) is left untouched.
+
+Edits: Table 3 rebuilt as a 3-seed direct+pyramid block with full caption; §"weight anchor"
+prose de-claims the seed-0 stacking/CI wins; Limitations records the non-determinism and drops
+the pyramid multi-seed from the "not yet run" list. `paper.docx` rebuilt. Decision item
+blocking Accept (single-seed pyramid coverage) now resolved.
+
+Still open: LoRA baseline, native-low-FOV control, never-abstain figure (all P2/P3, disclosed
+as future work).
