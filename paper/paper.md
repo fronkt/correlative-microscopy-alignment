@@ -21,7 +21,11 @@ Learned dense feature matchers have transformed correspondence estimation for na
 
 A natural hypothesis is that the FOV gap is the dominant problem and that a scale-aware wrapper can close it: crop the wide-FOV source into a pyramid of target-resolution tiles, match each tile against the narrow-FOV target, pool the correspondences, and fit a single global transform by robust estimation. The appeal is that it requires no training and treats the matcher as a black box. The project hypotheses were **(H1)** that such pyramidal patching yields ≥ 35 % relative gain at FOV ≤ 5 % over the best zero-shot baseline; **(H2)** that RoMa's dense flow tolerates partial overlap better than the ELoFTR family at low FOV; and **(H3)** that an affine model is sufficient for AmalgaMatch, with full homography offering no significant benefit.
 
-Here we test these hypotheses end-to-end on all 187 AmalgaMatch pairs, with controls, ablations, and a controlled decoupling experiment, and the result is as much diagnostic as methodological. The naive pyramid does not merely fail to help. It destroys the matchers it wraps, for a structural reason we trace to the fact that dense matchers never abstain. A redesigned verified coarse-to-fine wrapper recovers a small, real gain, but it cannot reach the severe-FOV regime. The single largest off-the-shelf lever turns out to be the backbone rather than the wrapper. A controlled FOV ladder then separates scale from appearance on real pairs and shows that the wrapper mechanism is in fact sound for scale; the real benchmark simply never presents scale as the isolated failure mode, because the low-FOV pairs are also the most appearance-divergent. Finally we attack appearance directly with materials-domain fine-tuning, observe forgetting of untrained modality combinations, and use a three-seed study to separate what a one-line weight anchor can and cannot fix. The contributions are four. First, a mechanistic account of why pyramidal wrappers break non-abstaining dense matchers, together with a verified coarse-to-fine wrapper that does not. Second, a controlled FOV-ladder protocol that decouples scale from appearance and validates the wrapper's scale mechanism. Third, evidence that cross-modal appearance, not FOV, is the dominant constraint on this benchmark. Fourth, a three-seed robustness analysis of decoder-only fine-tuning that diagnoses breadth of modality coverage, not the choice of optimiser or weight anchor, as the binding constraint on forgetting, together with the fine-tuning recipe itself (a large, seed-robust in-distribution gain with a modest, seed-noisy held-out regression).
+Here we test these hypotheses end-to-end on all 187 AmalgaMatch pairs, with controls, ablations, and a controlled decoupling experiment, and the result is as much diagnostic as methodological. The naive pyramid does not merely fail to help. It destroys the matchers it wraps, for a structural reason we trace to the fact that dense matchers never abstain. A redesigned verified coarse-to-fine wrapper recovers a small, real gain, but it cannot reach the severe-FOV regime. The single largest off-the-shelf lever turns out to be the backbone rather than the wrapper. A controlled FOV ladder then separates scale from appearance on real pairs and shows that the wrapper mechanism is in fact sound for scale; the real benchmark simply never presents scale as the isolated failure mode, because the low-FOV pairs are also the most appearance-divergent. Finally we attack appearance directly with materials-domain fine-tuning, observe forgetting of untrained modality combinations, and use a three-seed study to separate what a one-line weight anchor can and cannot fix. The contributions are four. First, a mechanistic account of why pyramidal wrappers break non-abstaining dense matchers, together with a verified coarse-to-fine wrapper that does not (Fig. 1a). Second, a controlled FOV-ladder protocol that decouples scale from appearance and validates the wrapper's scale mechanism (Fig. 1b). Third, evidence that cross-modal appearance, not FOV, is the dominant constraint on this benchmark. Fourth, a three-seed robustness analysis of decoder-only fine-tuning that diagnoses breadth of modality coverage, not the choice of optimiser or weight anchor, as the binding constraint on forgetting, together with the fine-tuning recipe itself (a large, seed-robust in-distribution gain with a modest, seed-noisy held-out regression).
+
+![Figure 1](figs/method_schematic.png)
+
+**Figure 1.** Method overview. (**a**) The verified coarse-to-fine wrapper (pyramid v2): a direct match yields an incumbent transform; candidate tile-search and zoom stages are invoked only on weak support and accepted only when a mutual-information-on-overlap verifier beats the incumbent, making the wrapper monotone with respect to the direct fit. (**b**) The FOV-ladder protocol crops real base-matchable pairs to shrinking field-of-view ratios with appearance, modality, and pixel size fixed, isolating scale as the only variable.
 
 ## Results
 
@@ -45,6 +49,14 @@ Table 1 reports the headline comparison. Classical baselines reproduce the bench
 | MatchAnything-RoMa | 84.0 | 0.04 | 0.13 | 0.24 |
 | **MatchAnything-RoMa + pyramid v2** | **72.7** | 0.05 | **0.13** | 0.24 |
 
+![Figure 2](figs/sr_bars.png)
+
+**Figure 2.** Success rates across all configurations on AmalgaMatch. Pyramid v1 collapses RoMa; pyramid v2 recovers a small significant gain without losing pairs; the MatchAnything-RoMa backbone provides the only significant headline gain over the zero-shot bar.
+
+![Figure 3](figs/group_heatmap.png)
+
+**Figure 3.** Per-task-group success rates. Performance is concentrated in orientation-mapping and serial-sectioning groups; dislocation characterisation and low-mutual-information pairs remain hard for every configuration, consistent with appearance (not scale) being the dominant constraint.
+
 ### The naive pyramid catastrophically degrades dense matchers
 
 The straightforward implementation of the scale hypothesis (pyramid v1) tiles the source, matches each tile, pools all correspondences, and fits one transform. It does not help; it destroys the backbone. RoMa's median ED rose from 76 to 1794 px, and 106 of 187 pairs became hard failures (Fig. 2). The mechanism is structural, and it is the central negative finding about the wrapper class. Dense matchers never abstain: every tile, whether or not it overlaps the target, returns on the order of 10⁴ confident matches. Pooling across a pyramid therefore floods the robust estimator with mostly-spurious correspondences, collapses the inlier fraction from 0.114 (direct) to 0.005, and leaves MAGSAC++ no consensus to find. This is a property of the non-abstaining dense-matcher class rather than a tuning artefact, and it predicts that any pool-then-fit pyramid will fail on these backbones regardless of tile size or overlap.
@@ -61,12 +73,20 @@ MatchAnything's released RoMa checkpoint is key-for-key compatible with the `rom
 
 ### A controlled FOV ladder decouples scale from appearance
 
-The real dataset cannot answer the question that H1 was about, namely the failure FOV per backbone, because the low-FOV pairs are simultaneously the most appearance-divergent and only four pairs sit below area ratio 0.05. We therefore constructed a controlled FOV ladder (Fig. 1b). For every base-matchable pair (direct mean ED < 20 px; 36–40 pairs per backbone) we cropped the target to absolute area ratios {0.5, 0.25, 0.1, 0.05, 0.02}, holding appearance, modality gap, and pixel sizes fixed while sweeping FOV. All GT is kept for evaluation, so out-of-crop points test the global transform's extrapolation. With scale thus isolated (Fig. 5):
+The real dataset cannot answer the question that H1 was about, namely the failure FOV per backbone, because the low-FOV pairs are simultaneously the most appearance-divergent and only four pairs sit below area ratio 0.05. We therefore constructed a controlled FOV ladder (Fig. 1b). For every base-matchable pair (direct mean ED < 20 px; 36–40 pairs per backbone) we cropped the target to absolute area ratios {0.5, 0.25, 0.1, 0.05, 0.02}, holding appearance, modality gap, and pixel sizes fixed while sweeping FOV. All GT is kept for evaluation, so out-of-crop points test the global transform's extrapolation. With scale thus isolated (Fig. 4):
 
 - **Direct matching collapses between FOV 0.25 and 0.1** for both RoMa and MatchAnything-RoMa: SR@10 holds near base levels through 0.5, bends at 0.25, and collapses at 0.1, with a hard floor at 0.02 for every configuration.
 - **With scale isolated, the wrapper does what it was designed to do.** At FOV 0.1, MatchAnything-RoMa with pyramid v2 holds SR@10 0.23 against 0.07 direct, a gain of +0.150 (95 % CI [+0.050, +0.275], *p* = 0.0014) and a more-than-threefold relative improvement in the regime H1 targeted.
 
-This resolves the project's central tension. The wrapper mechanism is sound for scale, and the usable-FOV envelope extends from about 0.25 (direct) to about 0.1 (wrapped, strong backbone). H1 as stated remains rejected on real pairs, but only because the real distribution never isolates scale as the failure mode: the severe-FOV pairs fail on appearance first, and no scale wrapper can touch that. Figure 4 shows the per-backbone FOV breakdown on the native (uncropped) pairs for comparison.
+This resolves the project's central tension. The wrapper mechanism is sound for scale, and the usable-FOV envelope extends from about 0.25 (direct) to about 0.1 (wrapped, strong backbone). H1 as stated remains rejected on real pairs, but only because the real distribution never isolates scale as the failure mode: the severe-FOV pairs fail on appearance first, and no scale wrapper can touch that. Figure 5 shows the per-backbone FOV breakdown on the native (uncropped) pairs for comparison.
+
+![Figure 4](figs/fov_ladder.png)
+
+**Figure 4.** Controlled FOV ladder with appearance fixed. Cropping base-matchable pairs to shrinking FOV ratios shows direct matching collapsing between 0.25 and 0.1, while the verified wrapper restores SR@10 at the 0.1 rung (0.07 → 0.23, *p* = 0.0014): the wrapper's scale mechanism is sound once scale is isolated.
+
+![Figure 5](figs/fov_curves.png)
+
+**Figure 5.** Success rate versus field-of-view stratum on native pairs. On the real distribution, low-FOV strata are simultaneously the most appearance-divergent, confounding scale and appearance; severe-FOV success is at the floor for every configuration.
 
 ### Materials-domain fine-tuning: the appearance lever and its cost
 
@@ -156,22 +176,6 @@ The AmalgaMatch dataset is publicly available from the Fraunhofer Fordatis repos
 
 All code is released under the repository above, with a single-command evaluation entry point and a synthetic-pair acceptance test.
 
-## Acknowledgements
-
-The author thanks the AmalgaMatch authors for releasing the dataset and the developers of RoMa, MatchAnything, Efficient LoFTR, and MAGSAC++ for releasing their code and weights.
-
-## Author contributions
-
-F.C. conceived the study, implemented the methods, conducted the experiments, analysed the results, and wrote the manuscript.
-
-## Competing interests
-
-The author declares no competing interests.
-
-## Funding
-
-This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
-
 ## References
 
 1. Durmaz, A. R., Lamb, J. D., Echlin, M. P. & Pollock, T. M. Foundation models for multimodal image data fusion in materials science. *Frontiers in Materials* **13** (2026). doi:10.3389/fmats.2026.1815017.
@@ -194,26 +198,18 @@ This research received no specific grant from any funding agency in the public, 
 
 *(Reference numbering in this Markdown render follows insertion order; the LaTeX/BibTeX build renumbers strictly by order of first appearance.)*
 
----
+## Acknowledgements
 
-## Figures
+The author thanks the AmalgaMatch authors for releasing the dataset and the developers of RoMa, MatchAnything, Efficient LoFTR, and MAGSAC++ for releasing their code and weights.
 
-![Figure 1](figs/method_schematic.png)
+## Author contributions
 
-**Figure 1.** Method overview. (a) Verified coarse-to-fine wrapper (pyramid v2); (b) FOV-ladder protocol.
+F.C. conceived the study, implemented the methods, conducted the experiments, analysed the results, and wrote the manuscript.
 
-![Figure 2](figs/sr_bars.png)
+## Competing interests
 
-**Figure 2.** Success rates across all configurations on AmalgaMatch.
+The author declares no competing interests.
 
-![Figure 3](figs/group_heatmap.png)
+## Funding
 
-**Figure 3.** Per-task-group success rates.
-
-![Figure 4](figs/fov_curves.png)
-
-**Figure 4.** Success rate versus FOV stratum on native pairs.
-
-![Figure 5](figs/fov_ladder.png)
-
-**Figure 5.** Controlled FOV ladder with appearance fixed.
+This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
