@@ -1,4 +1,4 @@
-# Cross-modal appearance, not field-of-view mismatch, is the dominant constraint on foundation-model registration in the AmalgaMatch correlative-microscopy benchmark
+# For foundation-model registration in correlative microscopy, cross-modal appearance matters more than field of view
 
 **Frank Cai**
 Independent Researcher · frankyc11223@gmail.com · ORCID: 0009-0003-0041-1459
