@@ -1,7 +1,7 @@
 # For foundation-model registration in correlative microscopy, cross-modal appearance matters more than field of view
 
 **Frank Cai**
-Independent Researcher · frankyc11223@gmail.com · ORCID: 0009-0003-0041-1459
+Purdue University, West Lafayette, IN, USA · frankyc11223@gmail.com · ORCID: 0009-0003-0041-1459
 
 *Prepared for submission to Scientific Reports. Keywords: correlative microscopy, image registration, dense feature matching, foundation models, domain fine-tuning, catastrophic forgetting.*
 
