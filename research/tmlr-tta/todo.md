@@ -22,12 +22,19 @@ consistency) + appearance (cycle + feature-alignment, vs forgetting-prone superv
 - [ ] Deliverables: RQ Brief, Methodology, Bibliography, Synthesis
 - [ ] **MANDATORY checkpoint** — confirm before Stage 2
 
-## Stage 2 — WRITE (academic-paper)
-- [ ] Implement TTA module on existing `cma/` decoder (norm-affine + certainty head, anchor-to-init)
-- [ ] Implement multi-scale-consistency + cycle objectives
-- [ ] Run baseline ladder (pyramid-only defended hardest)
-- [ ] Build dose-response curve (gain vs measured shift)
-- [ ] Draft paper
+## Stage 2 — implementation sub-phase (experiments BEFORE writing)
+- [x] TTA module `cma.tta`: multi-scale-consistency + cycle + CORAL losses, norm-affine
+      adapter, L2-SP anchor, stateless reset (10 CPU tests) — commit ba4697f
+- [x] ANHIR loader (`cma.data.anhir`) + 3MOS loader (`cma.data.threemos`) — synthetic-fixture tests
+- [x] Severity metrics (`cma.metrics.severity`): Fréchet distance + scale-severity + DINOv2 extractor (box)
+- [ ] Eval-harness wiring: register TTA / DMP / TENT / AdaBN baselines in eval/sweep
+- [ ] Box smoke test (1 pair: loss ↓, adapted match runs) — FIRST GPU spend
+- [ ] Acquire datasets on box (ANHIR gated dl, 3MOS, AmalgaMatch present)
+- [ ] Run baseline ladder × 3 domains × ≤3 backbones × severity × multi-seed
+- [ ] Build 2-D dose-response surface (gain vs measured shift)
+
+## Stage 2 — WRITE (academic-paper, after results)
+- [ ] Draft paper from results
 
 ## Stage 2.5 / 4.5 — INTEGRITY (mandatory gates)
 - [ ] Reference/citation/data 100% verification + 7-mode AI failure checklist
