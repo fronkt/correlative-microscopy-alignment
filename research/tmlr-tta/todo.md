@@ -27,7 +27,8 @@ consistency) + appearance (cycle + feature-alignment, vs forgetting-prone superv
       adapter, L2-SP anchor, stateless reset (10 CPU tests) — commit ba4697f
 - [x] ANHIR loader (`cma.data.anhir`) + 3MOS loader (`cma.data.threemos`) — synthetic-fixture tests
 - [x] Severity metrics (`cma.metrics.severity`): Fréchet distance + scale-severity + DINOv2 extractor (box)
-- [ ] Eval-harness wiring: register TTA / DMP / TENT / AdaBN baselines in eval/sweep
+- [x] Eval-harness wiring: `cma.eval.methods` (tta_method + matcher_method factories on the
+      sweep Method seam, ladder registry) — TENT/AdaBN/DMP are registry stubs for the box
 - [ ] Box smoke test (1 pair: loss ↓, adapted match runs) — FIRST GPU spend
 - [ ] Acquire datasets on box (ANHIR gated dl, 3MOS, AmalgaMatch present)
 - [ ] Run baseline ladder × 3 domains × ≤3 backbones × severity × multi-seed
