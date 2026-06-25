@@ -1,83 +1,85 @@
-# Research Brief — TMLR TTA Paper
+# Research Brief — TMLR TTA Paper (v2, two-axis)
 
-**Working title:** *Multi-Scale Self-Consistency as Test-Time Supervision: Label-Free Adaptation of Dense Matchers under Backbone Domain Shift*
+**Working title:** *Scale and Appearance are Different: Label-Free Test-Time Adaptation of Dense Matchers Decomposes Domain Shift into Two Axes*
 
-**Target venue:** Transactions on Machine Learning Research (TMLR) — rigorous, correctness-based, fast turnaround. CV-method work, judged on soundness not impact.
+**Target venue:** Transactions on Machine Learning Research (TMLR) — rigorous, correctness-based, fast turnaround.
 
-**Relationship to prior work in this repo:** This is the *follow-up* to the original pyramid-wrapper paper (`paper/`). That paper established that a training-free coarse-to-fine **inference** wrapper recovers dense-matcher accuracy on out-of-domain microscopy. This paper asks whether a genuine **per-pair test-time adaptation** step adds value *on top of* that wrapper, and why.
+**Relationship to prior work in this repo:** Follow-up to the original pyramid-wrapper paper (`paper/`). That paper showed a coarse-to-fine **inference** wrapper recovers accuracy under **scale/FOV** shift but is **flat on appearance**, and that appearance OOD required **supervised** decoder finetuning (MA-RoMa) which **catastrophically forgot** (mitigated by an L2-SP anchor). This paper turns that scale-vs-appearance split into its thesis and asks whether a single **label-free, per-pair test-time adaptation** framework can address *both* axes — beating supervised finetuning on appearance *without* its forgetting.
 
-> Status: Stage 1 (RESEARCH) of the academic-pipeline. This brief is the input artifact for `deep-research`. Items marked **[deep-research]** are deferred to that stage.
+> Stage 1 (RESEARCH) input artifact for `deep-research`. Items marked **[deep-research]** are deferred. **v2 supersedes v1** after re-plan against the project ledger (scale ≠ appearance; see §0).
 
 ---
 
-## 1. Motivation
+## 0. Why v2 (the collision v1 ignored)
 
-Dense feature matchers (RoMa, ELoFTR, MatchAnything) inherit a backbone pretrained on natural images. Applied to imagery far from that pretraining distribution (materials microscopy, biomedical, remote sensing), accuracy collapses. Retraining the backbone needs target-domain labels that often do not exist. We ask: **can a matcher repair itself, per image pair, at test time, with no labels and no backbone retraining?**
+The project ledger establishes — with significant results — that **domain shift is not one axis**:
+- **Scale/FOV axis:** pyramid/multi-scale processing recovers matching (FOV 0.1: SR@10 **0.23 vs 0.07** direct, p=0.0014). Multi-scale consistency is a *scale* signal.
+- **Appearance/modality axis:** the pyramid is **flat**; "severe-FOV pairs fail on appearance first." Appearance OOD was only fixed by **supervised** finetuning, which **forgot** (net SR@20 0.393→0.250) until L2-SP clawed it back to neutral.
 
-## 2. Central claim (3-part, falsifiable)
+v1's headline ("multi-scale self-consistency recovers *backbone-domain* shift") conflated these and risked a **null central figure**. v2 separates them.
 
-> Per-pair test-time adaptation driven by **multi-scale self-consistency** (+ forward-backward cycle consistency) recovers dense-matcher accuracy under backbone domain shift, such that:
+## 1. Central claim (two-axis, falsifiable)
+
+> Domain shift for dense matchers decomposes into a **scale** axis and an **appearance** axis that demand **different label-free test-time signals**:
 >
-> **(i) Practicality** — no target labels, no backbone retraining (encoder frozen).
-> **(ii) Dose-response law** — the accuracy gain *scales monotonically with the measured severity of the domain shift* (x-axis = distance between target imagery and backbone-pretraining distribution in frozen-encoder feature space; report correlation r).
-> **(iii) In-domain neutrality** — the method does **not** hurt when the backbone is already in-domain, explaining the prior observation that the wrapper "earns its keep only on out-of-domain backbones."
+> **(S) Scale axis** — **multi-scale self-consistency** as test-time supervision recovers matching under scale/FOV shift (extends the prior inference-only result into a per-pair *adaptation*).
+> **(A) Appearance axis** — **forward-backward cycle + feature-distribution alignment** as test-time supervision recovers matching under appearance/modality shift, **approaching supervised-finetuning accuracy without its catastrophic forgetting**.
+> **(X) Cross-term** — the two signals are **complementary, not redundant**: each helps its own axis and neither alone covers both; combined TTA tracks a 2-D dose-response surface (gain vs measured scale-severity × appearance-severity).
 
-The pivotal empirical question the whole paper defends: **does adaptation beat pyramid-only inference?** If not, there is no paper.
+Pivotal questions defended hardest: (1) per-pair TTA beats pyramid-only inference on the **scale** axis; (2) label-free cycle/feature TTA beats **forgetting-prone supervised finetuning** on the **appearance** axis (matched compute, no labels).
 
-## 3. Method
+## 2. Method
 
-Built on the existing `cma/` pipeline (pyramid → matcher → consensus). Per test pair:
+Per test pair, built on existing `cma/` (pyramid → matcher → consensus):
 
-1. **Pyramid as batch generator.** The coarse-to-fine tiling already produces many tiles from one pair, manufacturing a batch that stabilizes single-instance adaptation.
-2. **Self-supervised objective (joint):**
-   - **A — Multi-scale consistency (headline):** adapt so that correspondence estimates of the same points *agree across pyramid levels*. The pyramid stops being mere inference and becomes the *source of the TTA signal* — this unifies the paper's two halves.
-   - **C — Forward-backward cycle consistency:** match A→B and B→A, penalize disagreement. Folded in as a joint term and as an ablation.
-3. **Adapted parameters:** decoder **norm-affine params + certainty head only** (TENT-style), with a **KL/L2 anchor-to-initialization** regularizer to prevent single-pair collapse. Encoder stays frozen. Full-decoder adaptation reported as an ablation ("more params != better under shift").
-4. **Cost:** seconds/pair; report honestly. No real-time claims.
+1. **Pyramid as batch generator** — many tiles from one pair → stabilizes single-instance adaptation.
+2. **Two self-supervised signals, mapped to two axes:**
+   - **Scale:** multi-scale consistency — adapt so correspondences agree across pyramid levels.
+   - **Appearance:** forward-backward cycle consistency + feature-distribution alignment (pull target-image features toward the backbone's source-domain statistics). **[deep-research]** confirm the exact feature-alignment objective.
+3. **Adapted parameters:** decoder **norm-affine params only**, with an **L2-SP / KL anchor-to-init** (mechanism already validated offline in this repo). **Certainty head is NOT adapted by default** — the ledger shows certainty-head collapse under adaptation; include it only as a documented ablation.
+4. **Cost:** seconds/pair; reported honestly. No real-time claims.
 
-## 4. Experimental design
+## 3. Experimental design
 
-### 4.1 Baseline ladder (pyramid-only defended hardest)
+### 3.1 Baseline ladder (two pivots)
 
 | Tier | Baseline | Proves |
 |---|---|---|
 | Floor | SIFT+MAGSAC | non-learned reference |
-| Floor | Vanilla RoMa / ELoFTR / MatchAnything (no pyramid, no TTA) | the OOD failure |
-| **Pivot** | **Pyramid-only inference (no adaptation)** | **isolates TTA's marginal value — make-or-break** |
-| Rival | Generic TTA: TENT / BN-stats (on pyramid) | consistency objective beats off-the-shelf TTA |
-| Ablation | A-only / C-only / A+C | decomposes the objective |
-| Ablation | Full-decoder vs norm-affine | params vs robustness |
-| Ceiling | Supervised decoder finetune on target (uses labels) | gap to supervised |
-| Rival | AmalgaMatch (existing pipeline) | beats incumbent in home domain |
+| Floor | Vanilla RoMa / ELoFTR / MatchAnything | the OOD failure |
+| **Pivot-S** | **Pyramid-only inference (no adaptation)** | **TTA's marginal value on the scale axis** |
+| **Pivot-A** | **Supervised decoder ft (MA-RoMa ± L2-SP)** | **label-free TTA approaches it without forgetting** |
+| Rival | Generic TTA: TENT / BN-stats | consistency/alignment objectives beat off-the-shelf TTA |
+| Ablation | Scale-signal only / appearance-signal only / both | the cross-term (X): complementarity |
+| Ablation | norm-affine vs full-decoder; +certainty-head | params vs robustness; document collapse |
+| Rival | AmalgaMatch | beats incumbent in home domain |
 
-### 4.2 Shift-severity axis (defends claim ii)
+### 3.2 Two shift-severity axes (defend the (S)(A)(X) claim)
 
-- **Synthetic axis:** graded domain corruptions (modality-gap / contrast / texture, ImageNet-C-style) at increasing strength → clean monotone dose-response curve (internal validity). **[deep-research]** finalize corruption protocol.
-- **Backbone-swap axis:** hold imagery fixed, swap backbones pretrained on progressively more distant domains (matches "out-of-domain *backbones*" literally).
-- **Shift metric (x-axis):** quantitative distance between target imagery and backbone-pretraining distribution in frozen-encoder feature space. **[deep-research]** pick the exact metric (e.g., FID-like in DINOv2 feature space, MMD, OTDD).
+- **Scale severity:** FOV ratio — **already implemented** (`src/cma/data/fov_ladder.py`, crops base-matchable pairs holding appearance fixed). Strong existing evidence.
+- **Appearance severity:** quantitative distance between target imagery and backbone-pretraining distribution in **frozen-encoder (DINOv2) feature space**. **[deep-research]** pick exact metric (FID-like / MMD / OTDD).
+- **Central figure:** 2-D dose-response surface — gain vs (scale-severity × appearance-severity) — showing each signal lights up its own axis.
 
-### 4.3 Domains (exactly 3)
+### 3.3 Domains (exactly 3)
 
-- **Home:** materials microscopy (AmalgaMatch + correlative pairs — already in repo).
-- **+2 public OOD domains with existing correspondence GT** — **[deep-research]** to select best fit and source (candidates to evaluate: biomedical/histology/retina registration e.g. FIRE; remote-sensing / multimodal optical–SAR; thermal–RGB). Must have public GT to avoid hand-labeling.
+- **Home:** materials microscopy (AmalgaMatch + correlative pairs, in repo; appearance shift is real here — cross-modal SEM/EBSD/AFM/TEM).
+- **+2 public OOD domains with correspondence GT** — **[deep-research]** select for best *appearance*-axis coverage (candidates: biomedical/histology/retina e.g. FIRE; multimodal optical–SAR / thermal–RGB). Must have public GT.
 
-### 4.4 Metrics
+### 3.4 Metrics
 
-Existing harness: `P_match@k`, `mu_err`, `med_err`, `success_rate`. Central figure = gain (Δ success_rate or Δ med_err vs pyramid-only) plotted against the measured shift metric.
+Existing harness: `P_match@k`, `mu_err`, `med_err`, `success_rate`. Forgetting measured as retention on in-domain pairs (as in the L2-SP study).
 
-## 5. Guardrails (non-goals)
+## 4. Guardrails (non-goals)
 
-- No new architecture; adapt existing RoMa-family decoder.
-- Encoder frozen — no encoder adaptation.
-- Exactly 3 domains; ≤3 backbones.
-- No real-time / latency claims.
-- No 3D / video / multi-view — pairwise 2D registration only.
+- No new architecture; adapt existing RoMa-family decoder. Encoder frozen.
+- Two axes, exactly 3 domains, ≤3 backbones.
+- No real-time / latency claims. No 3D / video / multi-view.
 - Single GPU class (RTX 5090, vast.ai) is the compute envelope.
 
-## 6. Deferred to deep-research (Stage 1 deliverables)
+## 5. Deferred to deep-research (Stage 1 deliverables)
 
-- [ ] Lock the 2 public OOD datasets (license, GT format, access).
-- [ ] Prior-work positioning: test-time adaptation (TENT/TTT/EATA), dense matching (RoMa/LoFTR/ELoFTR/MatchAnything), multi-scale matching, domain-shift / OOD distance metrics, self-supervised matching (cycle consistency, photometric).
-- [ ] Exact severity-corruption protocol + the feature-space shift metric.
-- [ ] Novelty gap statement vs nearest prior (esp. any existing "consistency-based TTA for correspondence").
+- [ ] Lock 2 public OOD datasets emphasizing the **appearance** axis (license, GT, access).
+- [ ] Exact **feature-alignment** test-time objective + **appearance-severity** metric.
+- [ ] Prior work: TTA (TENT/TTT/EATA), dense matching, multi-scale matching, **feature/statistic alignment for domain adaptation**, cycle-consistent matching, OOD-distance metrics, **forgetting-free finetuning** (the supervised-ft rival's literature).
+- [ ] Novelty gap vs nearest prior (esp. consistency/alignment-based TTA for correspondence; any work decomposing shift into scale vs appearance).
 - [ ] Methodology section + bibliography + synthesis.

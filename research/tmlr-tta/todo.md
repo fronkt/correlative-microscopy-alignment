@@ -9,11 +9,16 @@ Pipeline: deep-research → write → integrity → review → revise → re-rev
 - [x] Write this plan
 - [ ] Push branch to origin
 
+## RE-PLAN (2026-06-24): brief v2 = two-axis decomposition
+Ledger collision caught: multi-scale = SCALE axis, but "backbone domain shift" = APPEARANCE
+axis where pyramid is flat & supervised ft forgot. v2 splits shift into scale (multi-scale
+consistency) + appearance (cycle + feature-alignment, vs forgetting-prone supervised ft).
+
 ## Stage 1 — RESEARCH (deep-research, IN PROGRESS)
-- [ ] Lock 2 public OOD datasets with correspondence GT (license + access verified)
-- [ ] Prior-work map: TTA (TENT/TTT/EATA), dense matching, multi-scale, OOD-distance metrics, self-supervised/cycle matching
-- [ ] Novelty gap vs nearest prior (consistency-based TTA for correspondence)
-- [ ] Finalize severity-corruption protocol + feature-space shift metric choice
+- [ ] Lock 2 public OOD datasets emphasizing the APPEARANCE axis (license + access)
+- [ ] Exact feature-alignment test-time objective + appearance-severity metric
+- [ ] Prior-work map: TTA (TENT/TTT/EATA), dense matching, multi-scale, feature/stat alignment for DA, cycle matching, OOD-distance metrics, forgetting-free finetuning
+- [ ] Novelty gap (consistency/alignment TTA for correspondence; scale-vs-appearance decomposition)
 - [ ] Deliverables: RQ Brief, Methodology, Bibliography, Synthesis
 - [ ] **MANDATORY checkpoint** — confirm before Stage 2
 
