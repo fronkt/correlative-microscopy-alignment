@@ -198,6 +198,10 @@ All code is released under the repository above, with a single-command evaluatio
 
 The author thanks the AmalgaMatch authors for releasing the dataset and the developers of RoMa, MatchAnything, Efficient LoFTR, and MAGSAC++ for releasing their code and weights.
 
+## Funding
+
+This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
+
 ## Author contributions
 
 F.C. conceived the study, implemented the methods, conducted the experiments, analysed the results, and wrote the manuscript.
@@ -205,7 +209,3 @@ F.C. conceived the study, implemented the methods, conducted the experiments, an
 ## Competing interests
 
 The author declares no competing interests.
-
-## Funding
-
-This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
