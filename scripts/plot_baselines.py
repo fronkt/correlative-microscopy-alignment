@@ -1,7 +1,18 @@
-"""Baseline figures (todo 1.5): SR bars, per-group heatmap, FOV curves.
+"""Baseline figures for the manuscript: SR bars (Fig. 2), per-group heatmap
+(Fig. 3), and success vs. native FOV stratum (Fig. 5).
 
-Writes PNGs to reports/figs/baselines/ (gitignored artifacts; regenerate
-from the committed CSVs at any time).
+Writes 300-dpi PNGs straight into paper/figs/ so the manuscript figures are
+regenerable from the committed CSVs:
+
+    paper/figs/sr_bars.png        Fig. 2, TPS-refined error (declared pipeline)
+    paper/figs/sr_bars_raw.png    supplementary, unrefined matcher error
+    paper/figs/group_heatmap.png  Fig. 3
+    paper/figs/fov_curves.png     Fig. 5
+
+Every panel reports its sample size and a 95 % Wilson score interval on each
+plotted rate. Wilson (not Wald/normal) is used deliberately: many strata here
+sit at or very near zero success, where the Wald interval collapses to zero
+width and understates uncertainty.
 
 Usage: python scripts/plot_baselines.py [results/baselines_A.csv]
 """
@@ -10,7 +21,6 @@ from __future__ import annotations
 
 import csv
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 import matplotlib
@@ -19,89 +29,270 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-path = Path(sys.argv[1] if len(sys.argv) > 1 else "results/baselines_A.csv")
-out_dir = Path("reports/figs/baselines")
-out_dir.mkdir(parents=True, exist_ok=True)
+# --------------------------------------------------------------------------
+# Configuration set: EXACTLY the nine rows of Table 1, in Table 1 order, as
+# (backbone, mode, source-file key, display name).
+#
+# Reviewer 2 flagged that the figure and table configuration sets diverged.
+# The set is now pinned here rather than derived by filtering the CSV, so the
+# two cannot drift apart again.
+#
+# Deliberately EXCLUDED and why:
+#   ma_roma_ft/*              fine-tuned on 131 of the 187 pairs
+#                             (results/split.json "train"). Its score over all
+#                             187 pairs is train-contaminated (SR@10 0.389 on
+#                             its own training pairs vs. 0.250 held out), so it
+#                             must never enter an all-pairs aggregate. The
+#                             fine-tuning results are reported separately on
+#                             the held-out split only (Table 2).
+#   matchanything/pyramid,    pyramid wrappers on the weaker ELoFTR backbone;
+#   matchanything/pyramid_v2  not Table 1 rows.
+#   matchanything_stretch     aspect-ratio ablation; not a Table 1 row.
+#   roma/pyramid_v2+z3,       the 4.1c iterated-zoom and certainty-gating
+#   roma/pyramid_v2+c50       ablations, reported in the text only.
+# --------------------------------------------------------------------------
+CONFIGS = [
+    ("sift", "direct", "A", "SIFT (Control A)"),
+    ("sift", "classical", "B", "SIFT + MI (Control B)"),
+    ("loftr", "direct", "A", "LoFTR"),
+    ("matchanything", "direct", "A", "MatchAnything-ELoFTR"),
+    ("roma", "direct", "A", "RoMa (zero-shot)"),
+    ("roma", "pyramid", "A", "RoMa + pyramid v1"),
+    ("roma", "pyramid_v2", "A", "RoMa + pyramid v2"),
+    ("ma_roma", "direct", "A", "MatchAnything-RoMa"),
+    ("ma_roma", "pyramid_v2", "A", "MatchAnything-RoMa + pyramid v2"),
+]
 
-with path.open(newline="", encoding="utf-8") as f:
-    rows = list(csv.DictReader(f))
-fov_path = path.parent / "fov_ratios.csv"
-with fov_path.open(newline="", encoding="utf-8") as f:
-    fov = {r["pair_id"]: float(r["fov_area_ratio"]) for r in csv.DictReader(f)}
+# internal task-group tokens -> prose labels shown to the reader
+GROUP_LABELS = {
+    "DislocationCharacterization": "Dislocation\ncharacterisation",
+    "FractureSurfaces": "Fracture\nsurfaces",
+    "Multiscale": "Multiscale",
+    "SameSlice": "Same slice",
+    "SerialSectioning": "Serial\nsectioning",
+    "SlipPartitioning": "Slip\npartitioning",
+}
+
+# Okabe-Ito colourblind-safe
+BLUE, ORANGE, GREEN, INK, GREY = "#0072B2", "#E69F00", "#009E73", "#222222", "#777777"
+
+FOV_BINS = [(0.0, 0.05), (0.05, 0.25), (0.25, 0.5), (0.5, 10.0)]
+FOV_LABELS = ["< 0.05", "0.05-0.25", "0.25-0.5", "$\\geq$ 0.5"]
+
+OUT_DIR = Path("paper/figs")
 
 
-def method(r: dict) -> str:
-    return r["backbone"] if r["mode"] == "direct" else f"{r['backbone']}/{r['mode']}"
+# --------------------------------------------------------------------------
+def wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:
+    """95 % Wilson score interval for a binomial proportion.
+
+    Chosen over the normal-approximation (Wald) interval because many strata
+    in this study have k = 0 or k = n, where Wald collapses to a zero-width
+    interval and understates uncertainty.
+    """
+    if n == 0:
+        return (float("nan"), float("nan"))
+    p = k / n
+    denom = 1.0 + z * z / n
+    centre = (p + z * z / (2 * n)) / denom
+    half = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
+    return (max(0.0, centre - half), min(1.0, centre + half))
 
 
-def ed(r: dict) -> float:
+def rate_with_err(hits: np.ndarray) -> tuple[float, float, float, int]:
+    """-> (point estimate, lower error-bar length, upper error-bar length, n)."""
+    n = int(hits.size)
+    if n == 0:
+        return (float("nan"), 0.0, 0.0, 0)
+    k = int(hits.sum())
+    p = k / n
+    lo, hi = wilson(k, n)
+    return p, p - lo, hi - p, n
+
+
+def ed_tps(r: dict) -> float:
+    """Declared pipeline metric: TPS-refined mean endpoint error, falling back
+    to the unrefined transform error when the TPS column is blank."""
     if r["status"] != "ok":
         return float("inf")
     v = r["mu_ed_tps"] or r["mu_ed"]
     return float(v) if v else float("inf")
 
 
-by_method: dict[str, list[dict]] = defaultdict(list)
-for r in rows:
-    # the 4.1c tag variants (pyramid_v2+z3 / +c50) were rejected; keep
-    # figures to the un-tagged configurations
-    if "+" not in r["mode"]:
-        by_method[method(r)].append(r)
-methods = sorted(by_method, key=lambda m: np.median([ed(r) for r in by_method[m]]))
+def ed_raw(r: dict) -> float:
+    """Unrefined transform mean endpoint error (metric-sensitivity check)."""
+    if r["status"] != "ok":
+        return float("inf")
+    return float(r["mu_ed"]) if r["mu_ed"] else float("inf")
 
-# --- Figure 1: SR bars at 5/10/20 px --------------------------------------
-fig, ax = plt.subplots(figsize=(9, 4.5))
-x = np.arange(len(methods))
-for i, t in enumerate((5, 10, 20)):
-    srs = [np.mean([ed(r) < t for r in by_method[m]]) for m in methods]
-    ax.bar(x + (i - 1) * 0.27, srs, width=0.25, label=f"SR@{t}px")
-ax.set_xticks(x, methods, rotation=20, ha="right")
-ax.set_ylabel("success rate (mean ED per pair, TPS)")
-ax.set_title("AmalgaMatch zero-shot + pyramid baselines (n=187 pairs)")
-ax.legend()
+
+# --------------------------------------------------------------------------
+path_a = Path(sys.argv[1] if len(sys.argv) > 1 else "results/baselines_A.csv")
+path_b = path_a.parent / "baselines_B.csv"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def read(p: Path) -> list[dict]:
+    with p.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+# Control B (SIFT + mutual-information refinement) lives in its own results
+# file; it is pulled in here so the figures cover all nine Table 1 rows rather
+# than silently dropping one.
+rows = {"A": read(path_a), "B": read(path_b) if path_b.exists() else []}
+
+with (path_a.parent / "fov_ratios.csv").open(newline="", encoding="utf-8") as f:
+    fov = {r["pair_id"]: float(r["fov_area_ratio"]) for r in csv.DictReader(f)}
+
+by_cfg: dict[str, list[dict]] = {}
+labels: list[str] = []
+missing: list[str] = []
+for backbone, mode, src, label in CONFIGS:
+    sel = [r for r in rows[src] if r["backbone"] == backbone and r["mode"] == mode]
+    if not sel:
+        missing.append(label)
+        continue
+    by_cfg[label] = sel
+    labels.append(label)
+if missing:
+    print("WARNING: no data for " + ", ".join(missing) + " -- omitted from the "
+          "figures; the caption must state the omission explicitly.")
+
+n_pairs = len({r["pair_id"] for r in by_cfg[labels[0]]})
+print(f"configurations plotted: {len(labels)} of {len(CONFIGS)}   pairs: {n_pairs}")
+
+
+# --- Figure 2: success-rate bars at 5/10/20 px -----------------------------
+def sr_bar_figure(metric, out_name: str, metric_note: str) -> None:
+    fig, ax = plt.subplots(figsize=(7.8, 6.4))
+    y = np.arange(len(labels))[::-1]  # Table 1 order, top to bottom
+    h = 0.26
+    for i, (t, colour) in enumerate(zip((5, 10, 20), (BLUE, ORANGE, GREEN))):
+        pts, los, his = [], [], []
+        for lab in labels:
+            p, lo, hi, _ = rate_with_err(
+                np.array([metric(r) < t for r in by_cfg[lab]]))
+            pts.append(p)
+            los.append(lo)
+            his.append(hi)
+        ax.barh(y + (1 - i) * h, pts, height=h * 0.92, color=colour,
+                edgecolor=INK, linewidth=0.4,
+                label=f"success at {t} px", zorder=2)
+        ax.errorbar(pts, y + (1 - i) * h, xerr=[los, his], fmt="none",
+                    ecolor=INK, elinewidth=0.9, capsize=2.0, zorder=3)
+
+    ax.set_yticks(y, [f"{lab}\n(n = {len(by_cfg[lab])} pairs)" for lab in labels],
+                  fontsize=8.5)
+    ax.set_xlabel("success rate (fraction of pairs registered within threshold)\n"
+                  + metric_note, fontsize=9.5)
+    ax.set_xlim(0, max(0.34, ax.get_xlim()[1]))
+    ax.set_title("Registration success on the AmalgaMatch benchmark\n"
+                 f"all {n_pairs} pairs; error bars are 95 % Wilson score intervals",
+                 fontsize=10.5)
+    ax.grid(axis="x", color="#DDDDDD", linewidth=0.6, zorder=0)
+    ax.set_axisbelow(True)
+    ax.legend(fontsize=8.5, loc="upper right", framealpha=0.95)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / out_name, dpi=300)
+    plt.close(fig)
+    print(f"wrote {OUT_DIR / out_name}")
+
+
+sr_bar_figure(ed_tps, "sr_bars.png",
+              "error metric: TPS-refined mean endpoint error")
+sr_bar_figure(ed_raw, "sr_bars_raw.png",
+              "error metric: unrefined matcher transform error (no TPS refinement)")
+
+# --- Figure 3: per-task-group success-rate heatmap -------------------------
+group_n: dict[str, int] = {}
+for r in by_cfg[labels[0]]:
+    group_n[r["group"]] = group_n.get(r["group"], 0) + 1
+groups = sorted(group_n, key=lambda g: -group_n[g])
+
+mat = np.full((len(labels), len(groups)), np.nan)
+ci: dict[tuple[int, int], tuple[float, float]] = {}
+for li, lab in enumerate(labels):
+    for gi, g in enumerate(groups):
+        hits = np.array([ed_tps(r) < 10 for r in by_cfg[lab] if r["group"] == g])
+        if hits.size:
+            mat[li, gi] = hits.mean()
+            ci[(li, gi)] = wilson(int(hits.sum()), int(hits.size))
+
+vmax = max(0.35, float(np.nanmax(mat)))
+fig, ax = plt.subplots(figsize=(10.2, 6.6))
+im = ax.imshow(mat, cmap="viridis", vmin=0, vmax=vmax, aspect="auto")
+ax.set_xticks(range(len(groups)),
+              [f"{GROUP_LABELS.get(g, g)}\n(n = {group_n[g]} pairs)" for g in groups],
+              fontsize=8.5)
+ax.set_yticks(range(len(labels)), labels, fontsize=8.5)
+for li in range(len(labels)):
+    for gi in range(len(groups)):
+        if np.isnan(mat[li, gi]):
+            continue
+        col = "w" if mat[li, gi] < 0.55 * vmax else "k"
+        lo, hi = ci[(li, gi)]
+        ax.text(gi, li - 0.13, f"{mat[li, gi]:.2f}", ha="center", va="center",
+                color=col, fontsize=9)
+        ax.text(gi, li + 0.21, f"[{lo:.2f}, {hi:.2f}]", ha="center", va="center",
+                color=col, fontsize=6.2)
+cb = fig.colorbar(im, ax=ax, fraction=0.030, pad=0.02)
+cb.set_label("success rate at 10 px", fontsize=9)
+ax.set_xlabel("task group", fontsize=9.5)
+ax.set_title("Success rate at 10 px by task group\n"
+             f"TPS-refined error; all {n_pairs} pairs; brackets are 95 % Wilson "
+             "score intervals", fontsize=10.5)
 fig.tight_layout()
-fig.savefig(out_dir / "sr_bars.png", dpi=150)
+fig.savefig(OUT_DIR / "group_heatmap.png", dpi=300)
+plt.close(fig)
+print(f"wrote {OUT_DIR / 'group_heatmap.png'}")
 
-# --- Figure 2: per-group SR@10 heatmap -------------------------------------
-groups = sorted({r["group"] for r in rows})
-mat = np.zeros((len(groups), len(methods)))
-for gi, g in enumerate(groups):
-    for mi, m in enumerate(methods):
-        sel = [r for r in by_method[m] if r["group"] == g]
-        mat[gi, mi] = np.mean([ed(r) < 10 for r in sel]) if sel else np.nan
-fig, ax = plt.subplots(figsize=(9, 4.5))
-im = ax.imshow(mat, cmap="viridis", vmin=0, vmax=max(0.35, np.nanmax(mat)))
-ax.set_xticks(range(len(methods)), methods, rotation=20, ha="right")
-ax.set_yticks(range(len(groups)), groups)
-for gi in range(len(groups)):
-    for mi in range(len(methods)):
-        ax.text(mi, gi, f"{mat[gi, mi]:.2f}", ha="center", va="center",
-                color="w" if mat[gi, mi] < 0.2 else "k", fontsize=8)
-fig.colorbar(im, label="SR@10px")
-ax.set_title("SR@10px by task group")
-fig.tight_layout()
-fig.savefig(out_dir / "group_heatmap.png", dpi=150)
+# --- Figure 5: success rate vs. native FOV area-ratio stratum --------------
+# Small multiples rather than nine overlaid curves: once every point carries a
+# 95 % interval (and the < 0.05 stratum holds only four pairs, so its interval
+# is very wide) overlaid curves are unreadable.
+bin_n = [sum(1 for r in by_cfg[labels[0]]
+             if lo <= fov.get(r["pair_id"], 1.0) < hi) for lo, hi in FOV_BINS]
+tick = [f"{lab}\n(n = {n})" for lab, n in zip(FOV_LABELS, bin_n)]
 
-# --- Figure 3: SR@10 vs FOV area-ratio bin ---------------------------------
-# curated to the narrative methods; the full set makes the panel unreadable
-FOV_METHODS = [
-    "sift", "matchanything", "roma", "roma/pyramid",
-    "roma/pyramid_v2", "ma_roma", "ma_roma/pyramid_v2",
-]
-bins = [(0.0, 0.05), (0.05, 0.25), (0.25, 0.5), (0.5, 10.0)]
-labels = ["<0.05", "0.05-0.25", "0.25-0.5", ">=0.5"]
-fig, ax = plt.subplots(figsize=(7.5, 4.5))
-for m in [m for m in FOV_METHODS if m in by_method]:
-    ys = []
-    for lo, hi in bins:
-        sel = [r for r in by_method[m] if lo <= fov.get(r["pair_id"], 1.0) < hi]
-        ys.append(np.mean([ed(r) < 10 for r in sel]) if sel else np.nan)
-    ax.plot(labels, ys, marker="o", label=m)
-ax.set_xlabel("FOV area ratio (target/source)")
-ax.set_ylabel("SR@10px")
-ax.set_title("Success vs FOV mismatch severity")
-ax.legend(fontsize=8)
-fig.tight_layout()
-fig.savefig(out_dir / "fov_curves.png", dpi=150)
-
-print(f"wrote 3 figures to {out_dir}")
+ncol = 3
+nrow = int(np.ceil(len(labels) / ncol))
+fig, axes = plt.subplots(nrow, ncol, figsize=(9.8, 7.6), sharex=True, sharey=True)
+axes = np.atleast_1d(axes).ravel()
+x = np.arange(len(FOV_BINS))
+for ai, lab in enumerate(labels):
+    ax = axes[ai]
+    pts, los, his = [], [], []
+    for lo_b, hi_b in FOV_BINS:
+        hits = np.array([ed_tps(r) < 10 for r in by_cfg[lab]
+                         if lo_b <= fov.get(r["pair_id"], 1.0) < hi_b])
+        p, lo, hi, _ = rate_with_err(hits)
+        pts.append(p)
+        los.append(lo)
+        his.append(hi)
+    ax.errorbar(x, pts, yerr=[los, his], marker="o", markersize=4.5,
+                color=BLUE, ecolor=GREY, elinewidth=1.0, capsize=2.5, lw=1.4)
+    ax.set_title(lab, fontsize=8.5)
+    ax.grid(color="#EEEEEE", linewidth=0.6)
+    ax.set_axisbelow(True)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+for ax in axes[len(labels):]:
+    ax.set_visible(False)
+axes[0].set_ylim(-0.03, 0.56)
+axes[0].set_xticks(x, tick, fontsize=7.5)
+for ai in range(len(labels)):
+    if ai % ncol == 0:
+        axes[ai].set_ylabel("success rate at 10 px", fontsize=9)
+    if ai >= len(labels) - ncol:
+        axes[ai].set_xlabel("field-of-view area ratio (target / source)",
+                            fontsize=8.5)
+fig.suptitle("Success rate at 10 px versus native field-of-view stratum\n"
+             f"TPS-refined error; all {n_pairs} pairs; error bars are 95 % "
+             "Wilson score intervals", fontsize=10.5)
+fig.tight_layout(rect=(0, 0, 1, 0.95))
+fig.savefig(OUT_DIR / "fov_curves.png", dpi=300)
+plt.close(fig)
+print(f"wrote {OUT_DIR / 'fov_curves.png'}")

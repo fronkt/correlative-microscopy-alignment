@@ -97,7 +97,7 @@ axA.text(0.86, 0.16, "if better,\nreplace $T^\\star$", fontsize=7, color=RED, ha
 axB.text(0.02, 0.96, "b", fontsize=14, fontweight="bold", va="top")
 axB.text(0.5, 0.965, "FOV-ladder protocol", ha="center", va="top",
          fontsize=10, fontweight="bold")
-axB.text(0.5, 0.885, "appearance fixed, scale swept on real pairs",
+axB.text(0.30, 0.885, "appearance fixed, scale swept on real pairs",
          ha="center", va="top", fontsize=8.2, color=GREY, style="italic")
 
 # nested crops illustrating shrinking FOV
@@ -108,17 +108,20 @@ for r, col in ratios:
     s = base * (r / 0.5) ** 0.5
     axB.add_patch(plt.Rectangle((cx - s / 2, cy - s / 2), s, s, fill=False,
                                 ec=col, lw=1.6, zorder=3))
-axB.text(cx, cy + base / 2 + 0.03, "target FOV / source area", ha="center",
+axB.text(cx, cy + base / 2 + 0.03, "target field-of-view area / source area",
+         ha="center",
          fontsize=7.5, color=GREY)
 axB.text(cx, cy - base / 2 - 0.05, "0.5 → 0.25 → 0.1 → 0.05 → 0.02",
          ha="center", fontsize=8, color=INK)
 
-# outcome annotation
+# protocol annotation. This is a METHODS figure: it states what is done at
+# each rung and must not assert an outcome, so no success rates, effect sizes
+# or p-values appear here. The ladder results are Fig. 4.
 box(axB, 0.60, 0.55, 0.37, 0.30,
-    "Direct match\ncollapses\nbetween 0.25 and 0.1",
+    "All ground-truth points\nretained, including those\noutside the crop",
     fc="#EDEDED", ec=INK, fs=8.5)
 box(axB, 0.60, 0.14, 0.37, 0.32,
-    "Wrapper restores\nSR@10 at 0.1\n(0.07 → 0.23,\n$p$ = 0.0014)",
+    "Each backbone evaluated\nat every rung, direct\nand wrapped",
     fc="#F3FBF7", ec=GREEN, fs=8.5)
 arrow(axB, (0.52, 0.55), (0.60, 0.62), INK)
 arrow(axB, (0.45, 0.30), (0.60, 0.30), GREEN)

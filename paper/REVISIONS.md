@@ -137,3 +137,67 @@ blocking Accept (single-seed pyramid coverage) now resolved.
 
 Still open: LoRA baseline, native-low-FOV control, never-abstain figure (all P2/P3, disclosed
 as future work).
+
+## Round 6 (2026-08-24) — Scientific Reports rejection, applied
+
+Submission 46c1e084-d0e4-4fb1-b217-a2b79135181f was **rejected** (Editorial Board
+Member sided with a negative R2 against a positive R1). All six reviewer points were
+audited against the result files and git history before any text changed. **All six are
+correct.** The audit also surfaced three problems neither reviewer raised, and those
+drive the largest changes here.
+
+### Found by audit, not by the reviewers
+
+1. **Both native-pair headline results are metric-contingent.** Accuracy is reported on
+   TPS-refined error. On raw parametric error the wrapper gain over direct matching is
+   exactly flat (0.0909 -> 0.0909, p = 0.6491, against the published +0.021, p = 0.0170)
+   and the MatchAnything-RoMa gain falls to +0.016, CI [-0.011, +0.043], p = 0.1669
+   (published +0.032, p = 0.0175). Refinement converts 13 otherwise-successful fits into
+   failures. TPS coverage is also non-uniform: 1.000 for the dense RoMa-family configs,
+   0.000 for Control B, so Table 1 partly compared configurations on different metrics.
+   **The FOV ladder is the one headline that survives both metrics** (+0.150 raw,
+   p = 0.0014; +0.075 TPS, p = 0.0434), and it strengthens on held-out pairs
+   (0.045 -> 0.227, p = 0.0117). New: `scripts/metric_sensitivity.py`,
+   `results/metric_sensitivity.csv`, `reports/metric_sensitivity.md`.
+
+2. **The title claim is not supported by a measured appearance axis.** NMI on the
+   GT-aligned overlap (187/187 pairs, ~3.5 min CPU, no GPU) confirms the confound
+   (Pearson r = +0.215 vs log area ratio, p = 0.003; median NMI 0.0022 below ratio 0.25
+   vs 0.0725 at >= 0.5) but the 2x2 does not rank appearance above FOV: at fixed FOV the
+   appearance effect is -0.002 (RoMa) and +0.076 (MA-RoMa), neither significant, while at
+   fixed appearance the FOV effect is +0.114 (p = 0.040) and +0.169 (p = 0.045).
+   New: `scripts/appearance_axis.py`, `results/appearance_nmi.csv`,
+   `reports/appearance_axis.md`. **Title changed accordingly.**
+
+3. **There is no seeding.** `grep` for `manual_seed`, `torch.Generator`, `worker_init_fn`
+   returns nothing; `--seed` reaches only the augmentation sampler. The eight "seeds" are
+   eight unseeded runs, and the Limitations sentence blaming non-determinism "at fixed
+   seed" was a category error. Reworded throughout from "seeds" to "runs".
+
+   Also recorded: the FOV-ladder testbed is 39 train / 13 val / 11 test, so the
+   fine-tuned-vs-zero-shot ladder comparison ran on training-enriched, per-backbone
+   differing denominators (n = 51 / 40 / 36). Disclosed in Results, Methods and Limitations.
+
+### Reviewer points, as applied
+
+| # | Point | Applied |
+|---|---|---|
+| R1.1 / R2.3 | Dropped seed run | Table 3 rebuilt with a **Draw** column carrying draw A's six per-run rows next to draw B's ten, recovered from `git show 9b4c2fb^`. Non-retention explained plainly (GPU instance released, checkpoints deleted with it). Added the rebuttal R2's arithmetic invites: the gap is 4 pairs in 28 = **2.0 binomial SE**, not nine, and draw A was *better* on SR@20 (0.297 vs 0.264) and median ED (46.0 vs 49.6), so dropping it made the fine-tune look worse on the metrics the section turns on. |
+| R1.2 | Forgetting claim too broad | Evidence base now stated before it is interpreted: three scenes (two test / four pairs, one validation), scenes not pairs as independent units, and the **validation scene of the same untrained combination is undamaged**, which cuts against the coverage reading. Softened to "consistent with" at first use, in the abstract, in contribution 4 and in Results. |
+| R2.1 | lambda selected on test | Conceded, not defended. "Test set touched once" withdrawn. Validation ranking now reported (lambda=1.0 best at 15.8 px; **lambda=0.01 worst at 18.9**), so test selection overrode validation and picked the validation-worst value. Single-run CIs at L114 marked as not-inference. Methods records it as a protocol defect with the fix a replication should use. The eight-run null is unaffected and we say why: the bias runs toward L2-SP and L2-SP still does not separate. |
+| R2.2 | Appearance by elimination; no leverage | Title changed; measured axis added (above); leverage disclosed (61 of 187 pairs below area ratio 0.5, **at most 3 ever registered** by any zero-shot or wrapped config). The broken causal leg at L81 ("severe-FOV pairs fail on appearance first") is **retracted in place**: at the area ratios those pairs exhibit (0.00013, 0.019) the wrapper already fails on the ladder where appearance is fixed (SR@10 0.025 at rung 0.05, 0.000 at rung 0.02), so scale alone suffices to explain them. |
+| R2.4 | Severe-stratum inconsistency | Root cause was undefined terms: "severe" meant 0.05-0.25 at L66, <0.05 at L72/L89/L137, and a ladder rung at L95. Bin edges now stated once in Results and Methods with n = 4 / 33 / 24 / 126, ratio direction corrected to target/source to match the Fig. 5 axis, and the word "severe" retired for **extreme** (<0.05) and **low** (0.05-0.25) FOV. The "only non-zero severe-stratum result (0.00 -> 0.03)" claim is **withdrawn**: direct RoMa already registers that pair to 3.3 px pre-refinement. |
+| R2.5 | Figures below standard | All five figures regenerated at 300 dpi. Prose axis labels (no `mu_ed`, no raw config tokens). Per-panel and per-stratum **n**. **Wilson 95 % CIs** on every rate. Config set aligned to Table 1's nine, including Control B, which the figures had silently dropped. `ma_roma_ft` explicitly excluded from all 187-pair panels — it had entered `baselines_A.csv` and would have contributed **train-contaminated** rows (train SR@10 0.389 vs test 0.250). Fig. 5 switched to small multiples so the RoMa + pyramid v2 curve is no longer fully occluded. Result text removed from the Fig. 1 methods schematic. Supplementary `figs/sr_bars_raw.png` shows the raw-metric version. |
+
+### Not done / open
+
+- **The metric decision is Frank's.** Both metrics are now reported and the contingency is
+  disclosed, with TPS kept as primary because it is the declared pipeline. Choosing to
+  headline the raw metric instead would null two Table 1 claims outright and is a
+  judgement call, not a correction.
+- The never-abstain figure (matches vs tile overlap) is still textual. It is inference-only
+  logging and remains the single best missing figure.
+- LoRA continual-learning baseline; native-low-FOV acquisition control; formal equivalence
+  test on a larger held-out set. All still disclosed as future work.
+- No new GPU compute was used in this round. Everything above is text, re-analysis of
+  existing result files, or CPU-only measurement.

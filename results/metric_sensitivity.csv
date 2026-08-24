@@ -1,0 +1,195 @@
+section,metric,config,config_ref,subset,rung,statistic,value,n,ci_lo,ci_hi,p_one_sided,p_two_sided,pair_id,note
+A_accuracy,raw,SIFT (Control A),,all_187,,SR@5,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,raw,SIFT (Control A),,all_187,,SR@10,0.0160,187,0.0055,0.0461,,,,k=3
+A_accuracy,raw,SIFT (Control A),,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,raw,SIFT (Control A),,all_187,,median_ED_px,903.0800,169,,,,,,median over pairs with a finite error
+A_accuracy,raw,SIFT (Control A),,all_187,,n_status_ok,169.0000,187,,,,,,
+A_accuracy,tps,SIFT (Control A),,all_187,,SR@5,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,tps,SIFT (Control A),,all_187,,SR@10,0.0160,187,0.0055,0.0461,,,,k=3
+A_accuracy,tps,SIFT (Control A),,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,tps,SIFT (Control A),,all_187,,median_ED_px,907.9730,169,,,,,,median over pairs with a finite error
+A_accuracy,tps,SIFT (Control A),,all_187,,n_status_ok,169.0000,187,,,,,,
+A_accuracy,raw,SIFT + MI (Control B),,all_187,,SR@5,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,raw,SIFT + MI (Control B),,all_187,,SR@10,0.0160,187,0.0055,0.0461,,,,k=3
+A_accuracy,raw,SIFT + MI (Control B),,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,raw,SIFT + MI (Control B),,all_187,,median_ED_px,823.6100,169,,,,,,median over pairs with a finite error
+A_accuracy,raw,SIFT + MI (Control B),,all_187,,n_status_ok,169.0000,187,,,,,,
+A_accuracy,tps,SIFT + MI (Control B),,all_187,,SR@5,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,tps,SIFT + MI (Control B),,all_187,,SR@10,0.0160,187,0.0055,0.0461,,,,k=3
+A_accuracy,tps,SIFT + MI (Control B),,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,tps,SIFT + MI (Control B),,all_187,,median_ED_px,823.6100,169,,,,,,median over pairs with a finite error
+A_accuracy,tps,SIFT + MI (Control B),,all_187,,n_status_ok,169.0000,187,,,,,,
+A_accuracy,raw,LoFTR,,all_187,,SR@5,0.0374,187,0.0182,0.0752,,,,k=7
+A_accuracy,raw,LoFTR,,all_187,,SR@10,0.0642,187,0.0371,0.1088,,,,k=12
+A_accuracy,raw,LoFTR,,all_187,,SR@20,0.0909,187,0.0575,0.1408,,,,k=17
+A_accuracy,raw,LoFTR,,all_187,,median_ED_px,270.1110,183,,,,,,median over pairs with a finite error
+A_accuracy,raw,LoFTR,,all_187,,n_status_ok,183.0000,187,,,,,,
+A_accuracy,tps,LoFTR,,all_187,,SR@5,0.0321,187,0.0148,0.0682,,,,k=6
+A_accuracy,tps,LoFTR,,all_187,,SR@10,0.0588,187,0.0332,0.1022,,,,k=11
+A_accuracy,tps,LoFTR,,all_187,,SR@20,0.0963,187,0.0618,0.1470,,,,k=18
+A_accuracy,tps,LoFTR,,all_187,,median_ED_px,270.1110,183,,,,,,median over pairs with a finite error
+A_accuracy,tps,LoFTR,,all_187,,n_status_ok,183.0000,187,,,,,,
+A_accuracy,raw,MatchAnything-ELoFTR,,all_187,,SR@5,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,raw,MatchAnything-ELoFTR,,all_187,,SR@10,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,raw,MatchAnything-ELoFTR,,all_187,,SR@20,0.0321,187,0.0148,0.0682,,,,k=6
+A_accuracy,raw,MatchAnything-ELoFTR,,all_187,,median_ED_px,510.1390,177,,,,,,median over pairs with a finite error
+A_accuracy,raw,MatchAnything-ELoFTR,,all_187,,n_status_ok,177.0000,187,,,,,,
+A_accuracy,tps,MatchAnything-ELoFTR,,all_187,,SR@5,0.0053,187,0.0009,0.0297,,,,k=1
+A_accuracy,tps,MatchAnything-ELoFTR,,all_187,,SR@10,0.0107,187,0.0029,0.0382,,,,k=2
+A_accuracy,tps,MatchAnything-ELoFTR,,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,tps,MatchAnything-ELoFTR,,all_187,,median_ED_px,509.8130,177,,,,,,median over pairs with a finite error
+A_accuracy,tps,MatchAnything-ELoFTR,,all_187,,n_status_ok,177.0000,187,,,,,,
+A_accuracy,raw,RoMa (zero-shot),,all_187,,SR@5,0.0588,187,0.0332,0.1022,,,,k=11
+A_accuracy,raw,RoMa (zero-shot),,all_187,,SR@10,0.0909,187,0.0575,0.1408,,,,k=17
+A_accuracy,raw,RoMa (zero-shot),,all_187,,SR@20,0.2246,187,0.1707,0.2896,,,,k=42
+A_accuracy,raw,RoMa (zero-shot),,all_187,,median_ED_px,80.1660,187,,,,,,median over pairs with a finite error
+A_accuracy,raw,RoMa (zero-shot),,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,tps,RoMa (zero-shot),,all_187,,SR@5,0.0481,187,0.0255,0.0889,,,,k=9
+A_accuracy,tps,RoMa (zero-shot),,all_187,,SR@10,0.0963,187,0.0618,0.1470,,,,k=18
+A_accuracy,tps,RoMa (zero-shot),,all_187,,SR@20,0.2299,187,0.1754,0.2953,,,,k=43
+A_accuracy,tps,RoMa (zero-shot),,all_187,,median_ED_px,76.3320,187,,,,,,median over pairs with a finite error
+A_accuracy,tps,RoMa (zero-shot),,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,raw,RoMa + pyramid v1,,all_187,,SR@5,0.0000,187,0.0000,0.0201,,,,k=0
+A_accuracy,raw,RoMa + pyramid v1,,all_187,,SR@10,0.0053,187,0.0009,0.0297,,,,k=1
+A_accuracy,raw,RoMa + pyramid v1,,all_187,,SR@20,0.0214,187,0.0083,0.0537,,,,k=4
+A_accuracy,raw,RoMa + pyramid v1,,all_187,,median_ED_px,2707.5920,81,,,,,,median over pairs with a finite error
+A_accuracy,raw,RoMa + pyramid v1,,all_187,,n_status_ok,81.0000,187,,,,,,
+A_accuracy,tps,RoMa + pyramid v1,,all_187,,SR@5,0.0000,187,0.0000,0.0201,,,,k=0
+A_accuracy,tps,RoMa + pyramid v1,,all_187,,SR@10,0.0053,187,0.0009,0.0297,,,,k=1
+A_accuracy,tps,RoMa + pyramid v1,,all_187,,SR@20,0.0160,187,0.0055,0.0461,,,,k=3
+A_accuracy,tps,RoMa + pyramid v1,,all_187,,median_ED_px,1794.0530,81,,,,,,median over pairs with a finite error
+A_accuracy,tps,RoMa + pyramid v1,,all_187,,n_status_ok,81.0000,187,,,,,,
+A_accuracy,raw,RoMa + pyramid v2,,all_187,,SR@5,0.0588,187,0.0332,0.1022,,,,k=11
+A_accuracy,raw,RoMa + pyramid v2,,all_187,,SR@10,0.0909,187,0.0575,0.1408,,,,k=17
+A_accuracy,raw,RoMa + pyramid v2,,all_187,,SR@20,0.2193,187,0.1659,0.2839,,,,k=41
+A_accuracy,raw,RoMa + pyramid v2,,all_187,,median_ED_px,69.8900,187,,,,,,median over pairs with a finite error
+A_accuracy,raw,RoMa + pyramid v2,,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,tps,RoMa + pyramid v2,,all_187,,SR@5,0.0481,187,0.0255,0.0889,,,,k=9
+A_accuracy,tps,RoMa + pyramid v2,,all_187,,SR@10,0.1176,187,0.0790,0.1717,,,,k=22
+A_accuracy,tps,RoMa + pyramid v2,,all_187,,SR@20,0.2460,187,0.1898,0.3124,,,,k=46
+A_accuracy,tps,RoMa + pyramid v2,,all_187,,median_ED_px,73.9750,187,,,,,,median over pairs with a finite error
+A_accuracy,tps,RoMa + pyramid v2,,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,raw,MatchAnything-RoMa,,all_187,,SR@5,0.0588,187,0.0332,0.1022,,,,k=11
+A_accuracy,raw,MatchAnything-RoMa,,all_187,,SR@10,0.1070,187,0.0703,0.1594,,,,k=20
+A_accuracy,raw,MatchAnything-RoMa,,all_187,,SR@20,0.2406,187,0.1850,0.3067,,,,k=45
+A_accuracy,raw,MatchAnything-RoMa,,all_187,,median_ED_px,80.9750,187,,,,,,median over pairs with a finite error
+A_accuracy,raw,MatchAnything-RoMa,,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,tps,MatchAnything-RoMa,,all_187,,SR@5,0.0374,187,0.0182,0.0752,,,,k=7
+A_accuracy,tps,MatchAnything-RoMa,,all_187,,SR@10,0.1283,187,0.0878,0.1839,,,,k=24
+A_accuracy,tps,MatchAnything-RoMa,,all_187,,SR@20,0.2353,187,0.1802,0.3010,,,,k=44
+A_accuracy,tps,MatchAnything-RoMa,,all_187,,median_ED_px,83.9590,187,,,,,,median over pairs with a finite error
+A_accuracy,tps,MatchAnything-RoMa,,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,raw,MatchAnything-RoMa + pyramid v2,,all_187,,SR@5,0.0535,187,0.0293,0.0956,,,,k=10
+A_accuracy,raw,MatchAnything-RoMa + pyramid v2,,all_187,,SR@10,0.1176,187,0.0790,0.1717,,,,k=22
+A_accuracy,raw,MatchAnything-RoMa + pyramid v2,,all_187,,SR@20,0.2299,187,0.1754,0.2953,,,,k=43
+A_accuracy,raw,MatchAnything-RoMa + pyramid v2,,all_187,,median_ED_px,77.6370,187,,,,,,median over pairs with a finite error
+A_accuracy,raw,MatchAnything-RoMa + pyramid v2,,all_187,,n_status_ok,187.0000,187,,,,,,
+A_accuracy,tps,MatchAnything-RoMa + pyramid v2,,all_187,,SR@5,0.0535,187,0.0293,0.0956,,,,k=10
+A_accuracy,tps,MatchAnything-RoMa + pyramid v2,,all_187,,SR@10,0.1283,187,0.0878,0.1839,,,,k=24
+A_accuracy,tps,MatchAnything-RoMa + pyramid v2,,all_187,,SR@20,0.2353,187,0.1802,0.3010,,,,k=44
+A_accuracy,tps,MatchAnything-RoMa + pyramid v2,,all_187,,median_ED_px,72.6690,187,,,,,,median over pairs with a finite error
+A_accuracy,tps,MatchAnything-RoMa + pyramid v2,,all_187,,n_status_ok,187.0000,187,,,,,,
+B_tps_coverage,tps,SIFT (Control A),,all_187,,tps_coverage,0.3743,187,,,,,,non_blank=70; fallback_to_raw=117
+B_tps_coverage,tps,SIFT + MI (Control B),,all_187,,tps_coverage,0.0000,187,,,,,,non_blank=0; fallback_to_raw=187
+B_tps_coverage,tps,LoFTR,,all_187,,tps_coverage,0.4973,187,,,,,,non_blank=93; fallback_to_raw=94
+B_tps_coverage,tps,MatchAnything-ELoFTR,,all_187,,tps_coverage,0.4385,187,,,,,,non_blank=82; fallback_to_raw=105
+B_tps_coverage,tps,RoMa (zero-shot),,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,RoMa + pyramid v1,,all_187,,tps_coverage,0.3850,187,,,,,,non_blank=72; fallback_to_raw=115
+B_tps_coverage,tps,RoMa + pyramid v2,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,MatchAnything-RoMa,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,MatchAnything-RoMa + pyramid v2,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,MatchAnything-ELoFTR + pyramid v1,,all_187,,tps_coverage,0.4332,187,,,,,,non_blank=81; fallback_to_raw=106
+B_tps_coverage,tps,MatchAnything-ELoFTR + pyramid v2,,all_187,,tps_coverage,0.4171,187,,,,,,non_blank=78; fallback_to_raw=109
+B_tps_coverage,tps,MatchAnything-ELoFTR (stretch),,all_187,,tps_coverage,0.4492,187,,,,,,non_blank=84; fallback_to_raw=103
+B_tps_coverage,tps,RoMa + pyramid v2 + certainty 0.5,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,RoMa + pyramid v2 + zoom x3,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0
+B_tps_coverage,tps,MatchAnything-RoMa fine-tuned,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+B_tps_coverage,tps,MatchAnything-RoMa fine-tuned + pyramid v2,,all_187,,tps_coverage,1.0000,187,,,,,,non_blank=187; fallback_to_raw=0; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+C_regression,raw_to_tps,LoFTR,,all_187,,raw_success_tps_failure,11.3330,,,,,,eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_1#2,raw_ed=8.387; tps_ed=11.333
+C_regression,raw_to_tps,RoMa (zero-shot),,all_187,,raw_success_tps_failure,37.4620,,,,,,eval_5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale_0#0,raw_ed=3.323; tps_ed=37.462
+C_regression,raw_to_tps,RoMa (zero-shot),,all_187,,raw_success_tps_failure,11.6950,,,,,,eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_0#2,raw_ed=6.189; tps_ed=11.695
+C_regression,raw_to_tps,RoMa (zero-shot),,all_187,,raw_success_tps_failure,34.7760,,,,,,eval_CoNi-AM90_SEM-EBSD_SameSlice_0#1,raw_ed=6.645; tps_ed=34.776
+C_regression,raw_to_tps,RoMa + pyramid v2,,all_187,,raw_success_tps_failure,14.2760,,,,,,eval_TRIP1-Bainitic_LOM_SEM_EBSD_Multiscale_0#3,raw_ed=9.777; tps_ed=14.276
+C_regression,raw_to_tps,MatchAnything-RoMa,,all_187,,raw_success_tps_failure,23.8730,,,,,,eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_0#0,raw_ed=9.233; tps_ed=23.873
+C_regression,raw_to_tps,MatchAnything-RoMa,,all_187,,raw_success_tps_failure,18.0140,,,,,,eval_CoNi-AM90_SEM-EBSD_SameSlice_0#0,raw_ed=3.552; tps_ed=18.014
+C_regression,raw_to_tps,MatchAnything-RoMa + pyramid v2,,all_187,,raw_success_tps_failure,14.4080,,,,,,eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_0#0,raw_ed=7.361; tps_ed=14.408
+C_regression,raw_to_tps,MatchAnything-RoMa + pyramid v2,,all_187,,raw_success_tps_failure,20.4780,,,,,,eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_1#1,raw_ed=8.318; tps_ed=20.478
+C_regression,raw_to_tps,MatchAnything-RoMa + pyramid v2,,all_187,,raw_success_tps_failure,19.2410,,,,,,eval_CoNi-AM90_SEM-EBSD_SameSlice_0#0,raw_ed=8.773; tps_ed=19.241
+C_regression,raw_to_tps,MatchAnything-RoMa + pyramid v2,,all_187,,raw_success_tps_failure,12.6440,,,,,,eval_CoNi-AM90_SEM-EBSD_SameSlice_0#2,raw_ed=2.385; tps_ed=12.644
+C_regression,raw_to_tps,RoMa + pyramid v2 + certainty 0.5,,all_187,,raw_success_tps_failure,34.0650,,,,,,eval_5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale_0#0,raw_ed=1.944; tps_ed=34.065
+C_regression,raw_to_tps,MatchAnything-RoMa fine-tuned,,all_187,,raw_success_tps_failure,11.7850,,,,,,eval_TRIP1-Bainitic_LOM_SEM_EBSD_Multiscale_0#2,raw_ed=9.957; tps_ed=11.785
+C_regression,raw_to_tps,ALL,,all_187,,regression_count,13.0000,16,,,,,,in_table1=11
+C_fov_stratum,raw,roma/direct,,fov_area_0-0.05,,SR@10,0.0000,4,,,,,,k=0
+C_fov_stratum,raw,roma/pyramid_v2,,fov_area_0-0.05,,SR@10,0.0000,4,,,,,,k=0
+C_fov_stratum,tps,roma/direct,,fov_area_0-0.05,,SR@10,0.0000,4,,,,,,k=0
+C_fov_stratum,tps,roma/pyramid_v2,,fov_area_0-0.05,,SR@10,0.0000,4,,,,,,k=0
+C_fov_stratum,raw,roma/direct,,fov_area_0.05-0.25,,SR@10,0.0303,33,,,,,,k=1
+C_fov_stratum,raw,roma/pyramid_v2,,fov_area_0.05-0.25,,SR@10,0.0606,33,,,,,,k=2
+C_fov_stratum,tps,roma/direct,,fov_area_0.05-0.25,,SR@10,0.0000,33,,,,,,k=0
+C_fov_stratum,tps,roma/pyramid_v2,,fov_area_0.05-0.25,,SR@10,0.0303,33,,,,,,k=1
+C_fov_stratum,raw,roma/direct,,fov_area_0.25-0.5,,SR@10,0.0417,24,,,,,,k=1
+C_fov_stratum,raw,roma/pyramid_v2,,fov_area_0.25-0.5,,SR@10,0.0417,24,,,,,,k=1
+C_fov_stratum,tps,roma/direct,,fov_area_0.25-0.5,,SR@10,0.0417,24,,,,,,k=1
+C_fov_stratum,tps,roma/pyramid_v2,,fov_area_0.25-0.5,,SR@10,0.0417,24,,,,,,k=1
+C_fov_stratum,raw,roma/direct,,fov_area_0.5-10,,SR@10,0.1190,126,,,,,,k=15
+C_fov_stratum,raw,roma/pyramid_v2,,fov_area_0.5-10,,SR@10,0.1111,126,,,,,,k=14
+C_fov_stratum,tps,roma/direct,,fov_area_0.5-10,,SR@10,0.1349,126,,,,,,k=17
+C_fov_stratum,tps,roma/pyramid_v2,,fov_area_0.5-10,,SR@10,0.1587,126,,,,,,k=20
+D_contrast,raw,roma/pyramid_v2,roma/direct,all_187,,delta_SR@5,0.0000,187,0.0000,0.0000,1.0000,1.0000,,A=0.0588; B=0.0588
+D_contrast,raw,roma/pyramid_v2,roma/direct,all_187,,delta_SR@10,0.0000,187,-0.0160,0.0160,0.6491,1.0000,,A=0.0909; B=0.0909
+D_contrast,raw,roma/pyramid_v2,roma/direct,all_187,,delta_SR@20,-0.0053,187,-0.0321,0.0160,0.7505,0.8294,,A=0.2246; B=0.2193
+D_contrast,raw,roma/pyramid_v2,roma/direct,all_187,,delta_median_ED_px,-10.2760,187,-48.1510,23.2410,0.1869,0.3738,,pairs finite under both configurations
+D_contrast,tps,roma/pyramid_v2,roma/direct,all_187,,delta_SR@5,0.0000,187,0.0000,0.0000,1.0000,1.0000,,A=0.0481; B=0.0481
+D_contrast,tps,roma/pyramid_v2,roma/direct,all_187,,delta_SR@10,0.0214,187,0.0053,0.0428,0.0170,0.0340,,A=0.0963; B=0.1176
+D_contrast,tps,roma/pyramid_v2,roma/direct,all_187,,delta_SR@20,0.0160,187,-0.0160,0.0481,0.2220,0.4440,,A=0.2299; B=0.2460
+D_contrast,tps,roma/pyramid_v2,roma/direct,all_187,,delta_median_ED_px,-2.3570,187,-33.1230,14.4250,0.2235,0.4470,,pairs finite under both configurations
+D_contrast,raw,ma_roma/direct,roma/direct,all_187,,delta_SR@5,0.0000,187,-0.0214,0.0214,0.6038,1.0000,,A=0.0588; B=0.0588
+D_contrast,raw,ma_roma/direct,roma/direct,all_187,,delta_SR@10,0.0160,187,-0.0107,0.0428,0.1669,0.3338,,A=0.0909; B=0.1070
+D_contrast,raw,ma_roma/direct,roma/direct,all_187,,delta_SR@20,0.0160,187,-0.0481,0.0802,0.3338,0.6676,,A=0.2246; B=0.2406
+D_contrast,raw,ma_roma/direct,roma/direct,all_187,,delta_median_ED_px,0.8090,187,-70.2840,44.8930,0.5689,0.8622,,pairs finite under both configurations
+D_contrast,tps,ma_roma/direct,roma/direct,all_187,,delta_SR@5,-0.0107,187,-0.0267,0.0000,1.0000,0.2684,,A=0.0481; B=0.0374
+D_contrast,tps,ma_roma/direct,roma/direct,all_187,,delta_SR@10,0.0321,187,0.0053,0.0642,0.0175,0.0350,,A=0.0963; B=0.1283
+D_contrast,tps,ma_roma/direct,roma/direct,all_187,,delta_SR@20,0.0053,187,-0.0588,0.0695,0.4586,0.9172,,A=0.2299; B=0.2353
+D_contrast,tps,ma_roma/direct,roma/direct,all_187,,delta_median_ED_px,7.6270,187,-46.8870,35.5040,0.5693,0.8614,,pairs finite under both configurations
+E_fov_ladder,,roma,,base-matchable,,denominator_pool,38.0000,63,,,,,,pairs passing the base-matchable filter
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable,0.5,delta_SR@10,-0.0294,34,-0.0882,0.0000,1.0000,0.7184,,direct=0.3824; pyramid_v2=0.3529
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable,0.5,delta_SR@10,0.0000,34,0.0000,0.0000,1.0000,1.0000,,direct=0.3529; pyramid_v2=0.3529
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable,0.25,delta_SR@10,0.0556,36,0.0000,0.1389,0.1233,0.2466,,direct=0.2778; pyramid_v2=0.3333
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable,0.25,delta_SR@10,0.0278,36,0.0000,0.0833,0.3591,0.7182,,direct=0.1944; pyramid_v2=0.2222
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable,0.1,delta_SR@10,0.0278,36,0.0000,0.0833,0.3641,0.7282,,direct=0.0556; pyramid_v2=0.0833
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable,0.1,delta_SR@10,0.0556,36,0.0000,0.1389,0.1302,0.2604,,direct=0.0000; pyramid_v2=0.0556
+E_fov_ladder,,roma,,base-matchable AND held-out,,denominator_pool,11.0000,63,,,,,,pairs passing the base-matchable filter; split.json train excluded
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.5,delta_SR@10,-0.1111,9,-0.3333,0.0000,1.0000,0.6934,,direct=0.7778; pyramid_v2=0.6667
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.5,delta_SR@10,0.0000,9,0.0000,0.0000,1.0000,1.0000,,direct=0.7778; pyramid_v2=0.7778
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.25,delta_SR@10,0.1818,11,0.0000,0.4545,0.1113,0.2226,,direct=0.4545; pyramid_v2=0.6364
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.25,delta_SR@10,0.0000,11,0.0000,0.0000,1.0000,1.0000,,direct=0.2727; pyramid_v2=0.2727
+E_fov_ladder,raw,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.1,delta_SR@10,0.0909,11,0.0000,0.2727,0.3465,0.6930,,direct=0.0909; pyramid_v2=0.1818
+E_fov_ladder,tps,roma/pyramid_v2,roma/direct,base-matchable AND held-out,0.1,delta_SR@10,0.0000,11,0.0000,0.0000,1.0000,1.0000,,direct=0.0000; pyramid_v2=0.0000
+E_fov_ladder,,ma_roma,,base-matchable,,denominator_pool,41.0000,63,,,,,,pairs passing the base-matchable filter
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.5,delta_SR@10,0.0278,36,0.0000,0.0833,0.3632,0.7264,,direct=0.5000; pyramid_v2=0.5278
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.5,delta_SR@10,0.0833,36,0.0000,0.1944,0.0421,0.0842,,direct=0.4722; pyramid_v2=0.5556
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.25,delta_SR@10,0.0250,40,0.0000,0.0750,0.3627,0.7254,,direct=0.2750; pyramid_v2=0.3000
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.25,delta_SR@10,0.0250,40,-0.0500,0.1250,0.3975,0.7950,,direct=0.1250; pyramid_v2=0.1500
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.1,delta_SR@10,0.1500,40,0.0500,0.2750,0.0014,0.0028,,direct=0.0750; pyramid_v2=0.2250
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable,0.1,delta_SR@10,0.0750,40,0.0000,0.1750,0.0434,0.0868,,direct=0.0250; pyramid_v2=0.1000
+E_fov_ladder,,ma_roma,,base-matchable AND held-out,,denominator_pool,22.0000,63,,,,,,pairs passing the base-matchable filter; split.json train excluded
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.5,delta_SR@10,0.0526,19,0.0000,0.1579,0.3625,0.7250,,direct=0.5789; pyramid_v2=0.6316
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.5,delta_SR@10,0.1053,19,0.0000,0.2632,0.1206,0.2412,,direct=0.4737; pyramid_v2=0.5789
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.25,delta_SR@10,0.0455,22,0.0000,0.1364,0.3581,0.7162,,direct=0.3182; pyramid_v2=0.3636
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.25,delta_SR@10,0.0909,22,0.0000,0.2273,0.1223,0.2446,,direct=0.0909; pyramid_v2=0.1818
+E_fov_ladder,raw,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.1,delta_SR@10,0.1818,22,0.0455,0.3636,0.0117,0.0234,,direct=0.0455; pyramid_v2=0.2273
+E_fov_ladder,tps,ma_roma/pyramid_v2,ma_roma/direct,base-matchable AND held-out,0.1,delta_SR@10,0.0455,22,0.0000,0.1364,0.3697,0.7394,,direct=0.0000; pyramid_v2=0.0455
+E_fov_ladder,,ma_roma_ft,,base-matchable,,denominator_pool,53.0000,63,,,,,,pairs passing the base-matchable filter
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.5,delta_SR@10,0.0213,47,0.0000,0.0638,0.3771,0.7542,,direct=0.3617; pyramid_v2=0.3830; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.5,delta_SR@10,0.0426,47,-0.0851,0.1702,0.3273,0.6546,,direct=0.4255; pyramid_v2=0.4681; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.25,delta_SR@10,0.0196,51,-0.0392,0.0784,0.3934,0.7868,,direct=0.3725; pyramid_v2=0.3922; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.25,delta_SR@10,0.0196,51,0.0000,0.0588,0.3670,0.7340,,direct=0.0784; pyramid_v2=0.0980; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.1,delta_SR@10,0.0784,51,0.0196,0.1569,0.0154,0.0308,,direct=0.0784; pyramid_v2=0.1569; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable,0.1,delta_SR@10,-0.0196,51,-0.0588,0.0000,1.0000,0.7246,,direct=0.0196; pyramid_v2=0.0000; fine-tuned on 131/187 pairs (results/split.json train); not comparable on the full 187-pair aggregate
+E_fov_ladder,,ma_roma_ft,,base-matchable AND held-out,,denominator_pool,18.0000,63,,,,,,pairs passing the base-matchable filter; split.json train excluded
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.5,delta_SR@10,0.0667,15,0.0000,0.2000,0.3491,0.6982,,direct=0.5333; pyramid_v2=0.6000
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.5,delta_SR@10,0.1333,15,-0.1333,0.4000,0.2120,0.4240,,direct=0.6000; pyramid_v2=0.7333
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.25,delta_SR@10,0.0556,18,-0.1111,0.2222,0.3874,0.7748,,direct=0.5556; pyramid_v2=0.6111
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.25,delta_SR@10,0.0556,18,0.0000,0.1667,0.3583,0.7166,,direct=0.1111; pyramid_v2=0.1667
+E_fov_ladder,raw,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.1,delta_SR@10,0.1667,18,0.0000,0.3333,0.0385,0.0770,,direct=0.1111; pyramid_v2=0.2778
+E_fov_ladder,tps,ma_roma_ft/pyramid_v2,ma_roma_ft/direct,base-matchable AND held-out,0.1,delta_SR@10,0.0000,18,0.0000,0.0000,1.0000,1.0000,,direct=0.0000; pyramid_v2=0.0000
