@@ -1,44 +1,13 @@
-# Multi-Scale Alignment of Correlative Materials Microscopy with Foundational Dense Matchers
+# Pyramidal wrappers break non-abstaining dense matchers: a diagnostic study of foundation-model registration in correlative microscopy
 
 ## Abstract
 
-Correlative materials microscopy pairs images of the same specimen across
-modalities (SEM, EBSD, TEM, optical) that share little visual appearance and
-often differ in field of view (FOV) by more than an order of magnitude,
-defeating classical feature-based registration. We asked whether a
-scale-aware pyramidal patching wrapper around pretrained dense matchers
-(RoMa, ELoFTR-family, MatchAnything) could lift cross-modal registration on
-AmalgaMatch (Durmaz et al.; 187 pairs, 19 subsets), particularly at severe
-FOV mismatch. Across a full controls-and-ablations pass we find: (1) a naive
-tiling pyramid *catastrophically degrades* dense matchers, because they never
-abstain — every tile returns thousands of confident matches that flood robust
-estimation (median error 76 → 1794 px); (2) a redesigned verified
-coarse-to-fine wrapper recovers a small but significant gain (SR@10 0.10 →
-0.12, p = 0.017) without losing any pair, yet leaves success at FOV ≤ 5% at
-zero. The largest off-the-shelf lever was instead the backbone: swapping in
-cross-modal-trained MatchAnything-RoMa weights gave the only significant
-zero-shot-bar headline gain (SR@10 +0.032, p = 0.018), entirely among
-high-FOV pairs. This isolates the binding constraint: **on AmalgaMatch,
-cross-modal appearance — not scale — is what fails.** A controlled FOV-ladder
-experiment, which crops real base-matchable pairs to sweep FOV with
-appearance fixed, confirms both halves: the same wrapper *triples* success at
-10% FOV (SR@10 0.07 → 0.23, p = 0.0014), so the scale mechanism is sound — the
-real distribution simply never isolates scale as the failure mode. Finally, we
-test the appearance lever directly: decoder-only fine-tuning of MatchAnything-
-RoMa on 131 held-out-split training pairs cuts median error on in-distribution
-TEM pairs 5.2× (321 → 62 px, the largest single movement in the study), but
-*regresses* overall SR@20 (0.393 → 0.250) by catastrophically forgetting a
-modality combination absent from training. Appearance is therefore attackable
-with domain data, but a 131-pair budget trades modality coverage for in-domain
-depth. We conclude that deployable cross-modal microscopy registration needs a
-forgetting-robust domain fine-tune over broad modality coverage, with the
-pyramid wrapper as a complementary — and provably effective — scale layer on
-top.
+Correlative materials microscopy pairs images of one specimen across modalities (SEM, EBSD, TEM, optical) that share little appearance and can differ in field of view (FOV) by orders of magnitude, defeating classical registration. We tested whether a scale-aware pyramidal wrapper around pretrained dense matchers (RoMa, ELoFTR, MatchAnything) could lift cross-modal registration on AmalgaMatch (187 pairs, 19 subsets). A naive tiling pyramid degrades matchers badly: because they never abstain, every tile floods robust estimation with thousands of confident matches (median error 76→1794 px). A redesigned verified coarse-to-fine wrapper recovers a small gain (SR@10 0.10→0.12, *p* = 0.034) without losing any pair, yet FOV ≤5% success stays zero; that gain is contingent on the reported error metric and vanishes on unrefined matcher error (Δ = 0.000, *p* = 1.00). The largest lever was the backbone: cross-modal-trained MatchAnything-RoMa gave the only other gain over zero-shot (SR@10 +0.032, *p* = 0.035), among high-FOV pairs, and it is metric-contingent in the same way (*p* = 0.33 unrefined). A controlled FOV ladder isolating scale (appearance fixed) shows the wrapper triples success at 10% FOV (0.07→0.23, *p* = 0.0028), much the largest and most robust effect we measured, so the scale mechanism is sound. Decoder-only fine-tuning cut in-distribution TEM error ~5×, but across eight runs regressed SR@20 (0.393→0.26) on the four test pairs whose modality combination is absent from training, which L2-SP did not fix. A directly measured appearance axis (normalised mutual information on the GT-aligned overlap) confirms that low FOV and appearance divergence are confounded on this benchmark (*r* = +0.215, *p* = 0.003) but does not show appearance dominating scale; with at most three of 61 sub-0.5-area-ratio pairs ever registered by any configuration, AmalgaMatch has too little leverage in that regime to separate the two.
 
-**Hypothesis verdicts.** H1 (pyramid ≥ 35% gain at FOV ≤ 5%): **rejected.**
-H2 (RoMa beats ELoFTR-family at low FOV): **supported.** H3 (affine sufficient
-vs. homography): **mostly supported** (affine selected on 69% of
-well-registered pairs).
+## Hypothesis verdicts
 
-*Full methods, tables, and figures: `reports/final_report.md`. All numbers
-regenerable from `results/` via the scripts referenced therein.*
+- **H1 (pyramid >= 35% gain at FOV <= 5%)**: rejected; and untestable on this benchmark, which holds only four pairs below area ratio 0.05.
+- **H2 (RoMa beats the ELoFTR family at low FOV)**: supported.
+- **H3 (affine sufficient vs. homography)**: mostly supported (affine selected on 69% of well-registered pairs).
+
+*Full methods, tables, and figures: paper/paper.md. Metric-sensitivity and appearance-axis analyses: reports/metric_sensitivity.md and reports/appearance_axis.md. All numbers regenerate from results/ via the scripts referenced therein.*

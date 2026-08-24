@@ -11,15 +11,15 @@ Paired bootstrap B=10000, seed=0, percentile 95 % CI. Rates carry Wilson 95 % in
 
 The manuscript scores accuracy on the TPS-refined error. Neither of its two significant native-pair results survives the switch to the raw parametric error that the matcher itself produces.
 
-1. **The wrapper gain is metric-dependent.** RoMa + pyramid v2 vs RoMa direct, SR@10 over all 187 pairs: TPS 0.0963 -> 0.1176 (+0.0214, CI [+0.0053, +0.0428], p = 0.0170); raw 0.0909 -> 0.0909 (+0.0000, CI [-0.0160, +0.0160], p = 0.6491). Under the raw metric the wrapper moves exactly zero pairs across the 10 px line.
+1. **The wrapper gain is metric-dependent.** RoMa + pyramid v2 vs RoMa direct, SR@10 over all 187 pairs: TPS 0.0963 -> 0.1176 (+0.0214, CI [+0.0053, +0.0428], p = 0.0340); raw 0.0909 -> 0.0909 (+0.0000, CI [-0.0160, +0.0160], p = 1.0000). Under the raw metric the wrapper moves exactly zero pairs across the 10 px line.
 
-2. **The backbone gain is metric-dependent.** MatchAnything-RoMa vs RoMa direct, SR@10: TPS 0.0963 -> 0.1283 (+0.0321, CI [+0.0053, +0.0642], p = 0.0175); raw 0.0909 -> 0.1070 (+0.0160, CI [-0.0107, +0.0428], p = 0.1669). The raw effect points the same way at roughly half the size and its CI covers zero.
+2. **The backbone gain is metric-dependent.** MatchAnything-RoMa vs RoMa direct, SR@10: TPS 0.0963 -> 0.1283 (+0.0321, CI [+0.0053, +0.0642], p = 0.0350); raw 0.0909 -> 0.1070 (+0.0160, CI [-0.0107, +0.0428], p = 0.3338). The raw effect points the same way at roughly half the size and its CI covers zero.
 
 3. **The TPS column is not one metric.** TPS coverage ranges from 0.000 for SIFT + MI (Control B) up to 1.000 for MatchAnything-RoMa, MatchAnything-RoMa + pyramid v2, RoMa (zero-shot), RoMa + pyramid v2. The dense RoMa-family configurations are scored on refined error for all 187 pairs while the weak configurations are silently scored on raw error for the majority of theirs, so part of the gap between the two families in Table 1 is a difference in scoring, not in registration. The sharpest case is Control B (SIFT + mutual information), whose TPS coverage is zero: it is a control scored entirely on the raw metric against treatments scored entirely on the refined one.
 
 4. **Refinement destroys 13 successes.** Across the 16 configurations in the baseline CSVs, 13 configuration-pair combinations register below 10 px on the raw fit and above 10 px after refinement (section C). One of them, `eval_5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale_0#0` under RoMa/direct (3.323 px raw, 37.462 px TPS), is the reason the 0.05-0.25 FOV stratum reads 0/33 -> 1/33 under TPS and 1/33 -> 2/33 under raw error. The wrapper still gains one pair in that stratum either way, but the "first non-zero severe-stratum result" framing is an artefact of the refinement failing on the one pair the direct baseline had already solved.
 
-5. **The FOV-ladder result is the robust one, and it strengthens when the fine-tuning split is respected.** MatchAnything-RoMa at rung 0.10 on raw error: base-matchable n = 40, 0.075 -> 0.225 (+0.150, CI [+0.050, +0.275], p = 0.0014); restricted to pairs held out of fine-tuning n = 22, 0.045 -> 0.227 (+0.182, CI [+0.045, +0.364], p = 0.0117). The same rung under the TPS metric is weaker (n = 40, 0.025 -> 0.100 (+0.075, CI [+0.000, +0.175], p = 0.0434)) because refinement is close to useless at 10 % FOV. The ladder is the one place where the wrapper claim does not depend on the scoring choice in direction, only in size.
+5. **The FOV-ladder result is the strongest wrapper result, and it strengthens when the fine-tuning split is respected -- but it is a result on the raw metric only.** The ladder is computed and reported on raw (unrefined) matcher error, which is the only metric meaningful at every rung. MatchAnything-RoMa at rung 0.10 on raw error: base-matchable n = 40, 0.075 -> 0.225 (+0.150, CI [+0.050, +0.275], p = 0.0028); restricted to pairs held out of fine-tuning n = 22, 0.045 -> 0.227 (+0.182, CI [+0.045, +0.364], p = 0.0234). Rescored under the TPS metric the same rung weakens to non-significance (n = 40, 0.025 -> 0.100 (+0.075, CI [+0.000, +0.175], p = 0.0868)): the effect points the same way at half the size, but two-sided it no longer clears 0.05, because refinement is close to useless at 10 % FOV. The ladder claim is therefore significant on the unrefined metric it is measured on, and must not be stated as holding under both metrics.
 
 6. **Descriptive medians move too.** The pyramid v1 collapse is quoted as median ED 76 -> 1794 px; those are TPS-metric numbers and the corresponding raw pair is 80.2 -> 2707.6 px (section A). The qualitative finding is unchanged and if anything larger on raw error, but the specific figures are metric-specific and should be labelled.
 
@@ -114,26 +114,26 @@ In the 0.05-0.25 stratum the TPS metric reads 0.000 -> 0.030, which is the manus
 
 ## D. Native-pair contrasts under both metrics
 
-| Contrast (B vs A) | metric | statistic | A | B | delta | 95% CI | p (one-sided, paper) | p (two-sided) |
-|---|---|---|---:|---:|---:|---|---:|---:|
-| RoMa + pyramid v2 vs RoMa direct | raw | SR@5 | 0.0588 | 0.0588 | +0.0000 | [+0.0000, +0.0000] | 1.0000 | 1.0000 |
-| RoMa + pyramid v2 vs RoMa direct | raw | SR@10 | 0.0909 | 0.0909 | +0.0000 | [-0.0160, +0.0160] | 0.6491 | 1.0000 |
-| RoMa + pyramid v2 vs RoMa direct | raw | SR@20 | 0.2246 | 0.2193 | -0.0053 | [-0.0321, +0.0160] | 0.7505 | 0.8294 |
-| RoMa + pyramid v2 vs RoMa direct | raw | median ED (px) |  |  | -10.3 | [-48.2, +23.2] | 0.1869 | 0.3738 |
-| RoMa + pyramid v2 vs RoMa direct | tps | SR@5 | 0.0481 | 0.0481 | +0.0000 | [+0.0000, +0.0000] | 1.0000 | 1.0000 |
-| RoMa + pyramid v2 vs RoMa direct | tps | SR@10 | 0.0963 | 0.1176 | +0.0214 | [+0.0053, +0.0428] | 0.0170 | 0.0340 |
-| RoMa + pyramid v2 vs RoMa direct | tps | SR@20 | 0.2299 | 0.2460 | +0.0160 | [-0.0160, +0.0481] | 0.2220 | 0.4440 |
-| RoMa + pyramid v2 vs RoMa direct | tps | median ED (px) |  |  | -2.4 | [-33.1, +14.4] | 0.2235 | 0.4470 |
-| MatchAnything-RoMa vs RoMa direct | raw | SR@5 | 0.0588 | 0.0588 | +0.0000 | [-0.0214, +0.0214] | 0.6038 | 1.0000 |
-| MatchAnything-RoMa vs RoMa direct | raw | SR@10 | 0.0909 | 0.1070 | +0.0160 | [-0.0107, +0.0428] | 0.1669 | 0.3338 |
-| MatchAnything-RoMa vs RoMa direct | raw | SR@20 | 0.2246 | 0.2406 | +0.0160 | [-0.0481, +0.0802] | 0.3338 | 0.6676 |
-| MatchAnything-RoMa vs RoMa direct | raw | median ED (px) |  |  | +0.8 | [-70.3, +44.9] | 0.5689 | 0.8622 |
-| MatchAnything-RoMa vs RoMa direct | tps | SR@5 | 0.0481 | 0.0374 | -0.0107 | [-0.0267, +0.0000] | 1.0000 | 0.2684 |
-| MatchAnything-RoMa vs RoMa direct | tps | SR@10 | 0.0963 | 0.1283 | +0.0321 | [+0.0053, +0.0642] | 0.0175 | 0.0350 |
-| MatchAnything-RoMa vs RoMa direct | tps | SR@20 | 0.2299 | 0.2353 | +0.0053 | [-0.0588, +0.0695] | 0.4586 | 0.9172 |
-| MatchAnything-RoMa vs RoMa direct | tps | median ED (px) |  |  | +7.6 | [-46.9, +35.5] | 0.5693 | 0.8614 |
+| Contrast (B vs A) | metric | statistic | A | B | delta | 95% CI | p (two-sided) |
+|---|---|---|---:|---:|---:|---|---:|
+| RoMa + pyramid v2 vs RoMa direct | raw | SR@5 | 0.0588 | 0.0588 | +0.0000 | [+0.0000, +0.0000] | 1.0000 |
+| RoMa + pyramid v2 vs RoMa direct | raw | SR@10 | 0.0909 | 0.0909 | +0.0000 | [-0.0160, +0.0160] | 1.0000 |
+| RoMa + pyramid v2 vs RoMa direct | raw | SR@20 | 0.2246 | 0.2193 | -0.0053 | [-0.0321, +0.0160] | 0.8294 |
+| RoMa + pyramid v2 vs RoMa direct | raw | median ED (px) |  |  | -10.3 | [-48.2, +23.2] | 0.3738 |
+| RoMa + pyramid v2 vs RoMa direct | tps | SR@5 | 0.0481 | 0.0481 | +0.0000 | [+0.0000, +0.0000] | 1.0000 |
+| RoMa + pyramid v2 vs RoMa direct | tps | SR@10 | 0.0963 | 0.1176 | +0.0214 | [+0.0053, +0.0428] | 0.0340 |
+| RoMa + pyramid v2 vs RoMa direct | tps | SR@20 | 0.2299 | 0.2460 | +0.0160 | [-0.0160, +0.0481] | 0.4440 |
+| RoMa + pyramid v2 vs RoMa direct | tps | median ED (px) |  |  | -2.4 | [-33.1, +14.4] | 0.4470 |
+| MatchAnything-RoMa vs RoMa direct | raw | SR@5 | 0.0588 | 0.0588 | +0.0000 | [-0.0214, +0.0214] | 1.0000 |
+| MatchAnything-RoMa vs RoMa direct | raw | SR@10 | 0.0909 | 0.1070 | +0.0160 | [-0.0107, +0.0428] | 0.3338 |
+| MatchAnything-RoMa vs RoMa direct | raw | SR@20 | 0.2246 | 0.2406 | +0.0160 | [-0.0481, +0.0802] | 0.6676 |
+| MatchAnything-RoMa vs RoMa direct | raw | median ED (px) |  |  | +0.8 | [-70.3, +44.9] | 0.8622 |
+| MatchAnything-RoMa vs RoMa direct | tps | SR@5 | 0.0481 | 0.0374 | -0.0107 | [-0.0267, +0.0000] | 0.2684 |
+| MatchAnything-RoMa vs RoMa direct | tps | SR@10 | 0.0963 | 0.1283 | +0.0321 | [+0.0053, +0.0642] | 0.0350 |
+| MatchAnything-RoMa vs RoMa direct | tps | SR@20 | 0.2299 | 0.2353 | +0.0053 | [-0.0588, +0.0695] | 0.9172 |
+| MatchAnything-RoMa vs RoMa direct | tps | median ED (px) |  |  | +7.6 | [-46.9, +35.5] | 0.8614 |
 
-`p (one-sided, paper)` is the fraction of bootstrap replicates with delta <= 0 (for median ED, delta >= 0). It reproduces the p-values printed in the manuscript exactly. The two-sided column is supplied because the manuscript's methods text describes the test as two-sided; see the note at the foot of this report.
+`p (two-sided)` is 2 x min(P(delta <= 0), P(delta >= 0)) over the bootstrap replicates, clipped at 1. That is the convention the manuscript's methods text declares and the values it prints; see the note at the foot of this report.
 
 ## E. FOV ladder wrapper contrast (pyramid v2 vs direct)
 
@@ -141,44 +141,44 @@ Ladder testbed: 63 pairs = 39 train / 13 val / 11 test with respect to `results/
 
 `base-matchable` is the manuscript's testbed filter: pairs whose full-FOV **direct** `mu_ed` is < 20 px for that backbone. It is computed per backbone, so the three backbones are evaluated on different denominators.
 
-| Backbone | subset | rung | metric | n | direct SR@10 | pyr v2 SR@10 | delta | 95% CI | p (one-sided) | p (two-sided) |
-|---|---|---:|---|---:|---:|---:|---:|---|---:|---:|
-| roma | base-matchable | 0.5 | raw | 34 | 0.382 | 0.353 | -0.029 | [-0.088, +0.000] | 1.0000 | 0.7184 |
-| roma | base-matchable | 0.5 | tps | 34 | 0.353 | 0.353 | +0.000 | [+0.000, +0.000] | 1.0000 | 1.0000 |
-| roma | base-matchable | 0.25 | raw | 36 | 0.278 | 0.333 | +0.056 | [+0.000, +0.139] | 0.1233 | 0.2466 |
-| roma | base-matchable | 0.25 | tps | 36 | 0.194 | 0.222 | +0.028 | [+0.000, +0.083] | 0.3591 | 0.7182 |
-| roma | base-matchable | 0.1 | raw | 36 | 0.056 | 0.083 | +0.028 | [+0.000, +0.083] | 0.3641 | 0.7282 |
-| roma | base-matchable | 0.1 | tps | 36 | 0.000 | 0.056 | +0.056 | [+0.000, +0.139] | 0.1302 | 0.2604 |
-| roma | base-matchable AND held-out | 0.5 | raw | 9 | 0.778 | 0.667 | -0.111 | [-0.333, +0.000] | 1.0000 | 0.6934 |
-| roma | base-matchable AND held-out | 0.5 | tps | 9 | 0.778 | 0.778 | +0.000 | [+0.000, +0.000] | 1.0000 | 1.0000 |
-| roma | base-matchable AND held-out | 0.25 | raw | 11 | 0.455 | 0.636 | +0.182 | [+0.000, +0.455] | 0.1113 | 0.2226 |
-| roma | base-matchable AND held-out | 0.25 | tps | 11 | 0.273 | 0.273 | +0.000 | [+0.000, +0.000] | 1.0000 | 1.0000 |
-| roma | base-matchable AND held-out | 0.1 | raw | 11 | 0.091 | 0.182 | +0.091 | [+0.000, +0.273] | 0.3465 | 0.6930 |
-| roma | base-matchable AND held-out | 0.1 | tps | 11 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | 1.0000 | 1.0000 |
-| ma_roma | base-matchable | 0.5 | raw | 36 | 0.500 | 0.528 | +0.028 | [+0.000, +0.083] | 0.3632 | 0.7264 |
-| ma_roma | base-matchable | 0.5 | tps | 36 | 0.472 | 0.556 | +0.083 | [+0.000, +0.194] | 0.0421 | 0.0842 |
-| ma_roma | base-matchable | 0.25 | raw | 40 | 0.275 | 0.300 | +0.025 | [+0.000, +0.075] | 0.3627 | 0.7254 |
-| ma_roma | base-matchable | 0.25 | tps | 40 | 0.125 | 0.150 | +0.025 | [-0.050, +0.125] | 0.3975 | 0.7950 |
-| ma_roma | base-matchable | 0.1 | raw | 40 | 0.075 | 0.225 | +0.150 | [+0.050, +0.275] | 0.0014 | 0.0028 |
-| ma_roma | base-matchable | 0.1 | tps | 40 | 0.025 | 0.100 | +0.075 | [+0.000, +0.175] | 0.0434 | 0.0868 |
-| ma_roma | base-matchable AND held-out | 0.5 | raw | 19 | 0.579 | 0.632 | +0.053 | [+0.000, +0.158] | 0.3625 | 0.7250 |
-| ma_roma | base-matchable AND held-out | 0.5 | tps | 19 | 0.474 | 0.579 | +0.105 | [+0.000, +0.263] | 0.1206 | 0.2412 |
-| ma_roma | base-matchable AND held-out | 0.25 | raw | 22 | 0.318 | 0.364 | +0.045 | [+0.000, +0.136] | 0.3581 | 0.7162 |
-| ma_roma | base-matchable AND held-out | 0.25 | tps | 22 | 0.091 | 0.182 | +0.091 | [+0.000, +0.227] | 0.1223 | 0.2446 |
-| ma_roma | base-matchable AND held-out | 0.1 | raw | 22 | 0.045 | 0.227 | +0.182 | [+0.045, +0.364] | 0.0117 | 0.0234 |
-| ma_roma | base-matchable AND held-out | 0.1 | tps | 22 | 0.000 | 0.045 | +0.045 | [+0.000, +0.136] | 0.3697 | 0.7394 |
-| ma_roma_ft * | base-matchable | 0.5 | raw | 47 | 0.362 | 0.383 | +0.021 | [+0.000, +0.064] | 0.3771 | 0.7542 |
-| ma_roma_ft * | base-matchable | 0.5 | tps | 47 | 0.426 | 0.468 | +0.043 | [-0.085, +0.170] | 0.3273 | 0.6546 |
-| ma_roma_ft * | base-matchable | 0.25 | raw | 51 | 0.373 | 0.392 | +0.020 | [-0.039, +0.078] | 0.3934 | 0.7868 |
-| ma_roma_ft * | base-matchable | 0.25 | tps | 51 | 0.078 | 0.098 | +0.020 | [+0.000, +0.059] | 0.3670 | 0.7340 |
-| ma_roma_ft * | base-matchable | 0.1 | raw | 51 | 0.078 | 0.157 | +0.078 | [+0.020, +0.157] | 0.0154 | 0.0308 |
-| ma_roma_ft * | base-matchable | 0.1 | tps | 51 | 0.020 | 0.000 | -0.020 | [-0.059, +0.000] | 1.0000 | 0.7246 |
-| ma_roma_ft | base-matchable AND held-out | 0.5 | raw | 15 | 0.533 | 0.600 | +0.067 | [+0.000, +0.200] | 0.3491 | 0.6982 |
-| ma_roma_ft | base-matchable AND held-out | 0.5 | tps | 15 | 0.600 | 0.733 | +0.133 | [-0.133, +0.400] | 0.2120 | 0.4240 |
-| ma_roma_ft | base-matchable AND held-out | 0.25 | raw | 18 | 0.556 | 0.611 | +0.056 | [-0.111, +0.222] | 0.3874 | 0.7748 |
-| ma_roma_ft | base-matchable AND held-out | 0.25 | tps | 18 | 0.111 | 0.167 | +0.056 | [+0.000, +0.167] | 0.3583 | 0.7166 |
-| ma_roma_ft | base-matchable AND held-out | 0.1 | raw | 18 | 0.111 | 0.278 | +0.167 | [+0.000, +0.333] | 0.0385 | 0.0770 |
-| ma_roma_ft | base-matchable AND held-out | 0.1 | tps | 18 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | 1.0000 | 1.0000 |
+| Backbone | subset | rung | metric | n | direct SR@10 | pyr v2 SR@10 | delta | 95% CI | p (two-sided) |
+|---|---|---:|---|---:|---:|---:|---:|---|---:|
+| roma | base-matchable | 0.5 | raw | 34 | 0.382 | 0.353 | -0.029 | [-0.088, +0.000] | 0.7184 |
+| roma | base-matchable | 0.5 | tps | 34 | 0.353 | 0.353 | +0.000 | [+0.000, +0.000] | 1.0000 |
+| roma | base-matchable | 0.25 | raw | 36 | 0.278 | 0.333 | +0.056 | [+0.000, +0.139] | 0.2466 |
+| roma | base-matchable | 0.25 | tps | 36 | 0.194 | 0.222 | +0.028 | [+0.000, +0.083] | 0.7182 |
+| roma | base-matchable | 0.1 | raw | 36 | 0.056 | 0.083 | +0.028 | [+0.000, +0.083] | 0.7282 |
+| roma | base-matchable | 0.1 | tps | 36 | 0.000 | 0.056 | +0.056 | [+0.000, +0.139] | 0.2604 |
+| roma | base-matchable AND held-out | 0.5 | raw | 9 | 0.778 | 0.667 | -0.111 | [-0.333, +0.000] | 0.6934 |
+| roma | base-matchable AND held-out | 0.5 | tps | 9 | 0.778 | 0.778 | +0.000 | [+0.000, +0.000] | 1.0000 |
+| roma | base-matchable AND held-out | 0.25 | raw | 11 | 0.455 | 0.636 | +0.182 | [+0.000, +0.455] | 0.2226 |
+| roma | base-matchable AND held-out | 0.25 | tps | 11 | 0.273 | 0.273 | +0.000 | [+0.000, +0.000] | 1.0000 |
+| roma | base-matchable AND held-out | 0.1 | raw | 11 | 0.091 | 0.182 | +0.091 | [+0.000, +0.273] | 0.6930 |
+| roma | base-matchable AND held-out | 0.1 | tps | 11 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | 1.0000 |
+| ma_roma | base-matchable | 0.5 | raw | 36 | 0.500 | 0.528 | +0.028 | [+0.000, +0.083] | 0.7264 |
+| ma_roma | base-matchable | 0.5 | tps | 36 | 0.472 | 0.556 | +0.083 | [+0.000, +0.194] | 0.0842 |
+| ma_roma | base-matchable | 0.25 | raw | 40 | 0.275 | 0.300 | +0.025 | [+0.000, +0.075] | 0.7254 |
+| ma_roma | base-matchable | 0.25 | tps | 40 | 0.125 | 0.150 | +0.025 | [-0.050, +0.125] | 0.7950 |
+| ma_roma | base-matchable | 0.1 | raw | 40 | 0.075 | 0.225 | +0.150 | [+0.050, +0.275] | 0.0028 |
+| ma_roma | base-matchable | 0.1 | tps | 40 | 0.025 | 0.100 | +0.075 | [+0.000, +0.175] | 0.0868 |
+| ma_roma | base-matchable AND held-out | 0.5 | raw | 19 | 0.579 | 0.632 | +0.053 | [+0.000, +0.158] | 0.7250 |
+| ma_roma | base-matchable AND held-out | 0.5 | tps | 19 | 0.474 | 0.579 | +0.105 | [+0.000, +0.263] | 0.2412 |
+| ma_roma | base-matchable AND held-out | 0.25 | raw | 22 | 0.318 | 0.364 | +0.045 | [+0.000, +0.136] | 0.7162 |
+| ma_roma | base-matchable AND held-out | 0.25 | tps | 22 | 0.091 | 0.182 | +0.091 | [+0.000, +0.227] | 0.2446 |
+| ma_roma | base-matchable AND held-out | 0.1 | raw | 22 | 0.045 | 0.227 | +0.182 | [+0.045, +0.364] | 0.0234 |
+| ma_roma | base-matchable AND held-out | 0.1 | tps | 22 | 0.000 | 0.045 | +0.045 | [+0.000, +0.136] | 0.7394 |
+| ma_roma_ft * | base-matchable | 0.5 | raw | 47 | 0.362 | 0.383 | +0.021 | [+0.000, +0.064] | 0.7542 |
+| ma_roma_ft * | base-matchable | 0.5 | tps | 47 | 0.426 | 0.468 | +0.043 | [-0.085, +0.170] | 0.6546 |
+| ma_roma_ft * | base-matchable | 0.25 | raw | 51 | 0.373 | 0.392 | +0.020 | [-0.039, +0.078] | 0.7868 |
+| ma_roma_ft * | base-matchable | 0.25 | tps | 51 | 0.078 | 0.098 | +0.020 | [+0.000, +0.059] | 0.7340 |
+| ma_roma_ft * | base-matchable | 0.1 | raw | 51 | 0.078 | 0.157 | +0.078 | [+0.020, +0.157] | 0.0308 |
+| ma_roma_ft * | base-matchable | 0.1 | tps | 51 | 0.020 | 0.000 | -0.020 | [-0.059, +0.000] | 0.7246 |
+| ma_roma_ft | base-matchable AND held-out | 0.5 | raw | 15 | 0.533 | 0.600 | +0.067 | [+0.000, +0.200] | 0.6982 |
+| ma_roma_ft | base-matchable AND held-out | 0.5 | tps | 15 | 0.600 | 0.733 | +0.133 | [-0.133, +0.400] | 0.4240 |
+| ma_roma_ft | base-matchable AND held-out | 0.25 | raw | 18 | 0.556 | 0.611 | +0.056 | [-0.111, +0.222] | 0.7748 |
+| ma_roma_ft | base-matchable AND held-out | 0.25 | tps | 18 | 0.111 | 0.167 | +0.056 | [+0.000, +0.167] | 0.7166 |
+| ma_roma_ft | base-matchable AND held-out | 0.1 | raw | 18 | 0.111 | 0.278 | +0.167 | [+0.000, +0.333] | 0.0770 |
+| ma_roma_ft | base-matchable AND held-out | 0.1 | tps | 18 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | 1.0000 |
 
 `*` denominator includes fine-tuning training pairs.
 
@@ -192,7 +192,7 @@ Per-backbone denominators on the ladder:
 
 ## Notes and caveats
 
-**p-value convention.** The p-values printed in the manuscript are one-sided: the fraction of paired-bootstrap replicates in which the difference is <= 0. That convention reproduces the published values (0.0170, 0.0175, 0.0014, 0.0434, 0.6491, 0.1669) to four decimals; a two-sided convention does not. Both columns are given above and both are in `results/metric_sensitivity.csv`. Whichever the revision adopts, the methods text and the numbers must be made to agree.
+**p-value convention.** Every p-value in this report and in `results/metric_sensitivity.csv` is two-sided: 2 x min(P(delta <= 0), P(delta >= 0)) over the paired-bootstrap replicates, clipped at 1. This matches the convention the manuscript's methods text declares, and it is symmetric under swapping the two configurations. An earlier version of this analysis quoted the one-sided tail mass P(delta <= 0), which is half these values wherever the observed difference is positive. The one substantive consequence of the correction is the FOV ladder at rung 0.10 rescored under the TPS metric: 0.0434 one-sided becomes 0.0868 two-sided, which does not clear 0.05 (summary point 5). The two native-pair TPS results (0.0340 and 0.0350) and the ladder on raw error (0.0028) remain significant at 0.05 two-sided.
 
 **Fine-tuned configuration.** `ma_roma_ft` was fine-tuned on the 131 pairs in the `train` split of `results/split.json`. It must not enter any aggregate over all 187 pairs unless it is restricted to held-out pairs or explicitly marked; it is excluded from Table 1 and appears here only in the coverage, regression and ladder blocks, flagged.
 

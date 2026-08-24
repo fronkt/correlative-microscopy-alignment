@@ -150,14 +150,19 @@ drive the largest changes here.
 
 1. **Both native-pair headline results are metric-contingent.** Accuracy is reported on
    TPS-refined error. On raw parametric error the wrapper gain over direct matching is
-   exactly flat (0.0909 -> 0.0909, p = 0.6491, against the published +0.021, p = 0.0170)
-   and the MatchAnything-RoMa gain falls to +0.016, CI [-0.011, +0.043], p = 0.1669
-   (published +0.032, p = 0.0175). Refinement converts 13 otherwise-successful fits into
+   exactly flat (0.0909 -> 0.0909, p = 1.0000, against the published +0.021, p = 0.0340)
+   and the MatchAnything-RoMa gain falls to +0.016, CI [-0.011, +0.043], p = 0.3338
+   (published +0.032, p = 0.0350). Refinement converts 13 otherwise-successful fits into
    failures. TPS coverage is also non-uniform: 1.000 for the dense RoMa-family configs,
    0.000 for Control B, so Table 1 partly compared configurations on different metrics.
-   **The FOV ladder is the one headline that survives both metrics** (+0.150 raw,
-   p = 0.0014; +0.075 TPS, p = 0.0434), and it strengthens on held-out pairs
-   (0.045 -> 0.227, p = 0.0117). New: `scripts/metric_sensitivity.py`,
+   The FOV ladder is the most robust result (+0.150 raw, p = 0.0028; strengthening to
+   +0.182 on held-out pairs, p = 0.0234), but it is **not** a both-metrics result: rescored
+   under TPS it halves to +0.075 and loses significance (p = 0.0868). An earlier draft of
+   this entry claimed it survived both metrics; that claim was made on one-sided p-values
+   and is withdrawn (see round 6b).
+
+   *All p-values in this entry are the corrected two-sided values. They were one-sided
+   when this round was first written; round 6b below explains why and what changed.* New: `scripts/metric_sensitivity.py`,
    `results/metric_sensitivity.csv`, `reports/metric_sensitivity.md`.
 
 2. **The title claim is not supported by a measured appearance axis.** NMI on the
@@ -188,6 +193,50 @@ drive the largest changes here.
 | R2.2 | Appearance by elimination; no leverage | Title changed; measured axis added (above); leverage disclosed (61 of 187 pairs below area ratio 0.5, **at most 3 ever registered** by any zero-shot or wrapped config). The broken causal leg at L81 ("severe-FOV pairs fail on appearance first") is **retracted in place**: at the area ratios those pairs exhibit (0.00013, 0.019) the wrapper already fails on the ladder where appearance is fixed (SR@10 0.025 at rung 0.05, 0.000 at rung 0.02), so scale alone suffices to explain them. |
 | R2.4 | Severe-stratum inconsistency | Root cause was undefined terms: "severe" meant 0.05-0.25 at L66, <0.05 at L72/L89/L137, and a ladder rung at L95. Bin edges now stated once in Results and Methods with n = 4 / 33 / 24 / 126, ratio direction corrected to target/source to match the Fig. 5 axis, and the word "severe" retired for **extreme** (<0.05) and **low** (0.05-0.25) FOV. The "only non-zero severe-stratum result (0.00 -> 0.03)" claim is **withdrawn**: direct RoMa already registers that pair to 3.3 px pre-refinement. |
 | R2.5 | Figures below standard | All five figures regenerated at 300 dpi. Prose axis labels (no `mu_ed`, no raw config tokens). Per-panel and per-stratum **n**. **Wilson 95 % CIs** on every rate. Config set aligned to Table 1's nine, including Control B, which the figures had silently dropped. `ma_roma_ft` explicitly excluded from all 187-pair panels — it had entered `baselines_A.csv` and would have contributed **train-contaminated** rows (train SR@10 0.389 vs test 0.250). Fig. 5 switched to small multiples so the RoMa + pyramid v2 curve is no longer fully occluded. Result text removed from the Fig. 1 methods schematic. Supplementary `figs/sr_bars_raw.png` shows the raw-metric version. |
+
+### Round 6b — every p-value was one-sided while Methods declared two-sided
+
+Found during post-revision verification, not by any reviewer, and it is the most
+consequential single correction in this round.
+
+`scripts/bootstrap_ci.py`, `scripts/fov_ladder_bootstrap.py` and
+`scripts/plot_fov_ladder.py` all computed the bootstrap p as a single tail mass,
+`(d_boot <= 0).mean()`. The code was honest about it (`bootstrap_ci.py` prints
+"p(one-sided)"), but the manuscript's Statistics subsection stated "reported
+p-values are two-sided bootstrap probabilities". Every p-value in the submitted
+paper was therefore half its declared value.
+
+Fixed by making the code two-sided, `min(1, 2 * min(P(d<=0), P(d>=0)))`, which is
+the conservative reading and matches what the manuscript already claimed. CIs, deltas,
+n and success rates are unchanged; only p-values move.
+
+| Contrast | one-sided (submitted) | two-sided (now) |
+|---|---:|---:|
+| RoMa direct to pyramid v2, SR@10, TPS | 0.0170 | **0.0340** |
+| RoMa direct to pyramid v2, SR@10, raw | 0.6491 | **1.0000** |
+| RoMa to MA-RoMa direct, SR@10, TPS | 0.0175 | **0.0350** |
+| RoMa to MA-RoMa direct, SR@10, raw | 0.1669 | **0.3338** |
+| FOV ladder rung 0.1, MA-RoMa, raw | 0.0014 | **0.0028** |
+| FOV ladder rung 0.1, MA-RoMa, TPS | 0.0434 | **0.0868** |
+| FOV ladder rung 0.1, MA-RoMa-ft, raw | 0.0154 | **0.0308** |
+
+No headline conclusion inverts except one: **the FOV ladder no longer clears 0.05 under
+the TPS metric** (0.087). The abstract and the H1 verdict had claimed the ladder was
+"the one headline that holds under both error metrics"; that claim is withdrawn and
+replaced with the accurate version, which is that the ladder carries much the largest
+effect in the study, is significant on the unrefined metric it is computed on
+(p = 0.0028), and halves to non-significance under TPS refinement because refinement is
+close to useless at 10 % FOV, where too few correspondences survive for a spline to help.
+
+Two single-run L2-SP values (median-ED p = 0.0046 and the SR@20 deficit p = 0.91) could
+not be recomputed, because the seed-0 checkpoints they came from were deleted. Rather
+than publish a p-value we cannot regenerate, both are now reported as their confidence
+intervals only, with the interval's relation to zero stated. Those two numbers were
+already marked as not-inference because lambda had been selected on the test split.
+
+The Statistics subsection now states the two-sided formula explicitly and records that
+success-rate proportions use Wilson score intervals, which matters here because several
+strata sit at or near zero.
 
 ### Not done / open
 

@@ -27,7 +27,9 @@ Success rates carry 95 % Wilson score intervals (correct near 0 and 1, which
 matters because several rungs sit at exactly zero). Median errors carry 95 %
 percentile bootstrap intervals using the study's protocol: resample pairs with
 replacement, B = 10,000. The wrapper-vs-direct gain annotated at rung 0.1 is
-the study's paired bootstrap over per-pair errors, B = 10,000.
+the study's paired bootstrap over per-pair errors, B = 10,000, and its p-value
+is two-sided -- min(1, 2 * min(P(delta <= 0), P(delta >= 0))) -- matching the
+convention declared in the manuscript's methods text.
 
 Usage: python scripts/plot_fov_ladder.py
 """
@@ -198,9 +200,10 @@ bidx = rng.integers(0, len(ids), size=(B, len(ids)))
 delta = float((eb < 10).mean() - (ea < 10).mean())
 boot = (eb[bidx] < 10).mean(axis=1) - (ea[bidx] < 10).mean(axis=1)
 blo, bhi = np.percentile(boot, [2.5, 97.5])
-pval = float((boot <= 0).mean())
+# two-sided: min(1, 2 * smaller tail mass), the manuscript's declared convention
+pval = min(1.0, 2.0 * min(float((boot <= 0).mean()), float((boot >= 0).mean())))
 print(f"\nrung 0.10, MatchAnything-RoMa, pyramid v2 vs direct: n={len(ids)} "
-      f"delta {delta:+.3f} CI [{blo:+.3f}, {bhi:+.3f}] p={pval:.4f}")
+      f"delta {delta:+.3f} CI [{blo:+.3f}, {bhi:+.3f}] p(two-sided)={pval:.4f}")
 
 xa = 3.0
 ax1.annotate("", xy=(xa + dodge[3], (eb < 10).mean()),
@@ -209,7 +212,7 @@ ax1.annotate("", xy=(xa + dodge[3], (eb < 10).mean()),
 ax1.annotate(f"MatchAnything-RoMa at FOV 0.1\n"
              f"$\\Delta$ success rate = {delta:+.3f}\n"
              f"95 % CI [{blo:+.3f}, {bhi:+.3f}], $p$ = {pval:.4f}\n"
-             f"paired bootstrap, B = 10,000, $n$ = {len(ids)}",
+             f"two-sided paired bootstrap, B = 10,000, $n$ = {len(ids)}",
              xy=(xa + 0.02, 0.5 * ((ea < 10).mean() + (eb < 10).mean())),
              xytext=(-0.35, 0.135), fontsize=7.0, color=INK, va="center",
              ha="left",

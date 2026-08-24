@@ -25,12 +25,13 @@ It produces five blocks:
 
 Bootstrap protocol (unchanged from scripts/bootstrap_ci.py): paired bootstrap
 over per-pair errors, B = 10,000 resamples, seed 0, percentile 95 % CI on the
-difference.  Two p-values are reported per contrast:
+difference.  One p-value is reported per contrast:
 
-  * `p_one_sided`  = fraction of bootstrap deltas <= 0.  THIS is the value the
-                     manuscript quotes (it reproduces 0.0170 / 0.0175 / 0.0014
-                     exactly).
-  * `p_two_sided`  = 2 * min(P(delta<=0), P(delta>=0)), clipped at 1.
+  * `p_two_sided`  = 2 * min(P(delta<=0), P(delta>=0)), clipped at 1.  This is
+                     the two-sided convention the manuscript's methods text
+                     declares.  It is symmetric: the value does not depend on
+                     which configuration is labelled A and which is labelled B,
+                     nor on the sign of the observed difference.
 
 Outputs:
   results/metric_sensitivity.csv   -- tidy machine-readable form
@@ -137,6 +138,13 @@ def boot_index(n: int) -> np.ndarray:
     return np.random.default_rng(SEED).integers(0, n, size=(B, n))
 
 
+def two_sided_p(boot: np.ndarray) -> float:
+    """Two-sided bootstrap p-value: twice the smaller tail mass, capped at 1."""
+    p_le = float((boot <= 0).mean())
+    p_ge = float((boot >= 0).mean())
+    return min(1.0, 2.0 * min(p_le, p_ge))
+
+
 def paired_rate_contrast(ea: np.ndarray, eb: np.ndarray, thresh: float) -> dict:
     """Paired bootstrap on SR@thresh, B minus A."""
     n = ea.size
@@ -144,12 +152,10 @@ def paired_rate_contrast(ea: np.ndarray, eb: np.ndarray, thresh: float) -> dict:
     obs = float((eb < thresh).mean() - (ea < thresh).mean())
     boot = (eb[idx] < thresh).mean(axis=1) - (ea[idx] < thresh).mean(axis=1)
     lo, hi = (float(x) for x in np.percentile(boot, [2.5, 97.5]))
-    p_le = float((boot <= 0).mean())
-    p_ge = float((boot >= 0).mean())
     return {
         "value": obs, "n": n, "ci_lo": lo, "ci_hi": hi,
         "sr_a": float((ea < thresh).mean()), "sr_b": float((eb < thresh).mean()),
-        "p_one_sided": p_le, "p_two_sided": min(1.0, 2 * min(p_le, p_ge)),
+        "p_two_sided": two_sided_p(boot),
     }
 
 
@@ -169,11 +175,9 @@ def paired_median_contrast(ea: np.ndarray, eb: np.ndarray) -> dict:
         boot.append(np.median(eb[row][m]) - np.median(ea[row][m]))
     boot = np.asarray(boot)
     lo, hi = (float(x) for x in np.percentile(boot, [2.5, 97.5]))
-    p_ge = float((boot >= 0).mean())
-    p_le = float((boot <= 0).mean())
     return {
         "value": obs, "n": int(both.sum()), "ci_lo": lo, "ci_hi": hi,
-        "p_one_sided": p_ge, "p_two_sided": min(1.0, 2 * min(p_le, p_ge)),
+        "p_two_sided": two_sided_p(boot),
     }
 
 
@@ -181,7 +185,7 @@ def paired_median_contrast(ea: np.ndarray, eb: np.ndarray) -> dict:
 OUT: list[dict] = []
 FIELDS = ["section", "metric", "config", "config_ref", "subset", "rung",
           "statistic", "value", "n", "ci_lo", "ci_hi",
-          "p_one_sided", "p_two_sided", "pair_id", "note"]
+          "p_two_sided", "pair_id", "note"]
 
 
 def emit(**kw) -> None:
@@ -374,8 +378,8 @@ def main() -> None:
         ("MatchAnything-RoMa vs RoMa direct", ("ma_roma", "direct"), ("roma", "direct")),
     ]
     say("| Contrast (B vs A) | metric | statistic | A | B | delta | 95% CI | "
-        "p (one-sided, paper) | p (two-sided) |")
-    say("|---|---|---|---:|---:|---:|---|---:|---:|")
+        "p (two-sided) |")
+    say("|---|---|---|---:|---:|---:|---|---:|")
     for label, (bbB, mdB), (bbA, mdA) in contrasts:
         rA = {r["pair_id"]: r for r in rows_for("baselines_A.csv", bbA, mdA)}
         rB = {r["pair_id"]: r for r in rows_for("baselines_A.csv", bbB, mdB)}
@@ -388,32 +392,31 @@ def main() -> None:
                 say(f"| {label} | {metric} | SR@{t:.0f} | {s['sr_a']:.4f} | "
                     f"{s['sr_b']:.4f} | {s['value']:+.4f} | "
                     f"[{s['ci_lo']:+.4f}, {s['ci_hi']:+.4f}] | "
-                    f"{s['p_one_sided']:.4f} | {s['p_two_sided']:.4f} |")
+                    f"{s['p_two_sided']:.4f} |")
                 if t == 10.0:
                     facts[f"contrast_{bbB}_{mdB}_{metric}"] = s
                 emit(section="D_contrast", metric=metric, config=f"{bbB}/{mdB}",
                      config_ref=f"{bbA}/{mdA}", subset="all_187",
                      statistic=f"delta_SR@{t:.0f}", value=s["value"], n=s["n"],
                      ci_lo=s["ci_lo"], ci_hi=s["ci_hi"],
-                     p_one_sided=s["p_one_sided"], p_two_sided=s["p_two_sided"],
+                     p_two_sided=s["p_two_sided"],
                      note=f"A={s['sr_a']:.4f}; B={s['sr_b']:.4f}")
             m = paired_median_contrast(ea, eb)
             if m:
                 say(f"| {label} | {metric} | median ED (px) |  |  | "
                     f"{m['value']:+.1f} | [{m['ci_lo']:+.1f}, {m['ci_hi']:+.1f}] | "
-                    f"{m['p_one_sided']:.4f} | {m['p_two_sided']:.4f} |")
+                    f"{m['p_two_sided']:.4f} |")
                 emit(section="D_contrast", metric=metric, config=f"{bbB}/{mdB}",
                      config_ref=f"{bbA}/{mdA}", subset="all_187",
                      statistic="delta_median_ED_px", value=m["value"], n=m["n"],
                      ci_lo=m["ci_lo"], ci_hi=m["ci_hi"],
-                     p_one_sided=m["p_one_sided"], p_two_sided=m["p_two_sided"],
+                     p_two_sided=m["p_two_sided"],
                      note="pairs finite under both configurations")
     say()
-    say("`p (one-sided, paper)` is the fraction of bootstrap replicates with "
-        "delta <= 0 (for median ED, delta >= 0). It reproduces the p-values "
-        "printed in the manuscript exactly. The two-sided column is supplied "
-        "because the manuscript's methods text describes the test as two-sided; "
-        "see the note at the foot of this report.")
+    say("`p (two-sided)` is 2 x min(P(delta <= 0), P(delta >= 0)) over the "
+        "bootstrap replicates, clipped at 1. That is the convention the "
+        "manuscript's methods text declares and the values it prints; see the "
+        "note at the foot of this report.")
     say()
 
     # ------------------------------------------------------- E. FOV ladder --
@@ -439,8 +442,8 @@ def main() -> None:
         "different denominators.")
     say()
     say("| Backbone | subset | rung | metric | n | direct SR@10 | pyr v2 SR@10 | "
-        "delta | 95% CI | p (one-sided) | p (two-sided) |")
-    say("|---|---|---:|---|---:|---:|---:|---:|---|---:|---:|")
+        "delta | 95% CI | p (two-sided) |")
+    say("|---|---|---:|---|---:|---:|---:|---:|---|---:|")
 
     def mu_raw(r: dict) -> float:
         return float(r["mu_ed"]) if (r["status"] == "ok" and cell(r, "mu_ed")) else INF
@@ -485,7 +488,7 @@ def main() -> None:
                         f"{rung:g} | {metric} | {s['n']} | {s['sr_a']:.3f} | "
                         f"{s['sr_b']:.3f} | {s['value']:+.3f} | "
                         f"[{s['ci_lo']:+.3f}, {s['ci_hi']:+.3f}] | "
-                        f"{s['p_one_sided']:.4f} | {s['p_two_sided']:.4f} |")
+                        f"{s['p_two_sided']:.4f} |")
                     note = f"direct={s['sr_a']:.4f}; pyramid_v2={s['sr_b']:.4f}"
                     if tainted:
                         note += f"; {FT_NOTE}"
@@ -493,7 +496,7 @@ def main() -> None:
                          config=f"{bb}/pyramid_v2", config_ref=f"{bb}/direct",
                          subset=sub_label, rung=f"{rung:g}", statistic="delta_SR@10",
                          value=s["value"], n=s["n"], ci_lo=s["ci_lo"],
-                         ci_hi=s["ci_hi"], p_one_sided=s["p_one_sided"],
+                         ci_hi=s["ci_hi"],
                          p_two_sided=s["p_two_sided"], note=note)
     say()
     say("`*` denominator includes fine-tuning training pairs.")
@@ -511,13 +514,13 @@ def main() -> None:
         s = facts[key]
         return (f"{s['sr_a']:.4f} -> {s['sr_b']:.4f} "
                 f"({s['value']:+.4f}, CI [{s['ci_lo']:+.4f}, {s['ci_hi']:+.4f}], "
-                f"p = {s['p_one_sided']:.4f})")
+                f"p = {s['p_two_sided']:.4f})")
 
     def ladline(key: str) -> str:
         s = facts[key]
         return (f"n = {s['n']}, {s['sr_a']:.3f} -> {s['sr_b']:.3f} "
                 f"({s['value']:+.3f}, CI [{s['ci_lo']:+.3f}, {s['ci_hi']:+.3f}], "
-                f"p = {s['p_one_sided']:.4f})")
+                f"p = {s['p_two_sided']:.4f})")
 
     worst_label, worst_cov = facts["cover_worst"]
     summary = [
@@ -567,15 +570,20 @@ def main() -> None:
         "the refinement failing on the one pair the direct baseline had "
         "already solved.",
         "",
-        "5. **The FOV-ladder result is the robust one, and it strengthens when "
-        "the fine-tuning split is respected.** MatchAnything-RoMa at rung 0.10 "
-        f"on raw error: base-matchable {ladline('ladder_ma_roma_0.1_raw_all')}; "
-        "restricted to pairs held out of fine-tuning "
-        f"{ladline('ladder_ma_roma_0.1_raw_held')}. The same rung under the TPS "
-        f"metric is weaker ({ladline('ladder_ma_roma_0.1_tps_all')}) because "
-        "refinement is close to useless at 10 % FOV. The ladder is the one "
-        "place where the wrapper claim does not depend on the scoring choice "
-        "in direction, only in size.",
+        "5. **The FOV-ladder result is the strongest wrapper result, and it "
+        "strengthens when the fine-tuning split is respected -- but it is a "
+        "result on the raw metric only.** The ladder is computed and reported "
+        "on raw (unrefined) matcher error, which is the only metric meaningful "
+        "at every rung. MatchAnything-RoMa at rung 0.10 on raw error: "
+        f"base-matchable {ladline('ladder_ma_roma_0.1_raw_all')}; restricted to "
+        "pairs held out of fine-tuning "
+        f"{ladline('ladder_ma_roma_0.1_raw_held')}. Rescored under the TPS "
+        "metric the same rung weakens to non-significance "
+        f"({ladline('ladder_ma_roma_0.1_tps_all')}): the effect points the same "
+        "way at half the size, but two-sided it no longer clears 0.05, because "
+        "refinement is close to useless at 10 % FOV. The ladder claim is "
+        "therefore significant on the unrefined metric it is measured on, and "
+        "must not be stated as holding under both metrics.",
         "",
         "6. **Descriptive medians move too.** The pyramid v1 collapse is "
         "quoted as median ED "
@@ -599,13 +607,19 @@ def main() -> None:
     caveats = [
         "## Notes and caveats",
         "",
-        "**p-value convention.** The p-values printed in the manuscript are "
-        "one-sided: the fraction of paired-bootstrap replicates in which the "
-        "difference is <= 0. That convention reproduces the published values "
-        "(0.0170, 0.0175, 0.0014, 0.0434, 0.6491, 0.1669) to four decimals; a "
-        "two-sided convention does not. Both columns are given above and both "
-        "are in `results/metric_sensitivity.csv`. Whichever the revision "
-        "adopts, the methods text and the numbers must be made to agree.",
+        "**p-value convention.** Every p-value in this report and in "
+        "`results/metric_sensitivity.csv` is two-sided: "
+        "2 x min(P(delta <= 0), P(delta >= 0)) over the paired-bootstrap "
+        "replicates, clipped at 1. This matches the convention the "
+        "manuscript's methods text declares, and it is symmetric under "
+        "swapping the two configurations. An earlier version of this analysis "
+        "quoted the one-sided tail mass P(delta <= 0), which is half these "
+        "values wherever the observed difference is positive. The one "
+        "substantive consequence of the correction is the FOV ladder at rung "
+        "0.10 rescored under the TPS metric: 0.0434 one-sided becomes 0.0868 "
+        "two-sided, which does not clear 0.05 (summary point 5). The two "
+        "native-pair TPS results (0.0340 and 0.0350) and the ladder on raw "
+        "error (0.0028) remain significant at 0.05 two-sided.",
         "",
         "**Fine-tuned configuration.** `ma_roma_ft` was fine-tuned on the 131 "
         "pairs in the `train` split of `results/split.json`. It must not enter "
