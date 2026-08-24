@@ -238,6 +238,69 @@ The Statistics subsection now states the two-sided formula explicitly and record
 success-rate proportions use Wilson score intervals, which matters here because several
 strata sit at or near zero.
 
+### Round 6c — forensic number audit, 17 corrections
+
+Every numeric claim in the revised manuscript was re-derived from the result files,
+the scripts and git history. Seventeen were wrong, several of them introduced by
+round 6 itself. All are now fixed and every replacement value was independently
+recomputed before it was written in.
+
+**Errors round 6 introduced**
+
+- **"survives restriction to held-out pairs"** was false for the backbone the p-value
+  tests. The fine-tuned ladder contrast held out is +0.167, CI [+0.000, +0.333],
+  p = 0.077, n = 18: direction preserved, significance not.
+- **The Limitations held-out sentence quoted the wrong backbone.** It discussed the
+  fine-tuned ladder but cited the zero-shot numbers (0.045 -> 0.227). Both are now
+  given, correctly attributed.
+- **A fabricated mechanism.** The H1 verdict blamed the TPS ladder's non-significance
+  on "too few correspondences surviving for a spline to help". False: TPS coverage at
+  rung 0.1 is 61/61, median inliers 322/523, and refinement *lowers* median ED by
+  15.4 px there. The real cause is near-threshold pairs crossing the 10 px line.
+- **Limitations contradicted Results** on the between-draw gap: "within the sampling
+  error" against "2.0 standard errors". The latter is right.
+- **Two abstract overclaims:** "most robust effect" (it is the largest, but under TPS
+  it loses significance) and "any configuration" for the sub-0.5 leverage count, which
+  is 3 only for zero-shot and wrapped configurations and 32 including the fine-tune.
+
+**Pre-existing errors the audit caught**
+
+- **"zero pairs lost" is true only at SR@10 under TPS.** Per pair the wrapper raises
+  TPS error on **94 of 187** pairs, materially on 22, worst case 60.6 -> 1481.7 px.
+  The verifier is monotone in its own MI score, not in GT error. Now stated.
+- **H2's "dominates ... including every low-FOV stratum"** is false: RoMa and
+  MatchAnything-ELoFTR are tied at 0.000 in both low-FOV strata. The support comes
+  from the two higher-FOV strata.
+- **"36-40 pairs per backbone"** matched neither pool; the true sizes are 38 / 41 / 53.
+- **"all straddling the 7-13 px band"**: three of four do; the fourth is 84.8 -> 8.3 px.
+- **"validation median 17.6 px"** was a double rounding of 17.546; and step 900 of 1500
+  is not "an early checkpoint".
+- **"370-1400 px"**: no value above 1032.5 exists in the released files.
+- **"80/1220 -> 16/24 px"** comes from the parametric lambda-selection probe, not the
+  full pipeline, and the released files show a different shape. Now flagged in place.
+- **"unrecoverable in every run"** rests on the three runs examined per scene, not eight.
+- **The 69 % affine figure no longer regenerated.** `scripts/h3_family_readout.py` over
+  the current `baselines_A.csv` printed 64 %, because `ma_roma_ft` rows had entered the
+  file and its well-registered set is mostly its own training data. The script now
+  excludes it and reproduces 82/118 = 69 % exactly, restoring the Data-availability claim.
+- **The extreme-FOV ladder citation was mis-anchored.** Those pairs sit at area ratios
+  0.019 and 0.00013; rung 0.05 is above both and three of the four are more than two
+  orders of magnitude below the ladder's floor. The conclusion survives; the citation
+  is now accurate.
+- **The NMI/FOV relationship is not monotone.** Per-stratum median NMI is 0.0196,
+  0.0021, 0.1648, 0.0725, so the 0.25-0.5 stratum is the most mutually informative.
+  Disclosed rather than left to imply a monotone trend.
+
+**What the audit confirmed.** Every cell of Table 1; both Table 2 zero-shot rows; all 16
+Table 3 per-run values against `git show 9b4c2fb^` and `seed_expand_summary.csv`; every
+p-value under the new two-sided convention; the whole appearance-axis analysis; the
+pyramid v1 collapse mechanism (106/187 failures, inlier fraction 0.1135 -> 0.0052); the
+GT affine residual re-derived from the dataset at median 10.26 px; the 603-tensor and
+445 MB checkpoint facts; and the lambda sweep showing 0.01 was validation-worst.
+
+Still not recomputable, and disclosed as such: the per-run values of draw-B runs 1-3,
+and the per-scene C103 readouts from the deleted seed-0 checkpoints.
+
 ### Not done / open
 
 - **The metric decision is Frank's.** Both metrics are now reported and the contingency is

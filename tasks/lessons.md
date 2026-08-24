@@ -109,3 +109,37 @@ single-image homographic warps of generic textures.
 H1 test for MatchAnything requires either AmalgaMatch or a multi-view
 natural-image dataset (MegaDepth / ScanNet pairs). The wrapper is
 production-quality and will work the moment real correlative pairs land.
+
+## Numbers written into a manuscript must be re-derived from source (2026-08-24)
+
+The Scientific Reports revision surfaced three failure modes worth keeping.
+
+**1. A metric choice can manufacture significance.** Accuracy was reported after
+thin-plate-spline refinement. Both native-pair headlines were significant on that
+metric and null on raw matcher error (p = 0.034 -> 1.00 and 0.035 -> 0.33), because
+refinement converts 13 otherwise-successful fits into failures, and its coverage is
+non-uniform across configurations (1.000 for the dense RoMa family, 0.000 for
+Control B). *Therefore: whenever a pipeline has a post-processing stage, report the
+headline under both with and without it before believing either.*
+
+**2. The declared statistical protocol was not the one implemented.** Methods said
+"two-sided bootstrap probabilities"; every p-value was a one-sided tail mass. The
+code was honest (`bootstrap_ci.py` printed "p(one-sided)"), but nobody reconciled the
+two for months. One conclusion flipped when corrected. *Therefore: grep the Methods
+claims against the code that produces them, as a checklist, before submitting.*
+
+**3. Agent-supplied numbers are not verified numbers.** During this revision an agent
+supplied 2x2 contrast p-values that were written into the Discussion. Re-running the
+committed script showed two of them wrong (0.040 -> 0.052, 0.045 -> 0.049), and one
+crossed 0.05. A follow-up forensic audit of *every* number in the manuscript then found
+17 more errors, including a fabricated causal mechanism, a sentence quoting the wrong
+backbone's numbers, and two claims that contradicted each other across sections.
+*Therefore: no number goes into a deliverable until it has been recomputed from the
+source data in this session. Delegation is fine for finding numbers; it is not
+sufficient for publishing them.*
+
+**Corollary that bit twice:** a results CSV is not append-only-safe. Adding
+`ma_roma_ft` rows to `baselines_A.csv` silently (a) would have put train-contaminated
+configurations into regenerated figures, and (b) broke the H3 readout so the published
+69 % affine figure no longer regenerated. *Therefore: any script that aggregates over
+"all backbones" needs an explicit exclusion list for models trained on the benchmark.*
