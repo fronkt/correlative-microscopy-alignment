@@ -301,6 +301,79 @@ GT affine residual re-derived from the dataset at median 10.26 px; the 603-tenso
 Still not recomputable, and disclosed as such: the per-run values of draw-B runs 1-3,
 and the per-scene C103 readouts from the deleted seed-0 checkpoints.
 
+### Round 7 — TMLR package, primary metric switched to unrefined error
+
+Scientific Reports rejected the manuscript. Venue moved to TMLR, and the
+submission was rebuilt on branch `tmlr-submission`; `sci-rep-revision` is
+retained unchanged as the record of what those reviewers saw.
+
+**The metric decision.** The paper now headlines the unrefined parametric error
+and reports the TPS-refined error alongside. The decisive argument is
+comparability, not effect size: TPS coverage runs from 187/187 for every dense
+RoMa-family configuration down to 93/187 for LoFTR, 70/187 for Control A and
+0/187 for Control B, with the blank rows falling back to the unrefined value. A
+"TPS-refined" table therefore scores the strong configurations on refined error
+and the weak ones almost entirely on raw error -- two metrics interleaved by
+configuration, with part of the apparent gap between families being a difference
+in scoring rather than in registration. The unrefined metric scores all nine
+identically. Two supporting reasons: refinement is an optional stage downstream
+of the matcher and wrapper we are actually studying, and it is not monotone (13
+configuration-pair combinations succeed at 10 px unrefined and fail refined).
+
+The switch **removes** significance from both native-pair headline results
+(wrapper +0.021 p=0.034 -> 0.000 p=1.00; backbone +0.032 p=0.035 -> +0.016
+p=0.33), so it cannot be read as metric-shopping. It also puts the headline on
+the same metric as the study's strongest result, the controlled FOV ladder,
+which is measured on unrefined error because that is the only metric meaningful
+at every rung.
+
+**Two findings improved under the new metric.**
+
+- The wrapper's null aggregate resolves into a composition shift rather than a
+  non-event: on RoMa it converts one low-FOV failure into a success (1/33 ->
+  2/33) and loses one high-FOV success (15/126 -> 14/126), 17 pairs either way.
+  That sign structure is a prediction the scale mechanism makes, on a benchmark
+  where 126 of 187 pairs are already at comparable scale, and it could have
+  failed.
+- H2 is supported in the low-FOV strata under raw (RoMa 1/33 against
+  MatchAnything-ELoFTR 0/33; 1/24 against 0/24) where under TPS both were tied
+  at zero. The evidence is still a single pair and is described as such.
+
+**Five carried-over claims were wrong under the new metric and are corrected.**
+The certainty-gating ablation is null on raw (0.219 -> 0.219, p = 1.00), not
+significantly worse; the -0.037 figure is TPS-only and both are now reported.
+The MatchAnything-RoMa wrapper gains two pairs and loses none on raw
+(11.8 -> 8.3, 325.8 -> 8.1), not "two gained and two lost ... 84.8 -> 8.3". The
+H3 claim that homography-selected pairs show no accuracy advantage is
+**withdrawn**: they are more accurate (median 6.5 against 11.3 px), though the
+comparison conditions on the selector's own choice and licenses no causal
+reading; the 69 % affine result itself is unaffected. The match cap is per
+invocation, not global, and the pyramid-v1 pooled maximum is 9,420,000
+correspondences on a single pair -- 942 tiles' worth -- which strengthens the
+non-abstention argument and is now stated.
+
+**Structural changes for the venue.** Anonymised for double-blind review (no
+author block, no ORCID, no Zenodo DOI, real repository URL replaced with an
+anonymous mirror placeholder). Converted from `wlscirep` to the official
+`tmlr.sty`, vendored in `paper/tmlr/`; 33 numeric `\cite` calls converted to
+natbib `\citep`/`\citet`; starred headings numbered. Restructured for an ML
+audience: Related Work added, Methods moved to Appendix A, per-run fine-tuning
+tables to Appendix B, and metric sensitivity promoted from a defensive note to
+a numbered section with a stated general hazard. Compiles against the real class
+under MiKTeX at 16 pages with zero errors and zero undefined references.
+
+**One metric exception, disclosed in place.** The eight-run fine-tuning table
+remains on TPS-refined error, because per-run pair-level outputs were not
+retained and rescoring is impossible. For the single fine-tuned run whose rows
+do survive, the held-out SR@20 regression is identical under both metrics
+(0.393 -> 0.250), which is stated in the paper rather than assumed.
+
+**Verification.** `scripts/verify_tmlr_draft.py` asserts 32 recomputed values
+are present, 12 retired phrasings are absent, two withdrawn claims appear only
+inside their retractions, and the rendered PDF contains no identifying string;
+plus brace/environment balance, no bare `\cite`, and no non-ASCII. Test suite
+green at 67 passed.
+
 ### Not done / open
 
 - **The metric decision is Frank's.** Both metrics are now reported and the contingency is

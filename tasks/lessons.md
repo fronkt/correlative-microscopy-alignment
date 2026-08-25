@@ -143,3 +143,30 @@ sufficient for publishing them.*
 configurations into regenerated figures, and (b) broke the H3 readout so the published
 69 % affine figure no longer regenerated. *Therefore: any script that aggregates over
 "all backbones" needs an explicit exclusion list for models trained on the benchmark.*
+
+## Changing the primary metric invalidates prose, not just tables (2026-08-24)
+
+Moving the correlative-microscopy paper from the TPS-refined error to the
+unrefined error for the TMLR submission required recomputing the tables, which
+was obvious, and recomputing **every sentence that quotes a number**, which was
+not. Five claims survived the table rewrite and were still wrong: an ablation
+whose significance existed only under the old metric, a per-pair narrative
+("two gained, two lost") that had a different shape under the new one, a
+comparison that reversed sign, and two statements about a match cap.
+
+*Therefore: when the primary metric changes, treat every numeric claim in the
+prose as unverified, including ones that were correct in the previous version.
+The table is the easy part.*
+
+**What caught them:** an explicit list of carried-over claims, checked one at a
+time against the source data, rather than a read-through. A read-through would
+have passed all five, because each was internally plausible and each had been
+true under the old metric.
+
+**Corollary worth keeping:** the verification is now a script
+(`scripts/verify_tmlr_draft.py`) that asserts 32 specific values appear, that 12
+retired phrasings do not, and that two deliberately-retained withdrawn claims
+still sit inside their retraction. A phrase-level ban list produced two false
+positives on the first run -- both were retractions naming the old claim -- which
+is itself the signal that the ban list needed to encode *context*, not just
+presence.

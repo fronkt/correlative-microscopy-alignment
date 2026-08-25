@@ -5,7 +5,11 @@ Writes 300-dpi PNGs straight into paper/figs/ so the manuscript figures are
 regenerable from the committed CSVs:
 
     paper/figs/sr_bars.png        Fig. 2, TPS-refined error (declared pipeline)
-    paper/figs/sr_bars_raw.png    supplementary, unrefined matcher error
+    paper/figs/sr_bars_raw.png    unrefined matcher error
+
+Usage: python scripts/plot_baselines.py [results/baselines_A.csv] [raw|tps]
+The second argument selects the primary metric for the group heatmap and the
+FOV-stratum curves; "raw" (default) writes the _raw variants.
     paper/figs/group_heatmap.png  Fig. 3
     paper/figs/fov_curves.png     Fig. 5
 
@@ -127,6 +131,20 @@ def ed_raw(r: dict) -> float:
 
 
 # --------------------------------------------------------------------------
+# Which error metric is primary for the heatmap and the FOV-stratum curves.
+# The manuscript headlines the unrefined parametric error, because TPS coverage
+# is not uniform across configurations (0.000 for Control B, 1.000 for the dense
+# RoMa family), so a TPS-scored table compares configurations under different
+# metrics. Both variants are generated; pass "tps" to make the refined error
+# primary. The success-rate bar figure always emits both.
+_METRIC = (sys.argv[2] if len(sys.argv) > 2 else "raw").lower()
+if _METRIC not in ("raw", "tps"):
+    sys.exit('metric must be "raw" or "tps", got %r' % _METRIC)
+PRIMARY = ed_raw if _METRIC == "raw" else ed_tps
+SUFFIX = "_raw" if _METRIC == "raw" else ""
+NOTE = ("unrefined matcher transform error" if _METRIC == "raw"
+        else "TPS-refined error")
+
 path_a = Path(sys.argv[1] if len(sys.argv) > 1 else "results/baselines_A.csv")
 path_b = path_a.parent / "baselines_B.csv"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -216,7 +234,7 @@ mat = np.full((len(labels), len(groups)), np.nan)
 ci: dict[tuple[int, int], tuple[float, float]] = {}
 for li, lab in enumerate(labels):
     for gi, g in enumerate(groups):
-        hits = np.array([ed_tps(r) < 10 for r in by_cfg[lab] if r["group"] == g])
+        hits = np.array([PRIMARY(r) < 10 for r in by_cfg[lab] if r["group"] == g])
         if hits.size:
             mat[li, gi] = hits.mean()
             ci[(li, gi)] = wilson(int(hits.sum()), int(hits.size))
@@ -242,12 +260,12 @@ cb = fig.colorbar(im, ax=ax, fraction=0.030, pad=0.02)
 cb.set_label("success rate at 10 px", fontsize=9)
 ax.set_xlabel("task group", fontsize=9.5)
 ax.set_title("Success rate at 10 px by task group\n"
-             f"TPS-refined error; all {n_pairs} pairs; brackets are 95 % Wilson "
+             f"{NOTE}; all {n_pairs} pairs; brackets are 95 % Wilson "
              "score intervals", fontsize=10.5)
 fig.tight_layout()
-fig.savefig(OUT_DIR / "group_heatmap.png", dpi=300)
+fig.savefig(OUT_DIR / f"group_heatmap{SUFFIX}.png", dpi=300)
 plt.close(fig)
-print(f"wrote {OUT_DIR / 'group_heatmap.png'}")
+print(f"wrote {OUT_DIR / ('group_heatmap%s.png' % SUFFIX)}")
 
 # --- Figure 5: success rate vs. native FOV area-ratio stratum --------------
 # Small multiples rather than nine overlaid curves: once every point carries a
@@ -266,7 +284,7 @@ for ai, lab in enumerate(labels):
     ax = axes[ai]
     pts, los, his = [], [], []
     for lo_b, hi_b in FOV_BINS:
-        hits = np.array([ed_tps(r) < 10 for r in by_cfg[lab]
+        hits = np.array([PRIMARY(r) < 10 for r in by_cfg[lab]
                          if lo_b <= fov.get(r["pair_id"], 1.0) < hi_b])
         p, lo, hi, _ = rate_with_err(hits)
         pts.append(p)
@@ -290,9 +308,9 @@ for ai in range(len(labels)):
         axes[ai].set_xlabel("field-of-view area ratio (target / source)",
                             fontsize=8.5)
 fig.suptitle("Success rate at 10 px versus native field-of-view stratum\n"
-             f"TPS-refined error; all {n_pairs} pairs; error bars are 95 % "
+             f"{NOTE}; all {n_pairs} pairs; error bars are 95 % "
              "Wilson score intervals", fontsize=10.5)
 fig.tight_layout(rect=(0, 0, 1, 0.95))
-fig.savefig(OUT_DIR / "fov_curves.png", dpi=300)
+fig.savefig(OUT_DIR / f"fov_curves{SUFFIX}.png", dpi=300)
 plt.close(fig)
-print(f"wrote {OUT_DIR / 'fov_curves.png'}")
+print(f"wrote {OUT_DIR / ('fov_curves%s.png' % SUFFIX)}")

@@ -390,3 +390,70 @@ so tile pooling floods RANSAC (inlier frac 0.114 -> 0.005). Box recycled once
 - 31 default tests + 2 slow tests, all green at handoff.
 - Open backbone: ELoFTR remains a shell. MatchAnything wrapper already covers
   the ELoFTR architecture via HF transformers, so this may not need wiring.
+
+
+## Phase 11 — TMLR submission package (2026-08-24)
+
+**Why:** Scientific Reports rejected the manuscript (all six reviewer points
+sustained). Venue decision: TMLR primary, Microscopy and Microanalysis fallback.
+TMLR's first acceptance criterion is whether claims are supported by the
+evidence, and its remedy for over-claiming is to adjust the claims -- which is
+what the Sci Rep revision already did. Branch `tmlr-submission`, kept separate
+from `sci-rep-revision` so the latter remains the record of what reviewers saw.
+
+- [x] **Headline metric decided: unrefined parametric error.** The refined (TPS)
+      column has coverage ranging 0.000-1.000 across configurations, so a
+      TPS-scored table is two metrics interleaved by configuration. The raw
+      metric scores all nine identically. Cost: both native-pair headline results
+      go null. Note the direction -- the switch *removes* significance, so it
+      cannot be metric-shopping.
+- [x] Figure scripts made metric-switchable (`plot_baselines.py [csv] [raw|tps]`);
+      `group_heatmap_raw.png` and `fov_curves_raw.png` added. Regenerating the
+      tps variant reproduces the previous files byte-for-byte.
+- [x] Every number in the new draft recomputed from the result files under raw.
+- [x] Manuscript rewritten for an ML audience: mechanism-first structure,
+      Related Work added, Methods moved to an appendix, metric sensitivity
+      promoted from a defensive note to a numbered contribution.
+- [x] Converted wlscirep -> tmlr.sty; 33 `\cite` -> `\citep`/`\citet`;
+      starred headings -> numbered; style files vendored in `paper/tmlr/`.
+- [x] Anonymised for double-blind: no author block, real repo URL replaced with
+      an anonymous.4open.science placeholder, no Zenodo DOI, no ORCID.
+- [x] Compiled against the real `tmlr.sty` with MiKTeX: 16 pages, zero errors,
+      zero undefined references or citations, no overfull box above 20 pt.
+- [x] `scripts/verify_tmlr_draft.py` added as a re-runnable gate: 32 must-appear
+      values, 12 banned phrasings, 2 withdrawn-claim retraction checks, plus
+      structural and rendered-PDF anonymity checks.
+- [x] Test suite green (67 passed, 3 deselected).
+
+### Review
+
+Five claims carried over from the Sci Rep text were **false or differently
+valued under the raw metric**, and the verification pass caught all five:
+
+1. Certainty gating was quoted as significantly worse (SR@20 -0.037). That is
+   the TPS value; on raw it is *exactly null* (0.219 -> 0.219, p = 1.00). Now
+   both are reported. The argument it supports -- that thresholding certainty
+   does not recover abstention -- survives, since the gate never helps.
+2. The MatchAnything-RoMa wrapper was described as "two pairs gained and two
+   lost ... the fourth a recovery from 84.8 to 8.3 px". Under raw it gains two
+   and loses **none** (11.8 -> 8.3 and 325.8 -> 8.1). Rewritten.
+3. H3 claimed homography-selected pairs "show no accuracy advantage". They are
+   in fact *more* accurate (median 6.5 vs 11.3 px). Withdrawn and replaced with
+   the selection-confound caveat; the 69 % affine claim itself stands.
+4. "Median 10,000 matches, which is the cap we impose" understated the
+   mechanism. RoMa hits exactly 10,000 per invocation on every pair, and
+   pyramid v1 pools up to **9,420,000** on one pair -- 942 tiles' worth. This
+   made the central argument stronger, not weaker.
+5. The match cap was stated as global; it is per invocation.
+
+Two results improved under the raw metric rather than degrading:
+
+- The wrapper's null aggregate resolves into a **composition shift** -- one
+  low-FOV failure converted to a success, one high-FOV success lost, 17 = 17 --
+  which is the trade its scale mechanism predicts and could have failed.
+- H2 is now supported in the low-FOV strata (RoMa 1/33 vs MA-ELoFTR 0/33) where
+  under TPS both were tied at zero.
+
+**Open:** submission itself is the user's action. Needs an OpenReview account,
+an anonymised code mirror at the placeholder URL, and the abstract pasted into
+the submission form.
