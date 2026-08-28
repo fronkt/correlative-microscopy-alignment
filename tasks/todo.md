@@ -457,3 +457,95 @@ Two results improved under the raw metric rather than degrading:
 **Open:** submission itself is the user's action. Needs an OpenReview account,
 an anonymised code mirror at the placeholder URL, and the abstract pasted into
 the submission form.
+
+---
+
+## Phase M — Microscopy & Microanalysis submission (opened 2026-08-28)
+
+Context: Sci Rep rejected 2026-08-24; TMLR **desk-rejected 2026-08-28** without review
+(volume/AE-bandwidth boilerplate — no signal on correctness). Frank's call: skip the
+AI4Mat workshop, go straight to M&M. Branch `mam-submission` off `tmlr-submission`.
+
+**Verified target facts (2026-08-28):** M&M is published by **Oxford University Press**,
+not Cambridge (our note was stale). Hybrid OA; the **standard subscription licence carries
+no charge**, so the free route survives the publisher move. MSA members may get discounts
+on the paid route (not needed).
+
+### M0 — Base text
+- [x] Base = `paper/tmlr/main.tex` (settled science: **unrefined parametric error primary**)
+- [x] NOT `paper/paper.md` — that is the Sci Rep text, still TPS-primary, and carries the
+      five claims the forensic audit falsified (wrapper p=0.034, MA-RoMa p=0.035, H3, etc.)
+- [x] De-anonymise: author block, real repo URL, Zenodo DOI, drop anonymous.4open.science
+
+### M1 — Restructure to M&M's mandated section order
+Required, "in the order listed herein": Introduction → Materials and Methods → Results →
+Discussion → Summary or Conclusions → Acknowledgments → References.
+- [x] Fold `Related work` into Introduction
+- [x] `Setting` → Materials and Methods (benchmark, pipeline, metric, strata, statistics)
+- [x] §4–§8 → Results subsections
+- [x] Mechanism argument + limitations → Discussion
+- [x] H1/H2/H3 verdicts → Summary/Conclusions
+
+### M2 — Retitle + abstract (the binding constraint)
+- [x] Retitle: M&M states "jargon should not be used". "Non-abstaining dense matchers" is
+      exactly that. Lead with the practitioner takeaway.
+- [x] Abstract: **≤200 words, no reference citations, NO ABBREVIATIONS.** Current is ~400
+      words and leans on FOV/SEM/EBSD/TEM/SR@10/TPS/NMI. Near-total rewrite, not a trim.
+
+### M3 — References → author-date
+- [x] 17 entries → author-date in-text (surname, year)
+- [x] Journal names abbreviated per CASSI
+- [x] **All authors listed; "et al." unacceptable in the reference list** (DINOv2,
+      MatchAnything, LoFTR have long author lists to expand)
+
+### M4 — Figures to spec
+- [x] Already 300 dpi colour ✓ (verified: all 8 PNGs at 299.999 dpi)
+- [x] Use the `_raw` variants as primary — consistent with the unrefined headline metric
+- [x] Multi-panel → ONE file per figure, panels labelled A/B/C upper-left
+- [x] Flatten RGBA → RGB
+- [x] **Alt text for every figure** (M&M requires it)
+- [~] Legibility: figures are 198–305 mm wide at 300 dpi. Figs 1 and 3 (279, 305 mm)
+      are full-page-width figures, not 84 mm single-column; flag to the editor at
+      submission, or re-export at larger font if a single column is required.
+
+### M5 — Required statements
+- [x] Conflict of interest (title page, all authors)
+- [x] Author contributions via **CRediT** taxonomy
+- [x] Data availability (Fordatis DOI 10.24406/fordatis/436 + repo + Zenodo)
+- [x] Acknowledgments
+
+### M6 — Format + build
+- [x] Double-spaced throughout, 12 pt, ~1 inch (2.5 cm) margins
+- [x] Build via the `journal-submission` skill (requirements.md YAML → apply_format + audit)
+
+### M7 — Cover letter + verification gate
+- [x] Cover letter to the editor
+- [x] `scripts/verify_mam_draft.py`, adapted from `verify_tmlr_draft.py`: re-assert every
+      number against the result files, plus M&M gates — abstract ≤200 words / 0 abbreviations
+      / 0 citations, mandated section order, no "et al." in the reference list
+
+**Not doing:** AI4Mat (Frank declined, 2026-08-28). Deadline was Aug 29 AOE = Sat Aug 30
+~08:00 ET, and there was a 5 pp Findings/Tools/Open-Challenges track that fit. Recorded in
+case the M&M route stalls and a non-archival airing becomes attractive again.
+
+### M8 — Status 2026-08-28
+Manuscript, figures, cover letter and both gates are **built and green**:
+- `paper/mam/manuscript.md` → `manuscript.docx` (12 pt, double-spaced, 1 in margins,
+  continuous line numbers, no theme fonts — audited by `build_mam_docx.py`)
+- `paper/mam/figures/Figure1..5.png` (300 dpi, RGB, one file per figure)
+- `paper/mam/cover_letter.md` / `.docx`
+- `scripts/verify_mam_draft.py` — **106 checks, all pass**
+- 67 pytest tests pass
+
+**Two things the gate caught that reading did not:** (1) the abstract came in at 205
+words against a hard 200-word cap; (2) **LoRA (Hu et al., 2022) was an orphan
+reference** — listed but never cited, because folding Related Work into the
+Introduction dropped its only mention. Both fixed; an orphan/dangling-citation
+check is now a permanent gate.
+
+**Publisher correction:** M&M is **Oxford University Press**, not Cambridge. The
+free (standard, subscription) licence route survives the move, so no charge.
+
+**Remaining = Frank's actions only:** OUP ScholarOne account, paste title/abstract,
+upload manuscript + 5 figure files + cover letter, supply CRediT roles and
+suggested reviewers if prompted. Nothing about the science is open.

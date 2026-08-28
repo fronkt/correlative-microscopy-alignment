@@ -53,7 +53,7 @@ for ax in (axA, axB):
     ax.axis("off")
 
 # ---------------------------------------------------------------- panel (a)
-axA.text(0.02, 0.96, "a", fontsize=14, fontweight="bold", va="top")
+axA.text(0.02, 0.96, "A", fontsize=14, fontweight="bold", va="top")
 axA.text(0.5, 0.965, "Verified coarse-to-fine wrapper (pyramid v2)",
          ha="center", va="top", fontsize=10, fontweight="bold")
 
@@ -94,7 +94,7 @@ arrow(axA, (0.905, 0.135), (0.905, 0.66), RED, ls="--")
 axA.text(0.86, 0.16, "if better,\nreplace $T^\\star$", fontsize=7, color=RED, ha="center")
 
 # ---------------------------------------------------------------- panel (b)
-axB.text(0.02, 0.96, "b", fontsize=14, fontweight="bold", va="top")
+axB.text(0.02, 0.96, "B", fontsize=14, fontweight="bold", va="top")
 axB.text(0.5, 0.965, "FOV-ladder protocol", ha="center", va="top",
          fontsize=10, fontweight="bold")
 axB.text(0.30, 0.885, "appearance fixed, scale swept on real pairs",
