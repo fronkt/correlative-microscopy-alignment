@@ -100,7 +100,7 @@ For each pair we warp the target into source coordinates under the GT-implied gl
 
 ### 3.1. Baseline registration accuracy
 
-Table 1 reports the headline comparison across all 187 pairs, and Figure 2 plots the same data with Wilson intervals. The classical baselines reproduce the benchmark's own finding: SIFT succeeds on 3 of 187 pairs, and mutual-information intensity refinement moves the median ED by 80 px without flipping a single pair to success. Among zero-shot foundation matchers RoMa is the strongest single backbone, and MatchAnything-RoMa is nominally stronger still.
+Table 1 reports the headline comparison across all 187 pairs, and Figure 1 plots the same data with Wilson intervals. The classical baselines reproduce the benchmark's own finding: SIFT succeeds on 3 of 187 pairs, and mutual-information intensity refinement moves the median ED by 80 px without flipping a single pair to success. Among zero-shot foundation matchers RoMa is the strongest single backbone, and MatchAnything-RoMa is nominally stronger still.
 
 ### 3.2. Pooling across tiles breaks matchers that cannot decline
 
@@ -114,7 +114,7 @@ We stress that this is a property of the class, not a tuning artefact. The argum
 
 ### 3.3. A verified coarse-to-fine wrapper, and what it does not buy
 
-We redesigned the wrapper so that it never pools blindly (pyramid v2; Figure 1a). Because it accepts a candidate only if a mutual-information verifier scores it above the incumbent, the design is monotone with respect to its own verifier: tile noise cannot displace a direct fit the verifier prefers.
+We redesigned the wrapper so that it never pools blindly (pyramid v2). Because it accepts a candidate only if a mutual-information verifier scores it above the incumbent, the design is monotone with respect to its own verifier: tile noise cannot displace a direct fit the verifier prefers.
 
 This removes the collapse completely. RoMa with pyramid v2 restores all 187 fits and improves the median error from 80.2 to 69.9 px (−10.3 px, 95 % CI [−48.2, +23.2], *p* = 0.37). But on the native benchmark that is the whole story: the aggregate success rate is unchanged, SR@10 0.091 → 0.091 (95 % CI [−0.016, +0.016], *p* = 1.00), and SR@20 is nominally lower (0.225 → 0.219, *p* = 0.83). The wrapper buys nothing in aggregate.
 
@@ -124,7 +124,7 @@ What it does is change *which* pairs succeed, and the direction is what its mech
 
 ### 3.4. A controlled field-of-view ladder
 
-The native benchmark confounds scale with appearance, so we built a testbed where scale is the only variable. Cropping base-matchable real pairs to shrinking FOV ratios, with appearance, modality and pixel size fixed, shows direct matching collapsing between the 0.25 and 0.1 rungs, while the verified wrapper restores success at the 0.1 rung: SR@10 rises from 0.075 to 0.225 (*p* = 0.0028), a threefold increase (Figure 3). On pairs held out of fine-tuning the effect is stronger still, 0.045 → 0.227 (*p* = 0.023).
+The native benchmark confounds scale with appearance, so we built a testbed where scale is the only variable. Cropping base-matchable real pairs to shrinking FOV ratios, with appearance, modality and pixel size fixed, shows direct matching collapsing between the 0.25 and 0.1 rungs, while the verified wrapper restores success at the 0.1 rung: SR@10 rises from 0.075 to 0.225 (*p* = 0.0028), a threefold increase (Figure 2). On pairs held out of fine-tuning the effect is stronger still, 0.045 → 0.227 (*p* = 0.023).
 
 The ladder is measured on the unrefined metric, which is the only one meaningful at every rung: at 10 % FOV, refinement has almost no inliers to work with and near-zero effect.
 
@@ -162,7 +162,7 @@ We tested the cheapest available remedy. Over eight runs, L2-SP does not fix the
 
 Everything above is scored on the unrefined parametric error. Our original protocol scored it after TPS refinement, and we changed primary metric during revision. This section reports what that change does, because the effect is large enough to be a finding in its own right rather than a housekeeping note.
 
-**Both of our aggregate null results become significant under refinement.** The wrapper contrast on RoMa reads Δ = 0.000, *p* = 1.00 unrefined and +0.021, 95 % CI [+0.005, +0.043], *p* = 0.034 refined. The backbone contrast reads +0.016, *p* = 0.33 unrefined and +0.032, 95 % CI [+0.005, +0.064], *p* = 0.035 refined (Table 4). Two publishable-looking results and two null results, from the same runs, the same pairs and the same bootstrap, differing only in whether an optional spline was applied before measuring.
+**Both of our aggregate null results become significant under refinement.** The wrapper contrast on RoMa reads Δ = 0.000, *p* = 1.00 unrefined and +0.021, 95 % CI [+0.005, +0.043], *p* = 0.034 refined. The backbone contrast reads +0.016, *p* = 0.33 unrefined and +0.032, 95 % CI [+0.005, +0.064], *p* = 0.035 refined (Table 4). Two publishable-looking results and two null results, from the same runs, the same pairs and the same bootstrap, differing only in whether an optional spline was applied before measuring. Figure 4 plots the nine configurations under the refined metric; set beside Figure 1, which is the same nine under the unrefined metric, it is the whole of the effect in one view.
 
 **Why we headline the unrefined metric.** The decisive reason is comparability, not effect size. A TPS refinement is only defined when the fit has enough surviving inliers to constrain a spline, so the refined column is populated for some configurations and not others. Coverage across Table 1's nine configurations ranges from 187/187 for every dense RoMa-family row down to 93/187 for LoFTR, 70/187 for the SIFT control and 0/187 for the SIFT-plus-mutual-information control. Where the column is blank the pipeline falls back to the unrefined value. A "TPS-refined" table therefore scores the dense rows entirely on refined error and the weak rows almost entirely on raw error: it is not one metric but two, interleaved by configuration, and part of the apparent gap between the strong and weak families is a difference in scoring rather than in registration. The unrefined metric scores all nine identically. Two further considerations point the same way. Refinement is an optional stage downstream of the object we are studying, which is the matcher and the wrapper; and it is not monotone — across the 16 configurations in our result files, 13 configuration-pair combinations register below 10 px unrefined and above it after refinement, so refinement destroys successes as well as creating them.
 
@@ -266,7 +266,7 @@ Wang, Y., He, X., Peng, S., Tan, D. & Zhou, X. (2024). Efficient LoFTR: Semi-den
 | MatchAnything-RoMa | 81.0 | 0.059 | 0.107 | 0.241 | 187/187 |
 | MatchAnything-RoMa + pyramid v2 | 77.6 | 0.053 | 0.118 | 0.230 | 187/187 |
 
-**Table 2.** Success at 10 px by native field-of-view stratum, unrefined error. Every configuration is at the floor in the extreme-FOV stratum. The wrapper's low-FOV gain and high-FOV loss on RoMa are visible as 1 → 2 and 15 → 14. Across the 61 pairs below area ratio 0.5, no configuration registers more than three. Figure 4 plots these with intervals.
+**Table 2.** Success at 10 px by native field-of-view stratum, unrefined error. Every configuration is at the floor in the extreme-FOV stratum. The wrapper's low-FOV gain and high-FOV loss on RoMa are visible as 1 → 2 and 15 → 14. Across the 61 pairs below area ratio 0.5, no configuration registers more than three. Figure 3 plots these with intervals.
 
 | Configuration | <0.05 (n = 4) | 0.05–0.25 (n = 33) | 0.25–0.5 (n = 24) | >0.5 (n = 126) |
 |---|---|---|---|---|
@@ -304,22 +304,18 @@ Wang, Y., He, X., Peng, S., Tan, D. & Zhou, X. (2024). Efficient LoFTR: Semi-den
 
 ## Figure Legends
 
-**Figure 1.** Method schematic. (**A**) The verified coarse-to-fine wrapper (pyramid v2). A direct match establishes an incumbent transform; candidate stages — tile search over a scaled source grid, then zoom refinement on the best-scoring region — are invoked only when direct support is weak, and a candidate is accepted only if a mutual-information-on-overlap verifier scores it above the incumbent. Correspondences are never pooled blindly across tiles. (**B**) Construction of the controlled field-of-view ladder. A base-matchable real pair is cropped to shrinking absolute area ratios while appearance, modality and pixel size are held fixed, so that scale is the only variable; full ground truth is retained so out-of-crop correspondences test extrapolation.
-
-*Alt text:* A two-panel schematic. Panel A is a flow diagram of the verified coarse-to-fine wrapper. A wide-field source image and a narrow-field target image, drawn as squares whose sizes differ, both feed a frozen dense matcher; a robust fit yields an incumbent transform. A decision point asks whether direct support is weak: if not, the incumbent stands, and if so a tile search over a scaled source grid and a zoom refinement on the best region produce a candidate, which a mutual-information-on-overlap verifier admits only if it scores above the incumbent. Panel B shows a square standing for the source field of view, containing five nested squares whose areas are 0.5, 0.25, 0.1, 0.05 and 0.02 of it, identified in a key by line darkness. Small open circles scattered across the source field mark ground-truth correspondences, which are retained whether or not they fall inside a crop.
-
-**Figure 2.** Success rates across all nine configurations, unrefined parametric error, all 187 pairs. Error bars are 95 % Wilson score intervals. Pyramid v1 collapses RoMa; pyramid v2 restores it to parity. The intervals overlap throughout the dense-matcher rows, which is the honest summary of the native-pair comparison: nothing here is separated. Figure 5 shows the same panel under the refined metric, where two contrasts become significant.
+**Figure 1.** Success rates across all nine configurations, unrefined parametric error, all 187 pairs. Error bars are 95 % Wilson score intervals. Pyramid v1 collapses RoMa; pyramid v2 restores it to parity. The intervals overlap throughout the dense-matcher rows, which is the honest summary of the native-pair comparison: nothing here is separated. Figure 4 shows the same panel under the refined metric, where two contrasts become significant.
 
 *Alt text:* Grouped bar chart of success rate at 5, 10 and 20 pixels for nine registration configurations, with 95 percent Wilson confidence intervals. The classical SIFT baselines sit near zero. The RoMa-family bars are the tallest but their intervals overlap one another. The pyramid v1 bar collapses to near zero, far below the other dense-matcher bars.
 
-**Figure 3.** Controlled field-of-view ladder, appearance held fixed, unrefined error. Cropping base-matchable pairs to shrinking field-of-view ratios shows direct matching collapsing between the 0.25 and 0.1 rungs, while the verified wrapper restores success at 0.1 (0.075 → 0.225, *p* = 0.0028). The ladder is measured on the unrefined metric, which is the only one meaningful at every rung: at 10 % field of view, refinement has almost no inliers to work with and near-zero effect.
+**Figure 2.** Controlled field-of-view ladder, appearance held fixed, unrefined error. Cropping base-matchable pairs to shrinking field-of-view ratios shows direct matching collapsing between the 0.25 and 0.1 rungs, while the verified wrapper restores success at 0.1 (0.075 → 0.225, *p* = 0.0028). The ladder is measured on the unrefined metric, which is the only one meaningful at every rung: at 10 % field of view, refinement has almost no inliers to work with and near-zero effect.
 
 *Alt text:* Line plot of success rate at 10 pixels against field-of-view area ratio on a descending axis from 0.5 to 0.02. The direct-matching curve falls steeply between the 0.25 and 0.1 rungs and reaches zero by 0.05. The wrapper curve stays above it, peaking at the 0.1 rung at roughly three times the direct value, before both collapse at the smallest ratios.
 
-**Figure 4.** Success at 10 px versus native field-of-view stratum, unrefined error, with per-stratum sample size and Wilson 95 % intervals. The extreme-FOV stratum holds four pairs, so its interval is very wide and nothing may be read from its point estimate. Every configuration is at the floor there.
+**Figure 3.** Success at 10 px versus native field-of-view stratum, unrefined error, with per-stratum sample size and Wilson 95 % intervals. The extreme-FOV stratum holds four pairs, so its interval is very wide and nothing may be read from its point estimate. Every configuration is at the floor there.
 
 *Alt text:* Plot of success rate at 10 pixels across four field-of-view strata for each configuration, with Wilson confidence intervals. All configurations sit at zero in the smallest stratum, where the interval is extremely wide because it contains only four pairs. Success rises only in the largest-field-of-view stratum.
 
-**Figure 5.** The same nine configurations under the TPS-refined metric. Compare Figure 2. The dense rows separate more here than they do unrefined, and part of that separation is the coverage artefact described in Section 3.8: the four RoMa-family rows have 187/187 refinement coverage while the SIFT-plus-mutual-information control has 0/187 and is scored entirely on the unrefined fallback.
+**Figure 4.** The same nine configurations under the TPS-refined metric. Compare Figure 1. The dense rows separate more here than they do unrefined, and part of that separation is the coverage artefact described in Section 3.8: the four RoMa-family rows have 187/187 refinement coverage while the SIFT-plus-mutual-information control has 0/187 and is scored entirely on the unrefined fallback.
 
-*Alt text:* The same grouped bar chart as Figure 2 but computed after thin-plate-spline refinement. The RoMa-family bars are visibly taller and separate more clearly from one another than in Figure 2, while the weak classical bars are essentially unchanged.
+*Alt text:* The same grouped bar chart as Figure 1 but computed after thin-plate-spline refinement. The RoMa-family bars are visibly taller and separate more clearly from one another than in Figure 1, while the weak classical bars are essentially unchanged.

@@ -214,6 +214,26 @@ checks += 1
 if len(legends) != len(alts):
     fails.append("STYLE    %d figure legends but %d alt-text blocks" % (len(legends), len(alts)))
 
+# 3e-bis. Legends numbered 1..N with no gap, and no body reference to a figure
+# that has no legend. Renumbering after a figure is cut breaks both silently:
+# nothing else in this file would notice a body citing a Figure 5 that is gone.
+nums = [int(n) for n in legends]
+checks += 1
+if nums != list(range(1, len(nums) + 1)):
+    fails.append("STRUCT   figure legends are numbered %s, expected 1..%d"
+                 % (nums, len(nums)))
+body_figs = set(int(n) for n in re.findall(r"Figure (\d+)", doc.split("## Figure Legends")[0]))
+checks += 1
+missing = sorted(body_figs - set(nums))
+if missing:
+    fails.append("STRUCT   text cites Figure %s but no such legend exists"
+                 % ", ".join(str(m) for m in missing))
+checks += 1
+uncited = sorted(set(nums) - body_figs)
+if uncited:
+    fails.append("STRUCT   Figure %s has a legend but is never cited in the text"
+                 % ", ".join(str(u) for u in uncited))
+
 # 3f. Table 2 strata must sum to the Table 1 SR@10 column.
 T1 = {
     "SIFT (Control A)": 0.016, "SIFT + mutual information (Control B)": 0.016,

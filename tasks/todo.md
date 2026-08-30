@@ -621,3 +621,29 @@ manuscript legend are unchanged. New generator `paper/schematics/gen_fig1.py`
   error threshold in Figs 2 and 5. Each figure has its own legend so neither is
   wrong, but it is worth one pass if the figures are ever revised together.
   Deliberately not acted on here.
+
+### N8 — Figure 1 cut entirely (2026-08-30, author's call)
+
+Frank's call on the drawing. Removed rather than reworked, and the cost is low:
+Methods 2.8 and 2.9 already state the wrapper's control flow and the ladder
+construction in prose, and the schematic illustrated those two things rather than
+the paper's actual mechanism (non-abstention flooding the estimator), so nothing
+argued in the text lost its only visual support.
+
+- [x] Legend and alt text excised; the one body reference ("pyramid v2; Figure 1a")
+      dropped, since the sentence reads correctly without it.
+- [x] Figures 2-5 renumbered to 1-4 through a placeholder, not in sequence — a
+      straight run of replacements would have taken 2->1 and then 3->2 on top of it.
+- [x] `build_mam_figures.py` FIGURES list cut to four; stale package files deleted
+      and the directory rebuilt from empty so no orphan Figure5.* could survive.
+- [x] Generator kept at `paper/schematics/gen_fig1.py`; only the rendered artefacts
+      were deleted, so the figure is one command away if it is ever wanted back.
+- [x] **New gate, and it caught something.** `verify_mam_draft.py` now checks that
+      legends run 1..N with no gap, that no body reference names a figure without a
+      legend, and that no figure has a legend without a body reference. The last of
+      those failed immediately — the refined-metric bar chart (Fig. 5, now Fig. 4)
+      was cited **only from inside another figure's legend** and never from the
+      text. That predates this edit. Fixed with a citation in Section 3.8, which is
+      the section the figure exists to support.
+- [x] Gates green: 109/109 manuscript checks, figure package 0 problems, DOCX
+      format audit clean. The paper now carries **four figures and four tables**.
