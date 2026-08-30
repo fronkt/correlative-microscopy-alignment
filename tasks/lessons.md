@@ -170,3 +170,60 @@ still sit inside their retraction. A phrase-level ban list produced two false
 positives on the first run -- both were retractions naming the old claim -- which
 is itself the signal that the ban list needed to encode *context*, not just
 presence.
+
+---
+
+## A schematic's proportions are claims, and claims get asserted (2026-08-30)
+
+Fig. 1's field-of-view ladder drew its rungs at `sqrt(r / 0.5)` of a base size —
+relative to the 0.5 rung — while the caption said the ratios were relative to the
+source. The 0.25 rung therefore sat at half the outer square's area, and the
+figure was right only because the outer square happened to also be 0.5. The
+source field, the actual denominator, was never drawn at all.
+
+Nobody catches that by reading the code; it reads fine. It is caught by writing
+the identity down as an assertion next to the constant:
+
+```python
+_sides = [SRC_SIDE_IN * np.sqrt(r) for r in FOV_RATIOS]
+for _r, _s in zip(FOV_RATIOS, _sides):
+    assert abs((_s / SRC_SIDE_IN) ** 2 - _r) < 1e-12
+```
+
+**Rule:** every proportion a schematic asserts gets a named constant, its source
+in a comment, and an assertion that the drawn geometry produces it. If a caption
+states a ratio, the thing it is a ratio *of* has to be on the page.
+
+## Alt text drifts from the figure, silently
+
+The Fig. 1 alt text described "a wide-field micrograph with successively smaller
+crop boxes drawn on it". No micrograph was ever in that panel — it was always an
+abstract nest of rectangles. The alt text was written from the *intent* and never
+re-checked against the render. The word-count gate, the citation gate and the
+section-order gate all passed over it, because none of them look at the figure.
+
+**Rule:** re-read alt text against the rendered PNG, not against the legend. It
+is prose about an image, so it is the one part of a manuscript that no text gate
+can check.
+
+## A house style that lives in one figure is not a house style
+
+Fig. 1 set `pdf.fonttype=42` via the skill's palette. `plot_baselines.py` and
+`plot_fov_ladder.py` did not, so every vector export of Figs 2-5 carried Type 3
+fonts — the single most common reason a publisher bounces artwork. It went
+unnoticed for the whole project because those scripts only ever wrote PNGs, where
+the setting has no effect; it surfaced the moment PDFs were needed.
+
+**Rule:** publisher rcParams belong to every figure script in the repo, not to
+the one that happens to import the shared palette. And a compliance check has to
+run over the whole figure package, not the figure being worked on.
+
+## verify.py silently drops any --expect containing a colon
+
+`--expect "verifier: mutual"` is parsed as stem `verifier`, text ` mutual`, and
+since no figure is named `verifier` the check is skipped — reported as neither
+pass nor fail, just absent from the output. The PASS looked complete. Only
+counting the printed lines against the number of `--expect` flags revealed it.
+
+**Rule:** when a checker reports per-item results, count them. A gate that can
+silently skip an item is a gate that can pass an unchecked figure.

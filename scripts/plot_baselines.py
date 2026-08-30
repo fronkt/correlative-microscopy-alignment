@@ -30,6 +30,12 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+# Publisher requirements, not preferences: Type 3 fonts get a figure bounced, and
+# flattened SVG text cannot be edited by a co-author. Without these the PDF
+# exports carried Type 3 -- caught by scripts/build_mam_figures.py, not by eye.
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
+matplotlib.rcParams["svg.fonttype"] = "none"
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -214,7 +220,11 @@ def sr_bar_figure(metric, out_name: str, metric_note: str) -> None:
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     fig.tight_layout()
+    # M&M asks for charts and diagrams as vector with embedded fonts, and
+    # sets 600-900 dpi for line art if raster is used at all. The PDF is the
+    # submission copy; the PNG stays for pasting into the manuscript.
     fig.savefig(OUT_DIR / out_name, dpi=300)
+    fig.savefig((OUT_DIR / out_name).with_suffix('.pdf'))
     plt.close(fig)
     print(f"wrote {OUT_DIR / out_name}")
 
@@ -264,6 +274,7 @@ ax.set_title("Success rate at 10 px by task group\n"
              "score intervals", fontsize=10.5)
 fig.tight_layout()
 fig.savefig(OUT_DIR / f"group_heatmap{SUFFIX}.png", dpi=300)
+fig.savefig(OUT_DIR / f"group_heatmap{SUFFIX}.pdf")
 plt.close(fig)
 print(f"wrote {OUT_DIR / ('group_heatmap%s.png' % SUFFIX)}")
 
@@ -312,5 +323,6 @@ fig.suptitle("Success rate at 10 px versus native field-of-view stratum\n"
              "Wilson score intervals", fontsize=10.5)
 fig.tight_layout(rect=(0, 0, 1, 0.95))
 fig.savefig(OUT_DIR / f"fov_curves{SUFFIX}.png", dpi=300)
+fig.savefig(OUT_DIR / f"fov_curves{SUFFIX}.pdf")
 plt.close(fig)
 print(f"wrote {OUT_DIR / ('fov_curves%s.png' % SUFFIX)}")

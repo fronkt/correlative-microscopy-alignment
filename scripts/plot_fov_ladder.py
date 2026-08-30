@@ -42,6 +42,12 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+# Publisher requirements, not preferences: Type 3 fonts get a figure bounced, and
+# flattened SVG text cannot be edited by a co-author. Without these the PDF
+# exports carried Type 3 -- caught by scripts/build_mam_figures.py, not by eye.
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
+matplotlib.rcParams["svg.fonttype"] = "none"
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -267,5 +273,6 @@ fig.suptitle("Controlled field-of-view ladder: appearance, modality and pixel "
 fig.subplots_adjust(left=0.155, right=0.985, top=0.855, bottom=0.155)
 OUT.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT, dpi=300)
+fig.savefig(OUT.with_suffix('.pdf'))
 plt.close(fig)
 print(f"wrote {OUT}")

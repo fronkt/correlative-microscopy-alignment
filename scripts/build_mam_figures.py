@@ -3,19 +3,25 @@
 
     python scripts/build_mam_figures.py
 
-The journal wants each figure uploaded as an individual file, every panel of a
-multi-panel figure in ONE file, and a minimum of 300 dpi for colour. Source
-plots are already generated at 300 dpi by scripts/plot_baselines.py and
-scripts/plot_fov_ladder.py; this script selects the right variants, flattens
-RGBA onto white (transparency prints as black in some RIPs), and re-stamps the
-dpi so it survives the copy.
+The journal wants each figure as an individual file, every panel of a multi-panel
+figure in ONE file, and -- for charts and diagrams, which is all five of ours --
+vector with embedded fonts. Its own words: "Vector graphics (maps, charts,
+diagrams) should be saved as .eps or .svg files", and .pdf is in the accepted
+list. So the PDF is the submission copy for every figure.
 
-Figure order follows the manuscript. Note that Figures 2 and 4 use the *_raw
-variants, i.e. the unrefined parametric error, which is the paper's primary
-metric; Figure 5 deliberately uses the refined variant, because its whole point
-is the contrast with Figure 2.
+The PNG is built too, because it is what gets pasted into the manuscript file and
+what a human actually looks at, but it is not the thing uploaded. That matters
+here: M&M's raster minimums are 300 dpi only for colour half-tones, and
+600-900 dpi for line art of the kind these all are. Shipping the 300 dpi PNGs
+would have been below the journal's own floor; the PDFs make the question moot.
+
+Figures 2 and 4 use the *_raw variants, i.e. the unrefined parametric error,
+which is the paper's primary metric; Figure 5 deliberately uses the refined
+variant, because its whole point is the contrast with Figure 2.
 """
 import pathlib
+import re
+import shutil
 import sys
 
 from PIL import Image
@@ -25,28 +31,49 @@ SRC = ROOT / "paper/figs"
 OUT = ROOT / "paper/mam/figures"
 
 FIGURES = [
-    (1, "method_schematic.png", "Method schematic (panels A, B)"),
-    (2, "sr_bars_raw.png",      "Success rates, unrefined error (primary metric)"),
-    (3, "fov_ladder.png",       "Controlled field-of-view ladder"),
-    (4, "fov_curves_raw.png",   "Success at 10 px by field-of-view stratum"),
-    (5, "sr_bars.png",          "Success rates, TPS-refined error (contrast to Fig. 2)"),
+    (1, "method_schematic", "Method schematic (panels A, B)"),
+    (2, "sr_bars_raw",      "Success rates, unrefined error (primary metric)"),
+    (3, "fov_ladder",       "Controlled field-of-view ladder"),
+    (4, "fov_curves_raw",   "Success at 10 px by field-of-view stratum"),
+    (5, "sr_bars",          "Success rates, TPS-refined error (contrast to Fig. 2)"),
 ]
 
-MIN_DPI = 300
+MIN_DPI = 300           # M&M's colour half-tone floor; line art wants 600-900
+LINE_ART_DPI = 600
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    problems = []
+    problems, notes = [], []
 
-    for num, name, desc in FIGURES:
-        src = SRC / name
-        if not src.exists():
-            problems.append("Figure %d: source missing (%s)" % (num, name))
+    for num, stem, desc in FIGURES:
+        png, pdf = SRC / (stem + ".png"), SRC / (stem + ".pdf")
+
+        if not pdf.exists():
+            problems.append("Figure %d: no vector source (%s.pdf); the journal "
+                            "asks for vector for charts and diagrams" % (num, stem))
+        else:
+            shutil.copyfile(pdf, OUT / ("Figure%d.pdf" % num))
+            raw = (OUT / ("Figure%d.pdf" % num)).read_bytes()
+            if b"/Type3" in raw:
+                problems.append("Figure %d: Type 3 fonts in the PDF" % num)
+            if b"/Subtype /Image" in raw or b"/Subtype/Image" in raw:
+                notes.append("Figure %d: PDF embeds a raster (expected only for "
+                             "a heat map)" % num)
+            if not re.search(rb"/BaseFont", raw):
+                problems.append("Figure %d: no embedded fonts in the PDF; text "
+                                "may have been flattened to paths" % num)
+
+        if not png.exists():
+            problems.append("Figure %d: source missing (%s.png)" % (num, stem))
             continue
 
-        im = Image.open(src)
+        im = Image.open(png)
         dpi = im.info.get("dpi", (0, 0))[0]
+        # Keep whatever the source was rendered at, provided it clears the
+        # minimum. Re-stamping everything to 300 would have told Word that the
+        # 600 dpi schematic is twice its true physical size.
+        out_dpi = max(MIN_DPI, round(dpi))
 
         if im.mode in ("RGBA", "LA", "P"):
             im = im.convert("RGBA")
@@ -56,26 +83,34 @@ def main():
         elif im.mode != "RGB":
             im = im.convert("RGB")
 
-        dest = OUT / ("Figure%d.png" % num)
-        im.save(dest, dpi=(MIN_DPI, MIN_DPI))
+        im.save(OUT / ("Figure%d.png" % num), dpi=(out_dpi, out_dpi))
 
         if dpi < MIN_DPI - 1:
-            problems.append("Figure %d: source was %.0f dpi, below the %d dpi minimum"
+            problems.append("Figure %d: PNG is %.0f dpi, below the %d dpi minimum"
                             % (num, dpi, MIN_DPI))
+        elif dpi < LINE_ART_DPI - 1:
+            notes.append("Figure %d: PNG is %.0f dpi, below M&M's %d dpi line-art "
+                         "tier -- fine, since the PDF is what is uploaded"
+                         % (num, dpi, LINE_ART_DPI))
 
-        # Legibility at the journal's single-column width of 84 mm.
-        width_mm = im.size[0] / MIN_DPI * 25.4
-        print("Figure%d.png  %5dx%-5d  %.0f dpi  %5.0f mm wide at 300 dpi  <- %s"
-              % (num, im.size[0], im.size[1], MIN_DPI, width_mm, name))
-        print("             %s" % desc)
+        # Printed width. M&M states no maximum, so this is reported, not gated;
+        # what it governs is how far production has to scale the figure down, and
+        # therefore how small the smallest type ends up.
+        width_mm = im.size[0] / out_dpi * 25.4
+        print("Figure%d  %5dx%-5d  %3d dpi  %5.1f mm wide  %s  <- %s"
+              % (num, im.size[0], im.size[1], out_dpi, width_mm,
+                 "pdf+png" if pdf.exists() else "png only", stem))
+        print("         %s" % desc)
 
+    for n in notes:
+        print("  note: " + n)
     if problems:
         print("\n%d PROBLEM(S):" % len(problems))
         for p in problems:
             print("  " + p)
         return 1
     print("\n%d figures written to %s" % (len(FIGURES), OUT.relative_to(ROOT)))
-    print("all at %d dpi, RGB, one file per figure" % MIN_DPI)
+    print("PDF is the submission copy; PNG is for the manuscript file")
     return 0
 
 

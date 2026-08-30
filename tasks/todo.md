@@ -549,3 +549,75 @@ free (standard, subscription) licence route survives the move, so no charge.
 **Remaining = Frank's actions only:** OUP ScholarOne account, paste title/abstract,
 upload manuscript + 5 figure files + cover letter, supply CRediT roles and
 suggested reviewers if prompted. Nothing about the science is open.
+
+---
+
+## Phase N — Figure 1 redrawn (2026-08-30)
+
+Brief: "redraw fig.1 to make it more cleaner, concise, and publishable grade."
+Scope held to craft, not content: the panel-A/panel-B split, every claim and the
+manuscript legend are unchanged. New generator `paper/schematics/gen_fig1.py`
+(palette + verify + crop copied from the vector-schematics skill); the old
+`paper/make_schematic.py` is archived, with a guard, as
+`paper/make_schematic-archive-2026-08-30.py`.
+
+- [x] N0 Defects found in the old Fig. 1, by looking at it at 4x
+  - **The ladder had no denominator.** Panel B's outermost square was the 0.5
+    rung, not the source field, while the axis text read "target field-of-view
+    area / source area". The source was never drawn, so none of the five ratios
+    named anything on the page.
+  - **The drawn areas were not the stated areas.** Rung sides went as
+    `sqrt(r / 0.5)`, i.e. relative to the 0.5 rung. The 0.25 rung was drawn at
+    half the outer square's area, which is 0.25 of the source only by accident of
+    the outer square also being 0.5. Now `side = SRC_SIDE * sqrt(r)` with the
+    identity asserted per rung.
+  - **The alt text described a figure that did not exist** — "a wide-field
+    micrograph with successively smaller crop boxes drawn on it". No micrograph
+    was ever in the panel. Alt text rewritten to the drawing that is there.
+  - Label collisions: "direct" straddled two box edges; "weak?" sat on the target
+    box corner; "if better, replace T*" overlapped the return connector.
+  - Two large text boxes floated in panel B carrying prose the legend already had.
+- [x] N1 Panel A rebuilt on a lattice: inputs -> matcher -> fit -> incumbent as a
+      spine, an explicit decision diamond for "direct support weak?", and the two
+      candidate stages drawn as the sequence they are rather than a bulleted list.
+      Both the accept and the reject outcome are now drawn; before, only accept was.
+- [x] N2 Field of view encoded by **frame size, not colour**. Okabe-Ito blue and
+      orange already mean backbone in Figs 3-4 and error threshold in Figs 2 and 5;
+      a third meaning on the same hues was avoidable, and size is what actually
+      distinguishes a wide field from a narrow one. Green and vermillion are left
+      to mark the only two things the wrapper adds: the branch and the gate.
+- [x] N3 Panel B: source frame drawn, rungs as a sequential ramp, all six in one
+      key. Labelling rungs in place cannot be done evenly — the 0.10/0.05 and
+      0.05/0.02 bands are thinner than a line of 5.9 pt type, forced by the square
+      roots being close — and a mixed inline/leader scheme reads as two systems
+      with leaders crossing every rung outside the one they name.
+- [x] N4 Ground-truth markers placed by 2-D blue noise in inches, not `rng.uniform`
+      and not in axes fractions (panel B is wider than tall, so equal separation in
+      axes units is unequal separation on the page). Asserted: no two markers touch,
+      counts inside the rungs fall monotonically, and the 0.05 rung is not empty —
+      an empty small rung would say the small crops carry no ground truth.
+- [x] N5 Export gates: zero Type 3, zero rasters, one font family, 42 live `<text>`
+      elements, ten expected strings present.
+- [x] N6 **Package-wide problems this turned up, now fixed**
+  - `scripts/plot_baselines.py` and `scripts/plot_fov_ladder.py` never set
+    `pdf.fonttype=42`, so **every vector export of Figs 2-5 carried Type 3 fonts**,
+    which publishers reject. Set in both, along with `ps.fonttype` and `svg.fonttype`.
+  - M&M asks for **vector with embedded fonts for charts and diagrams**, and sets
+    600-900 dpi for line art if raster is used. The package shipped 300 dpi PNGs
+    only — below the journal's own floor for what these are. All five figures now
+    have a PDF submission copy; the PNG stays for the manuscript file.
+  - `build_mam_figures.py` re-stamped every PNG to 300 dpi, which would have told
+    Word the 600 dpi schematic was twice its true size.
+- [x] N7 Gates green: `verify_mam_draft.py` 106/106, `build_mam_docx.py` format
+      audit clean, `build_mam_figures.py` 0 problems, pytest exit 0.
+
+### Open, and Frank's call
+- **Printed width.** M&M states no maximum figure width, so this is reported, not
+  gated. Fig. 1 is 182 mm; Figs 2 and 5 are 198 mm, Fig. 4 249 mm, Fig. 3 305 mm.
+  Production will scale them to the column, so Fig. 3 loses ~43 % of its linear
+  size and its 8 pt type lands near 4.6 pt. Re-tuning the four data plots is a
+  separate job from this one and was not done.
+- **Hue reuse across the paper.** Blue and orange mean backbone in Figs 3-4 and
+  error threshold in Figs 2 and 5. Each figure has its own legend so neither is
+  wrong, but it is worth one pass if the figures are ever revised together.
+  Deliberately not acted on here.
