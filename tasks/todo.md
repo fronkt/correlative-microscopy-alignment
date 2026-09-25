@@ -647,3 +647,83 @@ argued in the text lost its only visual support.
       the section the figure exists to support.
 - [x] Gates green: 109/109 manuscript checks, figure package 0 problems, DOCX
       format audit clean. The paper now carries **four figures and four tables**.
+
+---
+
+## Phase R — M&M rewrite after MAM-26-246 rejection (opened 2026-09-25, branch `mam-rewrite`)
+
+Decision letter (2026-09-11, Editor J. Michael, no reviewer reports): "extremely difficult to
+read ... written in a more tutorial way so that terms and methods are better described and
+examples of the failures are shown. The use of the existing known database is useful."
+Frank, 2026-09-25: "continue with the rewrites, continue with everything." The submitted
+package stays untouched on `mam-submission` (pushed); a copy lives in `paper/mam/MAM-26-246/`.
+
+### R0 — Correctness defects found while picking failure examples (must fix in any version)
+- [x] **The 106 pyramid-v1 "hard failures" are a GPU crash, not estimator failures.** Every
+      one of the 106 failed rows carries `CUDA error: unknown error`; the run died at the
+      82nd pair (loader order) and every later pair inherited the poisoned context. The
+      submitted text said "the estimator cannot return a transform at all". v1 was only
+      ever evaluated on 81 pairs (10 subsets, alphabetical head of the loader).
+- [x] **The 80 -> 2708 px headline compared different pair sets** (direct over 187, v1 median
+      over its 81 finite rows). Same 81 pairs: direct 335.8 -> v1 2707.6 px; SR@10 11 -> 1.
+      Same for the inlier fraction ("all 187 pairs", 0.114 -> 0.005): same 81 pairs,
+      0.092 -> 0.005.
+- [x] **48 of the 81 evaluated v1 pairs never tiled.** Tile side = target's shorter side in
+      TARGET pixels; when the target has finer pixels than the source (71/187 pairs) no
+      pyramid level is built, and when the source is smaller than that side the source is
+      reflect-padded to one square tile (61/187 pairs overall, all 48 single-tile rows).
+      Example: AF9628 0#2 source 4096x2028 padded into a 5628x5628 tile (26 % real content).
+      These pairs test mirror padding, an implementation defect, not tiling.
+- [x] **Genuinely tiled pairs (33 of 81, 2-942 tiles, median 75):** direct median 67.6 ->
+      v1 537.7 px, inlier fraction 0.102 -> 0.00092, v1 worse on 26/33, SR@20 4 -> 1,
+      SR@10 1 -> 0. The flooding mechanism stands on these; the success collapse mostly
+      came from the padded pairs (SR@10 10 -> 1).
+- [x] Section 3.8's "187/187 refinement coverage for every dense RoMa-family row" was false
+      for the v1 row (72/187). Moot once v1 leaves the 187-pair table.
+- [ ] **Frank's call — complete the v1 run on a rented GPU.** 106 crashed pairs = 4,303 tile
+      matches (97 multi-tile, 9 padded); includes 6 pairs direct RoMa registers (TRIP1 x2,
+      Ti3AlC2 x3, X2CrNi12), i.e. the real test of "tiling destroys a working fit". CPU is
+      not an option (one direct match takes minutes here, and the CPU is shared with other
+      sessions). ~1 h on a 5090 incl. the 4.2 GB dataset fetch, well under $2. Optional
+      second arm: fix the tiler (tile side in source pixels = target side x scale ratio) so
+      the 61 padded pairs are tested too. The rewrite text is correct WITHOUT either run.
+
+### R1 — Structure for a microscopist reader
+- [ ] Keep the title. Rewrite the abstract (<=200 words, no abbreviations, no citations).
+- [ ] Intro: the task in pictures (new Fig. 1: real AmalgaMatch pairs, target footprint drawn
+      in the wide image), what a matcher is, the tiling idea, what we found, a reading guide.
+- [ ] Methods as a walkthrough: Table 1 = glossary of every technical term; step-by-step
+      pipeline on one real pair (new Fig. 2); how error and success are measured and why
+      the unrefined error; the two wrappers step by step; ladder; appearance measure;
+      fine-tuning; statistics in plain words.
+- [ ] Results: each subsection opens with the question it answers and closes with the
+      one-sentence answer; failure examples shown as images (new Figs 3-4).
+- [ ] Discussion opens with practical guidance for someone registering their own data.
+- [ ] Move protocol minutiae to Supplementary Material (PDF): fine-tuning protocol defects,
+      earlier draw, per-run table, hypothesis verdicts, refined-metric figure + table,
+      full crash/padding accounting for v1. Every item cited from the main text.
+- [ ] Pyramid v1 restated on its 81 evaluated pairs, split multi-tile vs padded (R0).
+
+### R2 — New figures (real images; AmalgaMatch is CC-BY-4.0, credit in legends)
+- [ ] Fig. 1 the task: 3 pairs spanning FOV ratio and modality, GT footprint + GT points.
+- [ ] Fig. 2 the pipeline on one pair: correspondences (inlier/outlier), fitted footprint vs
+      GT footprint, per-point error vectors, the number that gets scored.
+- [ ] Fig. 3 why tiling fails: tile grid on a real multi-tile pair; a tile that does not
+      contain the target still returns 10,000 correspondences at high certainty; pooled
+      inlier fraction direct vs v1 on the 33 tiled pairs.
+- [ ] Fig. 4 failure gallery: severe FOV, appearance, and the fine-tuned model forgetting a
+      C103 SEM/LOM pair, each with predicted vs true footprint and its error. Re-run on CPU
+      for display only; legend states the displayed error comes from that re-run.
+- [ ] Keep: success-rate bars (v1 bar removed), FOV ladder (+ crops of a real pair),
+      strata plot. Refined-metric bars -> Supplementary.
+
+### R3 — Gates, package, correspondence
+- [ ] `verify_mam_draft.py` updated for the rewrite: numeric parity incl. the new v1
+      same-pair numbers, a failure-reason audit (no infrastructure failure scored as a
+      method failure), glossary coverage, abbreviations defined at first use.
+- [ ] Build manuscript.docx, supplementary.pdf, figures; gates green; pytest green.
+- [ ] Cover letter: new submission, discloses MAM-26-246, lists changes incl. the R0 fix.
+- [ ] AI-assistance statement drafted for Frank to confirm (OUP policy check).
+- [ ] Gmail DRAFT (never send) to the editor asking whether he will consider the
+      rewritten manuscript as a new submission.
+- [ ] Commit (explicit paths, no co-author trailer), push, memory + review section.
