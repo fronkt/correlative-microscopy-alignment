@@ -197,11 +197,11 @@ def fig2() -> None:
     axd.axvline(ed.mean(), color=EST, lw=1.2)
     axd.axvline(10, color="black", lw=0.8, ls=":")
     top = axd.get_ylim()[1]
-    axd.text(ed.mean() + 0.2, top * 0.92, f"mean {ed.mean():.1f} px", color=EST, fontsize=6.5)
-    axd.text(10.2, top * 0.6, "10 px", fontsize=6.5)
-    axd.set_xlabel("miss at each point (px)")
+    axd.text(ed.mean() + 0.2, top * 0.92, f"mean {ed.mean():.1f} pixels", color=EST, fontsize=6.5)
+    axd.text(10.2, top * 0.6, "10 pixels", fontsize=6.5)
+    axd.set_xlabel("miss at each point (pixels)")
     axd.set_ylabel("annotated points")
-    axd.set_title("Step 5: the pair's error is the\nmean; under 10 px = registered", fontsize=7)
+    axd.set_title("Step 5: the pair's error is the\nmean; under 10 pixels = registered", fontsize=7)
     axd.spines[["top", "right"]].set_visible(False)
     panel(axd, "D")
     save(fig, "Figure2")
@@ -250,7 +250,8 @@ def fig3() -> None:
     axn = fig.add_subplot(gs[0, 2])
     show(axn, pair.target, 600)
     axn.set_title("narrow image", fontsize=7)
-    axn.set_xlabel(L.modality_label(rec, "target"), fontsize=6.5)
+    import textwrap
+    axn.set_xlabel(textwrap.fill(L.modality_label(rec, "target"), 18), fontsize=6.5)
     # D: inlier fraction across the 33 tiled pairs
     tiles_csv = {r["pair_id"]: r for r in csv.DictReader((RES / "pyramid_v1_tiles.csv").open(encoding="utf-8"))}
     rows = [r for r in csv.DictReader((RES / "baselines_A.csv").open(encoding="utf-8")) if r["backbone"] == "roma"]
@@ -289,8 +290,8 @@ def fig3() -> None:
     axe.plot(lim, lim, color=GREY, lw=0.6, ls="--")
     axe.plot(ed_d, ed_p, "o", ms=3, mfc=POOLED, mec="black", mew=0.3)
     axe.set_xscale("log"); axe.set_yscale("log"); axe.set_xlim(lim); axe.set_ylim(lim)
-    axe.set_xlabel("error, whole image matched once (px)")
-    axe.set_ylabel("error, tiles pooled (px)")
+    axe.set_xlabel("error, whole image matched once (pixels)")
+    axe.set_ylabel("error, tiles pooled (pixels)")
     axe.set_title(f"Pooling raised the error on {t['n_worse']} of {t['n']}\n(points above the dashed line)",
                   fontsize=7)
     axe.spines[["top", "right"]].set_visible(False)
@@ -340,7 +341,7 @@ def fig4() -> None:
         name = {"ma_roma": "MatchAnything-RoMa", "roma": "RoMa"}[str(c["matcher"])]
         ax = axes[row, 0]
         _outlines_panel(ax, pair, c["H"])
-        ax.set_title(f"{name}: error {float(c['mu_ed']):.0f} px", fontsize=7)
+        ax.set_title(f"{name}: error {float(c['mu_ed']):.0f} pixels", fontsize=7)
         panel(ax, letter)
         ax.set_xlabel(f"wide: {L.modality_label(rec, 'source')}", fontsize=6.5)
         ax.text(0.0, 1.30, title, transform=ax.transAxes, fontsize=7.5, fontweight="bold")
@@ -348,7 +349,7 @@ def fig4() -> None:
         if job2:
             c2 = np.load(L.cache_path(job2), allow_pickle=False)
             _outlines_panel(ax2, pair, c2["H"])
-            ax2.set_title(f"after fine-tuning: error {float(c2['mu_ed']):.0f} px", fontsize=7)
+            ax2.set_title(f"after fine-tuning: error {float(c2['mu_ed']):.0f} pixels", fontsize=7)
             ax2.set_xlabel("same wide image", fontsize=6.5)
         else:
             cw, ch = _same_area_panel(ax2, pair)
@@ -357,7 +358,7 @@ def fig4() -> None:
         ax3 = axes[row, 2]
         show(ax3, pair.target, 700)
         ax3.set_title(f"narrow image ({fov_label(pid)} of the wide\nimage's area)", fontsize=7)
-        ax3.set_xlabel(f"{L.modality_label(rec, 'target')}\n{pair.target.shape[1]} x {pair.target.shape[0]} px",
+        ax3.set_xlabel(f"{L.modality_label(rec, 'target')}\n{pair.target.shape[1]} x {pair.target.shape[0]} pixels",
                        fontsize=6.5)
     fig.legend(handles=[plt.Line2D([], [], color=TRUE, lw=1.6, label="true outline (ground truth)"),
                         plt.Line2D([], [], color=EST, lw=1.2, ls="--", label="where the matcher put it")],
@@ -391,7 +392,7 @@ def fig5() -> None:
         ax.axvline(ceil, color="black", lw=0.9, ls="--")
         ax.text(ceil + 1.5, len(keys) - 0.6, f"best any global\ntransform can do: {ceil}", fontsize=6.3, va="top")
         ax.set_xlim(0, 187)
-        ax.set_xlabel(f"pairs registered within {t} px (of 187)")
+        ax.set_xlabel(f"pairs registered within {t} pixels (of 187)")
         ax.spines[["top", "right"]].set_visible(False)
         panel(ax, "AB"[t == 20])
     axes[0].set_yticks(np.arange(len(keys)))
@@ -459,11 +460,11 @@ def fig6() -> None:
             axb.text(3 + dx + 0.1, rate[3] + 0.02, f"{ks[3]} of {ns[3]}", color=col, fontsize=6.5)
     axb.set_xticks(x); axb.set_xticklabels(["uncropped"] + [f"{r:g}" for r in RUNGS])
     axb.set_xlabel("cropped narrow area / wide area")
-    axb.set_ylabel("fraction registered within 10 px")
+    axb.set_ylabel("fraction registered within 10 pixels")
     axb.set_ylim(0, 1)
     lad = NUM["ladder"]["ma_roma_r010"]
     axb.set_title(f"MatchAnything-RoMa, on the {NUM['ladder']['base_matchable']['ma_roma']} pairs it\n"
-                  f"registers within 20 px before cropping", fontsize=7)
+                  f"registers within 20 pixels before cropping", fontsize=7)
     axb.legend(frameon=False, loc="upper right")
     axb.spines[["top", "right"]].set_visible(False)
     panel(axb, "B")
@@ -489,7 +490,7 @@ def fig7() -> None:
     ns = NUM["fov"]["strata_gt"]
     ax.set_xticks(x); ax.set_xticklabels([f"{lab}\n(n = {n})" for lab, n in zip(labels, ns)])
     ax.set_xlabel("narrow image's area as a fraction of the wide image's")
-    ax.set_ylabel("fraction registered within 10 px")
+    ax.set_ylabel("fraction registered within 10 pixels")
     ax.set_ylim(0, 1)
     ax.legend(frameon=False, fontsize=6.3, loc="upper right", bbox_to_anchor=(1.02, 1.02))
     ax.set_title("Success by field-of-view group", fontsize=7)
@@ -542,11 +543,11 @@ def figS2() -> None:
     t = tile[0].image
     fig, axes = plt.subplots(1, 2, figsize=(FULL, 70 * MM), gridspec_kw={"wspace": 0.08})
     f = show(axes[0], pair.source, 900)
-    axes[0].set_title(f"wide image as recorded ({pair.source.shape[1]} x {pair.source.shape[0]} px)", fontsize=7)
+    axes[0].set_title(f"wide image as recorded ({pair.source.shape[1]} x {pair.source.shape[0]} pixels)", fontsize=7)
     ft = show(axes[1], t, 900)
     h, w = pair.source.shape[:2]
     axes[1].add_patch(Rectangle((0, 0), w * ft, h * ft, fill=False, ec=TRUE, lw=1.4))
-    axes[1].set_title(f"the one tile the implementation built ({t.shape[1]} x {t.shape[0]} px):\n"
+    axes[1].set_title(f"the one tile the implementation built ({t.shape[1]} x {t.shape[0]} pixels):\n"
                       f"the recorded image (outlined) and mirror copies filling the rest", fontsize=7)
     panel(axes[0], "A"); panel(axes[1], "B")
     save(fig, "FigureS2")
@@ -574,7 +575,7 @@ def figS3() -> None:
             k.append(sum(err(r, metric) < 10 for r in rr))
         ax.barh(y + dy, k, height=0.34, color=col, label=lab)
     ax.set_yticks(y); ax.set_yticklabels([LABELS[k] for k in keys])
-    ax.set_xlabel("pairs registered within 10 px (of 187)")
+    ax.set_xlabel("pairs registered within 10 pixels (of 187)")
     ax.legend(frameon=False, loc="lower right")
     ax.spines[["top", "right"]].set_visible(False)
     save(fig, "FigureS3")

@@ -227,3 +227,35 @@ counting the printed lines against the number of `--expect` flags revealed it.
 
 **Rule:** when a checker reports per-item results, count them. A gate that can
 silently skip an item is a gate that can pass an unchecked figure.
+
+## A gate that checks copied strings cannot find a data error (2026-09-25)
+
+`verify_mam_draft.py` passed 109 checks on a submitted paper that called a GPU crash "106
+estimator failures" and binned pairs by a metadata ratio it described as GT-implied. Every
+check compared the manuscript with an earlier manuscript, so it could only prove that two
+texts agreed. Both errors were found by LOOKING at data while choosing figure examples:
+the `error` column of the failed rows, and a ground-truth outline drawn over its image.
+
+**Rules.** (1) A numeric gate builds its expected strings from a script that recomputes
+them from the raw result files, never from a string typed into the gate
+(`mam_rewrite_numbers.py` -> JSON -> `verify_mam_rewrite.py`). (2) Before any count of
+failures goes into a table, group the failed rows by their error message; an
+infrastructure error (CUDA, OOM, timeout) is a missing measurement, not a method failure.
+A contiguous block of identical errors at the end of a run is a crash signature.
+(3) Any quantity derived from metadata gets cross-checked against an independent estimate
+from the data (here: pixel-size FOV ratio vs the ratio implied by the annotated points).
+
+## A code default that changes between runs silently confounds a comparison
+
+`register_v2` did one zoom when the RoMa v2 rows were produced; a later commit made
+"up to three zooms" the default, so the gated variant (run after) differed from its
+comparator in two ways. The published "gate is significantly worse" came from the zoom
+count, not the gate. **Rule:** every results row should record the effective value of each
+tunable (or the commit it ran at); before comparing two configurations, diff the code
+between the commits that produced them.
+
+## Inline `python -c` edits with escapes break silently here
+
+A multi-replacement `python -c "..."` with `\*` and nested quotes raised SyntaxWarnings,
+applied the first file's edit and aborted the second, leaving a half-edited state.
+Use the Edit tool, or write the script to a file and run it.

@@ -44,9 +44,9 @@ CONFIGS = [
     ("loftr", "LoFTR", "baselines_A.csv", "loftr", "direct"),
     ("ma_eloftr", "MatchAnything-ELoFTR", "baselines_A.csv", "matchanything", "direct"),
     ("roma", "RoMa", "baselines_A.csv", "roma", "direct"),
-    ("roma_v2", "RoMa + checked tiling", "baselines_A.csv", "roma", "pyramid_v2"),
+    ("roma_v2", "RoMa + checked search", "baselines_A.csv", "roma", "pyramid_v2"),
     ("ma_roma", "MatchAnything-RoMa", "baselines_A.csv", "ma_roma", "direct"),
-    ("ma_roma_v2", "MatchAnything-RoMa + checked tiling", "baselines_A.csv", "ma_roma", "pyramid_v2"),
+    ("ma_roma_v2", "MatchAnything-RoMa + checked search", "baselines_A.csv", "ma_roma", "pyramid_v2"),
 ]
 ZERO_SHOT_OR_WRAPPED = [c[0] for c in CONFIGS]
 
@@ -197,7 +197,7 @@ def main() -> None:
     }
     for name, a, b in (("wrapper_median_raw", "roma", "roma_v2"), ("backbone_median_raw", "roma", "ma_roma")):
         c = paired_median_contrast(errs(a), errs(b))
-        num["contrasts"][name] = {k: (round(v, 2) if isinstance(v, float) else v) for k, v in c.items()}
+        num["contrasts"][name] = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in c.items()}
 
     # Composition shift of the checked wrapper, by GT stratum.
     shift = []
@@ -214,14 +214,16 @@ def main() -> None:
     heldout = (set(split["val"]) | set(split["test"])) & testbed
     bad = set(inconsistent)
 
-    def ladder_contrast(bb: str, rung: float, subset: set[str] | None = None) -> dict:
+    def ladder_contrast(bb: str, rung: float, subset: set[str] | None = None, metric: str = "raw") -> dict:
+        # Base-matchability is always decided on the unrefined error, as in
+        # fov_ladder_bootstrap.py; only the rung scoring switches metric.
         allrows = rows_by_pair("baselines_A.csv", bb, "direct")
         match = {p for p, r in allrows.items() if err(r, "raw") < 20 and p in testbed}
         if subset is not None:
             match &= subset
 
         def at(mode: str) -> dict[str, float]:
-            return {r["pair_id"]: err(r, "raw") for r in ladder
+            return {r["pair_id"]: err(r, metric) for r in ladder
                     if r["backbone"] == bb and r["mode"] == mode and float(r["rung"]) == rung
                     and r["status"] != "skipped" and r["pair_id"] in match}
 
@@ -256,6 +258,7 @@ def main() -> None:
         "testbed_metadata_inconsistent": len(testbed & bad),
         "ma_roma_r010": ladder_contrast("ma_roma", 0.1),
         "ma_roma_r010_heldout": ladder_contrast("ma_roma", 0.1, heldout),
+        "ma_roma_r010_tps": ladder_contrast("ma_roma", 0.1, metric="tps"),
         "ma_roma_r010_consistent_only": ladder_contrast("ma_roma", 0.1, notbad),
         "roma_r010": ladder_contrast("roma", 0.1),
         "ma_roma_ft_r010_heldout": ladder_contrast("ma_roma_ft", 0.1, heldout),
@@ -311,6 +314,15 @@ def main() -> None:
                      for fam, arr in (("affine", resid_a), ("homography", resid_h)) for t in (5, 10, 20)}
     num["oracle"]["either_k10"] = int((np.minimum(resid_a, resid_h) < 10).sum())
     num["oracle"]["either_k20"] = int((np.minimum(resid_a, resid_h) < 20).sum())
+    from cma.data.amalgamatch import _load_eval
+    sides = []
+    for rec in loader.records:
+        data = _load_eval(rec.eval_path)
+        for m in data["image_metadata"]:
+            sides.append((int(m["Resolution Width"]), int(m["Resolution Height"])))
+    num["image_sizes"] = {"min_long_side": min(max(s) for s in sides), "max_long_side": max(max(s) for s in sides),
+                          "subsets": len({r.subclass for r in loader.records}),
+                          "groups": len({r.group for r in loader.records})}
     num["gt"] = {"affine_floor_median": round(float(np.median(resid)), 1),
                  "points_median": int(np.median(npts)), "points_min": int(min(npts)),
                  "points_max": int(max(npts)), "pairs_floor_over_10": int(sum(x >= 10 for x in resid))}
@@ -326,11 +338,38 @@ def main() -> None:
         c = paired_rate_contrast(ea, eb, t)
         return {k: (round(v, 4) if isinstance(v, float) else v) for k, v in c.items()}
 
+    # Zoom count differs between runs. register_v2 did ONE zoom when the RoMa pyramid_v2
+    # rows were produced (commit 4b6553d, 2026-06-10); commit eef81ce (2026-06-11) made
+    # "up to 3 zooms" the default and nothing set it back, so every later pyramid_v2 run
+    # (z3, c50, MatchAnything-RoMa, the ladder, the fine-tuned model) used up to three.
+    # The gate is therefore compared against z3 (both three zooms), not against the
+    # single-zoom rows, which would confound the gate with the zoom count.
     num["ablations"] = {
-        "gate_sr20_raw": rc(e_v2["raw"], e_c50["raw"], 20), "gate_sr20_tps": rc(e_v2["tps"], e_c50["tps"], 20),
-        "gate_sr10_raw": rc(e_v2["raw"], e_c50["raw"], 10),
+        "gate_sr20_raw": rc(e_z3["raw"], e_c50["raw"], 20), "gate_sr20_tps": rc(e_z3["tps"], e_c50["tps"], 20),
+        "gate_sr10_raw": rc(e_z3["raw"], e_c50["raw"], 10), "gate_sr10_tps": rc(e_z3["tps"], e_c50["tps"], 10),
         "zoom_sr10_raw": rc(e_v2["raw"], e_z3["raw"], 10), "zoom_sr20_raw": rc(e_v2["raw"], e_z3["raw"], 20),
+        "zoom_iters": {"roma_v2": 1, "z3": 3, "c50": 3, "ma_roma_v2": 3, "ladder": 3},
     }
+
+    # The "certainty 0.5" gate. RoMa's sampler sets every certainty above its 0.05 cut-off
+    # to exactly 1 before returning it, so gating the returned values at 0.5 keeps exactly
+    # the correspondences above 0.05. In the gated run the logged match count is therefore
+    # the number above the cut-off in the accepted stage; on pairs where that stage is the
+    # direct match, count / 10,000 is the direct match's share above the cut-off.
+    nk = np.array([int(c50[p]["n_matches"]) for p in pairs])
+    num["gate_kept"] = {"median": int(np.median(nk)), "min": int(nk.min()), "under_1000": int((nk < 1000).sum())}
+    dir_acc = [p for p in pairs if c50[p]["family"].endswith("@direct")]
+    share = np.array([int(c50[p]["n_matches"]) / 10_000 for p in dir_acc])
+    e_acc = np.array([err(c50[p], "raw") for p in dir_acc])
+    reg, fail = e_acc < 10, e_acc > 100
+    rho, prho = stats.spearmanr(share, np.log10(e_acc))
+    num["certainty_share"] = {
+        "n": len(dir_acc), "registered": int(reg.sum()), "failed_100": int(fail.sum()),
+        "registered_median": round(float(np.median(share[reg])), 2), "registered_min": round(float(share[reg].min()), 2),
+        "failed_median": round(float(np.median(share[fail])), 2),
+        "failed_over_half": int((share[fail] > 0.5).sum()),
+        "failed_below_registered_min": int((share[fail] < share[reg].min()).sum()),
+        "spearman_rho": round(float(rho), 2), "spearman_p": float(f"{prho:.1g}")}
 
     # Per-pair behaviour of the checked wrapper on the primary (unrefined) metric.
     d_raw, v_raw = errs("roma"), errs("roma_v2")
@@ -339,6 +378,9 @@ def main() -> None:
     material = fin & (v_raw > d_raw + 10) & (v_raw > 1.5 * d_raw)
     iw = int(np.argmax(np.where(fin, v_raw - d_raw, -np.inf)))
     fam_v2 = [base["roma_v2"][p]["family"] for p in pairs]
+    # register_v2 runs its tile search only when the direct fit has < 50 inliers.
+    num["v2_tile_trigger"] = {k: sum(int(base[k][p]["n_inliers"] or 0) < 50 for p in pairs)
+                              for k in ("roma", "ma_roma")}
     num["v2_per_pair"] = {"worse": int(worse.sum()), "better": int((fin & (v_raw < d_raw - 1e-9)).sum()),
                           "unchanged": int((fin & (np.abs(v_raw - d_raw) <= 1e-9)).sum()),
                           "materially_worse": int(material.sum()),
@@ -392,6 +434,42 @@ def main() -> None:
                         for cfg in ("plain", "l2sp") for mode in ("direct", "pyramid_v2")
                         for col in ("sr10", "sr20", "med_ed")}
     num["finetune"] = ftb
+
+    # Supplementary S1: pooled-tiling coverage by series.
+    by_sub: dict[str, list[int]] = {}
+    for p in pairs:
+        e = by_sub.setdefault(tiles[p]["subclass"], [0, 0, 0])
+        e[0 if tiles[p]["v1_status"] == "evaluated" else 1] += 1
+        e[2] += int(tiles[p]["n_tiles"])
+    num["v1_by_subset"] = by_sub
+
+    # Supplementary S2: the 13 pairs whose metadata disagrees with the annotated points.
+    meta_tab: dict[str, dict] = {}
+    for p in inconsistent:
+        sub = gt[p]["subclass"]
+        d = meta_tab.setdefault(sub, {"pairs": 0, "meta": [], "gt": []})
+        d["pairs"] += 1
+        d["meta"].append(float(gt[p]["meta_area_ratio"]))
+        d["gt"].append(float(gt[p]["gt_target_over_source"]))
+    for d in meta_tab.values():
+        d["meta"] = float(f"{np.median(d['meta']):.3g}")
+        d["gt"] = float(f"{np.median(d['gt']):.3g}")
+        d["factor"] = float(f"{d['gt'] / d['meta']:.3g}")
+    num["metadata_table"] = meta_tab
+    # AF9628 scene 3: pixel size of the SEM mosaic implied by the annotated points.
+    rec3 = next(r for r in loader.records if r.pair_id.endswith("AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_3#0"))
+    g3 = loader._gt[rec3.pair_id]
+    X3 = np.hstack([g3.tgt_xy, np.ones((len(g3), 1))])
+    A3, *_ = np.linalg.lstsq(X3, g3.src_xy, rcond=None)
+    lin = float(np.sqrt(abs(np.linalg.det(A3[:2, :2]))))  # source px per target px
+    d3 = _load_eval(rec3.eval_path)
+    names3 = [q.rsplit("/", 1)[-1] for q in d3["image_paths"]]
+    ms3 = d3["image_metadata"][names3.index(rec3.source_path.name)]
+    num["af9628_scene3"] = {
+        "source_px_meta_nm": round(rec3.source_pixel_nm, 1), "target_px_nm": round(rec3.target_pixel_nm, 1),
+        "source_width_px": int(ms3["Resolution Width"]),
+        "source_width_meta_mm": round(rec3.source_pixel_nm * int(ms3["Resolution Width"]) / 1e6, 1),
+        "source_px_implied_nm": round(rec3.target_pixel_nm / lin, 1)}
 
     OUT.write_text(json.dumps(num, indent=2, default=float), encoding="utf-8")
     print(json.dumps(num, indent=1, default=float))

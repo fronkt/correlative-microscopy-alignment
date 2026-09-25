@@ -26,13 +26,31 @@ TMP = ROOT / "paper/mam/_raw.docx"
 TWIPS_INCH = 1440
 LINE_DOUBLE = "480"   # 240 twips = single; 480 = double
 PT12 = "24"           # half-points
+LINE_NUMBERS = True
 
 
 def build():
+    # --resource-path lets a source embed images relative to its own folder
+    # (the supplement does; the manuscript does not, the journal wants figures
+    # as separate uploads).
     subprocess.run(
-        ["pandoc", str(SRC), "-o", str(TMP), "--standalone"],
+        ["pandoc", str(SRC), "-o", str(TMP), "--standalone",
+         "--resource-path", str(SRC.parent)],
         check=True, cwd=str(ROOT),
     )
+
+
+def to_pdf(docx: pathlib.Path) -> pathlib.Path:
+    """Export through Word itself, so the PDF is exactly what Word lays out."""
+    pdf = docx.with_suffix(".pdf")
+    ps = (
+        "$w = New-Object -ComObject Word.Application; $w.Visible = $false; "
+        f"$d = $w.Documents.Open('{docx}', $false, $true); "
+        f"$d.SaveAs2('{pdf}', 17); $d.Close($false); $w.Quit()"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-Command", ps], check=True)
+    print("exported %s" % pdf.relative_to(ROOT))
+    return pdf
 
 
 def patch_styles(xml: str) -> str:
@@ -83,7 +101,7 @@ def patch_document(xml: str) -> str:
     else:
         xml = xml.replace("<w:sectPr>", "<w:sectPr>" + page, 1)
 
-    if "<w:lnNumType" not in xml:
+    if LINE_NUMBERS and "<w:lnNumType" not in xml:
         xml = xml.replace(
             "</w:sectPr>",
             '<w:lnNumType w:countBy="1" w:restart="continuous"/></w:sectPr>')
@@ -123,7 +141,7 @@ def audit():
         problems.append("12 pt not applied to Normal")
     if 'w:top="%d"' % TWIPS_INCH not in docxml:
         problems.append("1 inch margins not applied")
-    if "<w:lnNumType" not in docxml:
+    if LINE_NUMBERS and "<w:lnNumType" not in docxml:
         problems.append("line numbering not applied")
 
     size_kb = OUT.stat().st_size / 1024
@@ -132,13 +150,33 @@ def audit():
         for p in problems:
             print("  FAIL: " + p)
         return 1
-    print("  format audit: 12 pt / double-spaced / 1 in margins / line numbers / no theme fonts")
+    spacing = "double-spaced" if LINE_DOUBLE == "480" else "single-spaced"
+    numbers = "line numbers" if LINE_NUMBERS else "no line numbers"
+    print(f"  format audit: 12 pt / {spacing} / 1 in margins / {numbers} / no theme fonts")
     return 0
 
 
 if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("src", nargs="?", default=str(SRC), help="markdown source (default: the manuscript)")
+    ap.add_argument("out", nargs="?", default=None, help="DOCX to write (default: next to the source)")
+    ap.add_argument("--single", action="store_true", help="single spacing (supplement, letters)")
+    ap.add_argument("--no-line-numbers", action="store_true")
+    ap.add_argument("--pdf", action="store_true", help="also export a PDF through Word")
+    args = ap.parse_args()
+    SRC = pathlib.Path(args.src).resolve()
+    OUT = pathlib.Path(args.out).resolve() if args.out else SRC.with_suffix(".docx")
+    TMP = OUT.with_name("_raw_" + OUT.name)
+    if args.single:
+        LINE_DOUBLE = "240"
+    LINE_NUMBERS = not args.no_line_numbers
     if not shutil.which("pandoc"):
         sys.exit("pandoc not found on PATH")
     build()
     repack()
-    sys.exit(audit())
+    rc = audit()
+    if args.pdf and rc == 0:
+        to_pdf(OUT)
+    sys.exit(rc)

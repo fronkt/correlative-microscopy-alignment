@@ -76,7 +76,7 @@
       ]
     },
     "roma_v2": {
-      "label": "RoMa + checked tiling",
+      "label": "RoMa + checked search",
       "median_ed": 69.9,
       "fits": 187,
       "sr5": 0.059,
@@ -106,7 +106,7 @@
       ]
     },
     "ma_roma_v2": {
-      "label": "MatchAnything-RoMa + checked tiling",
+      "label": "MatchAnything-RoMa + checked search",
       "median_ed": 77.6,
       "fits": 187,
       "sr5": 0.053,
@@ -335,18 +335,18 @@
       "p_two_sided": 0.035
     },
     "wrapper_median_raw": {
-      "value": -10.28,
+      "value": -10.276,
       "n": 187,
-      "ci_lo": -48.15,
-      "ci_hi": 23.24,
-      "p_two_sided": 0.37
+      "ci_lo": -48.151,
+      "ci_hi": 23.241,
+      "p_two_sided": 0.3738
     },
     "backbone_median_raw": {
-      "value": 0.81,
+      "value": 0.809,
       "n": 187,
-      "ci_lo": -70.28,
-      "ci_hi": 44.89,
-      "p_two_sided": 0.86
+      "ci_lo": -70.284,
+      "ci_hi": 44.893,
+      "p_two_sided": 0.8622
     }
   },
   "wrapper_shift_by_stratum": [
@@ -400,6 +400,19 @@
         0.364
       ],
       "p": 0.0234
+    },
+    "ma_roma_r010_tps": {
+      "n": 40,
+      "k_direct": 1,
+      "k_v2": 4,
+      "sr_direct": 0.025,
+      "sr_v2": 0.1,
+      "delta": 0.075,
+      "ci": [
+        0.0,
+        0.175
+      ],
+      "p": 0.0868
     },
     "ma_roma_r010_consistent_only": {
       "n": 34,
@@ -478,6 +491,12 @@
     "either_k10": 93,
     "either_k20": 156
   },
+  "image_sizes": {
+    "min_long_side": 238,
+    "max_long_side": 13333,
+    "subsets": 19,
+    "groups": 6
+  },
   "gt": {
     "affine_floor_median": 10.3,
     "points_median": 20,
@@ -487,31 +506,40 @@
   },
   "ablations": {
     "gate_sr20_raw": {
-      "value": 0.0,
+      "value": 0.016,
       "n": 187,
-      "ci_lo": -0.0214,
-      "ci_hi": 0.0214,
-      "sr_a": 0.2193,
+      "ci_lo": -0.0053,
+      "ci_hi": 0.0428,
+      "sr_a": 0.2032,
       "sr_b": 0.2193,
-      "p_two_sided": 1.0
+      "p_two_sided": 0.2436
     },
     "gate_sr20_tps": {
-      "value": -0.0374,
+      "value": -0.0214,
       "n": 187,
-      "ci_lo": -0.0695,
-      "ci_hi": -0.0107,
-      "sr_a": 0.246,
+      "ci_lo": -0.0535,
+      "ci_hi": 0.0053,
+      "sr_a": 0.2299,
       "sr_b": 0.2086,
-      "p_two_sided": 0.0012
+      "p_two_sided": 0.1826
     },
     "gate_sr10_raw": {
+      "value": -0.0053,
+      "n": 187,
+      "ci_lo": -0.016,
+      "ci_hi": 0.0,
+      "sr_a": 0.0856,
+      "sr_b": 0.0802,
+      "p_two_sided": 0.7206
+    },
+    "gate_sr10_tps": {
       "value": -0.0107,
       "n": 187,
       "ci_lo": -0.0267,
       "ci_hi": 0.0,
-      "sr_a": 0.0909,
-      "sr_b": 0.0802,
-      "p_two_sided": 0.258
+      "sr_a": 0.107,
+      "sr_b": 0.0963,
+      "p_two_sided": 0.2608
     },
     "zoom_sr10_raw": {
       "value": -0.0053,
@@ -530,7 +558,35 @@
       "sr_a": 0.2193,
       "sr_b": 0.2032,
       "p_two_sided": 0.0906
+    },
+    "zoom_iters": {
+      "roma_v2": 1,
+      "z3": 3,
+      "c50": 3,
+      "ma_roma_v2": 3,
+      "ladder": 3
     }
+  },
+  "gate_kept": {
+    "median": 8581,
+    "min": 97,
+    "under_1000": 6
+  },
+  "certainty_share": {
+    "n": 149,
+    "registered": 15,
+    "failed_100": 51,
+    "registered_median": 0.99,
+    "registered_min": 0.93,
+    "failed_median": 0.65,
+    "failed_over_half": 31,
+    "failed_below_registered_min": 48,
+    "spearman_rho": -0.71,
+    "spearman_p": 1e-24
+  },
+  "v2_tile_trigger": {
+    "roma": 0,
+    "ma_roma": 0
   },
   "v2_per_pair": {
     "worse": 98,
@@ -660,5 +716,129 @@
         49.8
       ]
     }
+  },
+  "v1_by_subset": {
+    "5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale": [
+      1,
+      0,
+      1
+    ],
+    "AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice": [
+      15,
+      0,
+      132
+    ],
+    "C103_SEM-SE_LOM-DC-Height_FractureSurfaces": [
+      6,
+      0,
+      56
+    ],
+    "CoNi-AM67_OM-SEM_Multiscale": [
+      3,
+      0,
+      18
+    ],
+    "CoNi-AM67_SEM-EBSD_SameSliceSerialSectioning": [
+      18,
+      0,
+      1554
+    ],
+    "CoNi-AM90_OM-SEM_Multiscale": [
+      2,
+      0,
+      954
+    ],
+    "CoNi-AM90_SEM-DIC_EBSD_SlipPartitioning": [
+      27,
+      0,
+      27
+    ],
+    "CoNi-AM90_SEM-EBSD_SameSlice": [
+      6,
+      0,
+      6
+    ],
+    "CoNi_SEM-SE_SEM-BSE_Cracks-SameSliceSerialSectioning": [
+      1,
+      0,
+      15
+    ],
+    "In718-PrecipitationStrengthened_SEM-BSE_EBSD_SameSliceSerialSectioning": [
+      2,
+      2,
+      2508
+    ],
+    "In718-PrecipitationStrengthened_SEM-DIC_EBSD_SlipPartitioning": [
+      0,
+      4,
+      4
+    ],
+    "In718-SolutionStrengthened_SEM-SE_EBSD_SameSliceSerialSectioning": [
+      0,
+      10,
+      173
+    ],
+    "MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization": [
+      0,
+      32,
+      64
+    ],
+    "MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization": [
+      0,
+      16,
+      32
+    ],
+    "MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization": [
+      0,
+      18,
+      36
+    ],
+    "TRIP1-Bainitic_LOM_SEM_EBSD_Multiscale": [
+      0,
+      7,
+      30
+    ],
+    "Ta-AM-Spalled_SEM-BSE_EBSD_SameSliceSerialSectioning": [
+      0,
+      9,
+      2397
+    ],
+    "Ti3AlC2-MAX-Phase_TEM_DislocationCharacterization": [
+      0,
+      3,
+      10
+    ],
+    "X2CrNi12-Ferritic_SEM-SE-Stitch_EBSD_Fatigue-SameSlice": [
+      0,
+      5,
+      303
+    ]
+  },
+  "metadata_table": {
+    "AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice": {
+      "pairs": 3,
+      "meta": 0.00013,
+      "gt": 1.22,
+      "factor": 9380.0
+    },
+    "In718-PrecipitationStrengthened_SEM-DIC_EBSD_SlipPartitioning": {
+      "pairs": 4,
+      "meta": 0.318,
+      "gt": 2.9,
+      "factor": 9.12
+    },
+    "In718-SolutionStrengthened_SEM-SE_EBSD_SameSliceSerialSectioning": {
+      "pairs": 6,
+      "meta": 1.0,
+      "gt": 5.42,
+      "factor": 5.42
+    }
+  },
+  "af9628_scene3": {
+    "source_px_meta_nm": 9257.9,
+    "target_px_nm": 259.8,
+    "source_width_px": 10147,
+    "source_width_meta_mm": 93.9,
+    "source_px_implied_nm": 97.3
   }
 }

@@ -689,41 +689,81 @@ package stays untouched on `mam-submission` (pushed); a copy lives in `paper/mam
       the 61 padded pairs are tested too. The rewrite text is correct WITHOUT either run.
 
 ### R1 — Structure for a microscopist reader
-- [ ] Keep the title. Rewrite the abstract (<=200 words, no abbreviations, no citations).
-- [ ] Intro: the task in pictures (new Fig. 1: real AmalgaMatch pairs, target footprint drawn
+- [x] Keep the title. Rewrite the abstract (<=200 words, no abbreviations, no citations).
+- [x] Intro: the task in pictures (new Fig. 1: real AmalgaMatch pairs, target footprint drawn
       in the wide image), what a matcher is, the tiling idea, what we found, a reading guide.
-- [ ] Methods as a walkthrough: Table 1 = glossary of every technical term; step-by-step
+- [x] Methods as a walkthrough: Table 1 = glossary of every technical term; step-by-step
       pipeline on one real pair (new Fig. 2); how error and success are measured and why
       the unrefined error; the two wrappers step by step; ladder; appearance measure;
       fine-tuning; statistics in plain words.
-- [ ] Results: each subsection opens with the question it answers and closes with the
+- [x] Results: each subsection opens with the question it answers and closes with the
       one-sentence answer; failure examples shown as images (new Figs 3-4).
-- [ ] Discussion opens with practical guidance for someone registering their own data.
-- [ ] Move protocol minutiae to Supplementary Material (PDF): fine-tuning protocol defects,
+- [x] Discussion opens with practical guidance for someone registering their own data.
+- [x] Move protocol minutiae to Supplementary Material (PDF): fine-tuning protocol defects,
       earlier draw, per-run table, hypothesis verdicts, refined-metric figure + table,
       full crash/padding accounting for v1. Every item cited from the main text.
-- [ ] Pyramid v1 restated on its 81 evaluated pairs, split multi-tile vs padded (R0).
+- [x] Pyramid v1 restated on its 81 evaluated pairs, split multi-tile vs padded (R0).
 
 ### R2 — New figures (real images; AmalgaMatch is CC-BY-4.0, credit in legends)
-- [ ] Fig. 1 the task: 3 pairs spanning FOV ratio and modality, GT footprint + GT points.
-- [ ] Fig. 2 the pipeline on one pair: correspondences (inlier/outlier), fitted footprint vs
+- [x] Fig. 1 the task: 3 pairs spanning FOV ratio and modality, GT footprint + GT points.
+- [x] Fig. 2 the pipeline on one pair: correspondences (inlier/outlier), fitted footprint vs
       GT footprint, per-point error vectors, the number that gets scored.
-- [ ] Fig. 3 why tiling fails: tile grid on a real multi-tile pair; a tile that does not
+- [x] Fig. 3 why tiling fails: tile grid on a real multi-tile pair; a tile that does not
       contain the target still returns 10,000 correspondences at high certainty; pooled
       inlier fraction direct vs v1 on the 33 tiled pairs.
-- [ ] Fig. 4 failure gallery: severe FOV, appearance, and the fine-tuned model forgetting a
+- [x] Fig. 4 failure gallery: severe FOV, appearance, and the fine-tuned model forgetting a
       C103 SEM/LOM pair, each with predicted vs true footprint and its error. Re-run on CPU
       for display only; legend states the displayed error comes from that re-run.
-- [ ] Keep: success-rate bars (v1 bar removed), FOV ladder (+ crops of a real pair),
+- [x] Keep: success-rate bars (v1 bar removed), FOV ladder (+ crops of a real pair),
       strata plot. Refined-metric bars -> Supplementary.
 
 ### R3 — Gates, package, correspondence
-- [ ] `verify_mam_draft.py` updated for the rewrite: numeric parity incl. the new v1
+- [x] `verify_mam_draft.py` updated for the rewrite: numeric parity incl. the new v1
       same-pair numbers, a failure-reason audit (no infrastructure failure scored as a
       method failure), glossary coverage, abbreviations defined at first use.
-- [ ] Build manuscript.docx, supplementary.pdf, figures; gates green; pytest green.
-- [ ] Cover letter: new submission, discloses MAM-26-246, lists changes incl. the R0 fix.
-- [ ] AI-assistance statement drafted for Frank to confirm (OUP policy check).
-- [ ] Gmail DRAFT (never send) to the editor asking whether he will consider the
+- [x] Build manuscript.docx, supplementary.pdf, figures; gates green; pytest green.
+- [x] Cover letter: new submission, discloses MAM-26-246, lists changes incl. the R0 fix.
+- [x] AI-assistance statement drafted for Frank to confirm (OUP policy check).
+- [x] Gmail DRAFT (never send) to the editor asking whether he will consider the
       rewritten manuscript as a new submission.
-- [ ] Commit (explicit paths, no co-author trailer), push, memory + review section.
+- [x] Commit (explicit paths, no co-author trailer), push, memory + review section.
+
+### R4 — Review (2026-09-25)
+
+**Delivered on `mam-rewrite`:** `paper/mam/manuscript.md|.docx` (tutorial rewrite, 198-word
+abstract, 7 figures, 5 tables incl. a glossary), `supplementary.md|.docx|.pdf` (S1-S7, 3
+figures, 6 tables), `cover_letter.md|.docx` (discloses MAM-26-246 and the corrections),
+`figures/Figure1-7, S1-S3` (PDF + 300 dpi PNG), and a Gmail DRAFT to the editor asking
+whether he will take the rewrite as a new submission (not sent). The submitted version is
+archived in `paper/mam/MAM-26-246/` and on branch `mam-submission`.
+
+**New tooling:** `mam_rewrite_numbers.py` recomputes every quoted number from the result
+CSVs into `results/mam_rewrite_numbers.json`; `verify_mam_rewrite.py` builds its expected
+strings FROM that JSON (278 checks, 0 failures) and replaces `verify_mam_draft.py`, which
+asserted copied strings and is removed. `pyramid_v1_audit.py`, `fov_ratios_gt.py`,
+`mam_examples_run.py` (seeded CPU re-runs for display), `plot_mam_rewrite.py`.
+`build_mam_figures.py` now only checks the package (copying would overwrite the new figures).
+`build_mam_docx.py` takes src/out, `--single`, `--no-line-numbers`, `--pdf` (via Word).
+
+**Corrections found (beyond R0):**
+- The certainty-0.5 gate compared against the ONE-zoom v2 rows, but c50 ran after commit
+  eef81ce made three zooms the default. Against z3 (same zoom count) the gate is null on
+  both metrics (p = 0.24 raw, 0.18 refined); the old "significantly worse, p = 0.002" is
+  withdrawn. MatchAnything-RoMa + v2, the ladder and the ft runs all used three zooms.
+- RoMa's sampler sets certainty > 0.05 to exactly 1, so "gate at 0.5" = keep above 0.05.
+- The v2 tile stage (runs below 50 inliers) essentially never fires: every direct RoMa fit
+  kept >= 50 inliers, including 2,000-px misses. v2's effect is the ZOOM (37 of 187 native
+  answers; 7 of the 9 ladder successes). Paper now says so.
+- Ceiling: a homography fitted to the annotated points themselves registers only 93/187
+  within 10 px (156 within 20). Now reported against every method.
+- Certainty share separates outcomes in-sample: all 15 registered direct-accepted pairs had
+  >= 93 % of correspondences above the cut-off; 48 of 51 gross failures had less (rho -0.71).
+  Reported as in-sample, untested elsewhere.
+- Refinement on the ladder is invalid (out-of-crop GT points), not "near-zero effect".
+
+**Frank's calls (open):**
+1. Confirm or edit the AI-use paragraph (manuscript Section 2.14).
+2. Send the editor query (Gmail draft) or submit directly.
+3. Optional ~<$2 GPU run to complete pooled tiling on the 106 crashed pairs (and, if
+   wanted, a second arm with tiles sized in wide-image pixels). The text is correct without it.
+4. The ICLR / STS deadlines come first; nothing here is time-bound.
