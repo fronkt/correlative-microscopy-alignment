@@ -9,6 +9,11 @@ cd /root
 cd /root/cma
 git pull -q --ff-only || true
 pip install -q -e ".[dev]" kornia romatch transformers pillow scipy scikit-image
+# The pytorch image lacks libxcb, which opencv-python needs; use the headless build, pinned to the
+# 4.13 line the local runs used (pip otherwise pulls OpenCV 5.0). Force-reinstall: uninstalling
+# opencv-python deletes the cv2 folder the two wheels share.
+pip uninstall -y -q opencv-python || true
+pip install -q --force-reinstall --no-deps "opencv-python-headless==4.13.0.92"
 python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), torch.cuda.get_device_name(0))"
 
 ZIP=/root/AmalgaMatch_Dataset.zip
@@ -19,9 +24,9 @@ done
 mkdir -p data/AmalgaMatch
 python -m zipfile -e "$ZIP" data/AmalgaMatch
 rm -f "$ZIP"
+mkdir -p results/triage
 python -m pytest -q tests/test_triage.py
 
-mkdir -p results/triage
 # Two processes share the GPU; separate CSVs so appends never interleave.
 python scripts/run_triage_candidates.py --pools gt,core,transform,control \
   --backbones sift,loftr,matchanything,roma --out results/triage/cand_a.csv > results/triage/run_a.log 2>&1 &
