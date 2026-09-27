@@ -3,6 +3,85 @@
 Track in this file. Check items off as completed.
 Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
+## CJSJ 2026-27 — label-free triage of registrations (2026-09-27, branch `cjsj-tta`)
+
+**Venue:** Columbia Junior Science Journal, original research, 2-3 pages. **Due Wed 2026-09-30 11:59 PM ET, no
+exceptions** — submit by 10:59 PM. Sole author: Frank.
+**Separation rule (why this paper may exist beside the M&M submission):** new question + new results only. The
+configurations' own success rates, tiling and fine-tuning are M&M results → cite, never re-report as findings.
+Triage/selection results never go into M&M.
+
+**Why not test-time adaptation (the first plan, dropped 2026-09-27 after two literature reviews):** a cycle-only loss
+never looks at image content and is satisfied by wrong warps (Truong et al. 2021, Warp Consistency); every TTA success
+found uses an image-content loss; starting errors (~300 px) are far outside any local basin (even labelled fine-tuning
+got 0/16 STEM test pairs within 20 px); estimated ~5% chance of a defensible gain. Two bugs found in `cma.tta` (BN
+running stats leak across pairs; CORAL acts on the 2-channel flow) are recorded here but not fixed, since TTA is out.
+
+**Question.** Can a label-free score tell a microscopist which automatic registrations to trust, and choose a better
+registration per pair, across the whole AmalgaMatch benchmark (187 pairs, 19 subsets, 6 groups)?
+
+**Closest prior work.** Durmaz et al. 2026b (Front. Mater., doi:10.3389/fmats.2026.1815017): the retained-inlier
+fraction (share of MA-RoMa correspondences that are inliers to one homography) separated success (mean error < 8 px)
+from failure with ROC-AUC 0.905 on 48 pairs from four subsets in the SameSlice (their "OrientationMapping") and
+SerialSectioning groups, with the operating point (0.517) picked on the same 48 pairs. They PROPOSED, without testing,
+choosing the highest-fraction modality pair and sending low-fraction groups to human review.
+
+**Exploratory pilot (already seen, disclosed as such, NOT confirmatory):** on the stored M&M runs
+(`results/baselines_A.csv`, 11 non-fine-tuned configurations), inlier count vs success at 20 px: AUROC RoMa 0.937
+[0.860, 0.989], MA-RoMa 0.835 [0.696, 0.966] (subclass-clustered bootstrap); oracle best-of-11 SR@20 63/187 vs best
+single 45/187; "pick max inliers" 50/187. Every dense-matcher run returns exactly 10,000 correspondences and keeps ≥58
+inliers, so a fixed cut-off of 50 never fires, but the count still ranks pairs. These numbers motivated the design;
+every number in the paper comes from the NEW runs below.
+
+**Pre-registered design (this section is committed + pushed BEFORE the GPU run; the commit is the timestamp):**
+- Data: AmalgaMatch only (CC BY 4.0). Metric: unrefined parametric error `mu_ed` (mean over GT points, px), no TPS.
+  Success = `mu_ed` ≤ 20 px (primary); 10 px and Durmaz's 8 px secondary. Scenes = `pair_id.split("#")[0]`.
+- Candidates per pair (one fresh run each, fixed seeds, fitted 3×3 transform saved):
+  - core pool (7): sift, loftr, roma, ma_roma, matchanything (direct); roma, ma_roma (pyramid_v2);
+  - input-transform pool (8): roma and ma_roma direct on {target inverted, target histogram-matched to source,
+    CLAHE on both, Sobel gradient magnitude on both};
+  - rerun control (10): roma and ma_roma direct, seeds 1-5 (seed 0 is the core run). Controls never vote.
+- Scores (label-free, per pair × candidate):
+  (S1) retained fraction = n_inliers / n_matches (Durmaz); (S2) agreement = −median over the other voting candidates
+  (core + transform pools, not itself) of the mean displacement, in source pixels, between the two transforms applied
+  to a 5×5 grid spanning the target image; (S3) combined = mean of the within-pair-set rank percentiles of S1 and S2
+  (ranks taken over all pair × candidate rows of the voting pools).
+- **H1 (primary).** S1 predicts success for MA-RoMa direct on all 187 pairs. Supported if AUROC ≥ 0.80 and the
+  scene-clustered bootstrap 95% CI (B = 10,000) excludes 0.5. **Transfer:** the Youden-optimal S1 cut-off chosen on
+  the SameSlice + SerialSectioning groups (Durmaz's groups) is applied unchanged to the other four groups; supported if
+  the accepted pairs' success rate exceeds those groups' base rate with a clustered CI on the difference excluding 0.
+- **H2.** S2 and S3 vs S1, same candidate (MA-RoMa direct) and pooled over all voting candidates: ΔAUROC with paired
+  scene-clustered bootstrap CI. Supported for S3 if the CI on AUROC(S3) − AUROC(S1) excludes 0.
+- **H3.** Per-pair selection among the voting candidates by S1 (Durmaz's proposal), by S2 (consensus medoid) and by S3,
+  vs the best single voting candidate (chosen by its SR@20 on all pairs, which favours the baseline). Paired exact
+  McNemar + clustered bootstrap CI on ΔSR@20. Supported if p < 0.05 AND the gain exceeds the rerun control's gain
+  (best-of-6 seeds of the same matcher selected by S1). Oracle best-of-K reported as the ceiling.
+- **Triage (risk-coverage).** For MA-RoMa direct and for the best H3 rule: success rate among accepted pairs at 25 /
+  50 / 75 % coverage and AURC, with clustered CIs, against the base rate.
+- Feasibility ceiling: GT-fitted homography error per pair, reported so failures that no homography can fix are visible.
+- Failures of a run count as failures (error = ∞); nothing is dropped. Anything outside this list is labelled
+  exploratory in the paper.
+
+**Tasks**
+- [ ] 0. Commit + push this section + runner + analysis skeleton BEFORE step 6 (pre-registration timestamp).
+- [ ] 1. `src/cma/triage.py`: input transforms, transform-agreement, scores, selection, AUROC, clustered bootstrap,
+      McNemar, risk-coverage. CPU tests in `tests/test_triage.py`.
+- [ ] 2. `scripts/run_triage_candidates.py`: resumable CSV keyed by (pair, backbone, mode, transform, seed); saves H
+      (9 floats), n_matches, n_inliers, family, mu_ed, image sizes, runtime; real seeding (torch, numpy, random,
+      CUDA, cv2) derived from (seed, pair_id).
+- [ ] 3. `scripts/analyze_triage.py` → `results/triage/summary.json`; `scripts/verify_triage.py` gate recomputes
+      every number in the paper from the CSV.
+- [ ] 4. Local CPU smoke on 2 pairs (sift + transforms) to prove the CSV/H round-trip.
+- [ ] 5. Rent one GPU box (5090/4090); clone public repo branch `cjsj-tta` over HTTPS; wget AmalgaMatch from Fordatis,
+      verify 4,228,037,938 bytes before unzip.
+- [ ] 6. Run all 25 candidate configurations × 187 pairs (~3 GPU-h estimate). Pull CSV back; destroy the box.
+- [ ] 7. Analysis + verify gate; figures: (1) method schematic + one accepted and one rejected example; (2) S1 vs
+      error scatter coloured by group with the transferred cut-off; (3) risk-coverage curves.
+- [ ] 8. 2-3 page draft in the CJSJ Word template; figures in their .ppt template; AI-use statement.
+- [ ] 9. Frank: read and revise, Permission Form (author + parent if under 18; mentor may be blank), submit.
+
+**Timeline:** Sun night 0-5 → Mon 6-7 → Tue 7-8 → Wed 9.
+
 ## Phase 9 — Forgetting-robust fine-tune (2026-06-19)
 
 **Why:** §7/§8.1. MA-RoMa decoder-only ft won 5.2x on in-distribution TEM
