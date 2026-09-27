@@ -19,6 +19,11 @@ RESULTS = ROOT / "paper/cjsj/results_section.template.md"
 OUT = ROOT / "paper/cjsj/paper.md"
 
 
+def sgn(x: float) -> str:
+    """Signed value with a true minus sign (U+2212), as the CJSJ template asks."""
+    return format(x, "+.2f").replace("-", "−")
+
+
 def pct(x: float, nd: int = 0) -> str:
     return f"{100 * x:.{nd}f} %"
 
@@ -46,14 +51,14 @@ def numbers(s: dict) -> dict[str, str]:
         "held_diff": f"{100 * tr['diff']:.0f}", "held_diff_lo": f"{100 * tr['diff_ci']['lo']:.0f}",
         "held_diff_hi": f"{100 * tr['diff_ci']['hi']:.0f}",
         "auc_s2": f"{h2['primary_auroc_S2']['auroc']:.2f}", "auc_s3": f"{h2['primary_auroc_S3']['auroc']:.2f}",
-        "d_s3": f"{h2['primary_delta_S3_minus_S1']['delta']:+.2f}",
-        "d_s3_lo": f"{h2['primary_delta_S3_minus_S1']['lo']:+.2f}", "d_s3_hi": f"{h2['primary_delta_S3_minus_S1']['hi']:+.2f}",
+        "d_s3": sgn(h2['primary_delta_S3_minus_S1']['delta']),
+        "d_s3_lo": sgn(h2['primary_delta_S3_minus_S1']['lo']), "d_s3_hi": sgn(h2['primary_delta_S3_minus_S1']['hi']),
         "pool_s1": f"{h2['pooled_auroc_S1']['auroc']:.2f}", "pool_s2": f"{h2['pooled_auroc_S2']['auroc']:.2f}",
         "pool_s3": f"{h2['pooled_auroc_S3']['auroc']:.2f}",
-        "pd_s2": f"{h2['pooled_delta_S2_minus_S1']['delta']:+.2f}",
-        "pd_s2_lo": f"{h2['pooled_delta_S2_minus_S1']['lo']:+.2f}", "pd_s2_hi": f"{h2['pooled_delta_S2_minus_S1']['hi']:+.2f}",
-        "pd_s3": f"{h2['pooled_delta_S3_minus_S1']['delta']:+.2f}",
-        "pd_s3_lo": f"{h2['pooled_delta_S3_minus_S1']['lo']:+.2f}", "pd_s3_hi": f"{h2['pooled_delta_S3_minus_S1']['hi']:+.2f}",
+        "pd_s2": sgn(h2['pooled_delta_S2_minus_S1']['delta']),
+        "pd_s2_lo": sgn(h2['pooled_delta_S2_minus_S1']['lo']), "pd_s2_hi": sgn(h2['pooled_delta_S2_minus_S1']['hi']),
+        "pd_s3": sgn(h2['pooled_delta_S3_minus_S1']['delta']),
+        "pd_s3_lo": sgn(h2['pooled_delta_S3_minus_S1']['lo']), "pd_s3_hi": sgn(h2['pooled_delta_S3_minus_S1']['hi']),
         "best_single": h3["best_single"], "best_single_n": str(round(h3["best_single_sr20"] * n)),
         "oracle_n": str(round(h3["oracle_sr20"] * n)),
         **{f"sel_{k}_n": str(round(v["sr20"] * n)) for k, v in sel.items()},
@@ -80,9 +85,36 @@ def fill(text: str, nums: dict[str, str]) -> str:
     return re.sub(r"\{\{(\w+)\}\}", rep, text)
 
 
+def exploratory(x: dict, n: int) -> dict[str, str]:
+    e1, e2, e3, e4 = x["E1"], x["E2"], x["E3"], x["E4"]
+    return {
+        "ex_none": str(e1["pairs_no_candidate_succeeds"]), "ex_oracle_only": str(e1["oracle_only_pairs"]),
+        "ex_oracle_le2": str(e1["oracle_only_with_at_most_2_successes"]),
+        "ex_oracle_gt10": str(e1["oracle_only_best_error_over_10px"]),
+        "ex_flip": str(e1["ma_roma_rerun_flip"]), "ex_mixed": str(e2["mixed_pairs"]),
+        "ex_within": f"{e2['within_pair_auroc_median']:.2f}",
+        "ex_sift_picks": str(e3["sift_picks"]), "ex_lost": str(e3["lost"]), "ex_lost_sift": str(e3["lost_sift_picks"]),
+        "ex_sift_med": f"{e3['sift_S1_median']:.2f}", "ex_dense_med": f"{e3['dense_S1_median']:.2f}",
+        "ex_dense_k": str(e4["n_candidates"]), "ex_dense_n": str(e4["n_ok"]), "ex_dense_won": str(e4["won"]),
+        "ex_dense_lost": str(e4["lost"]), "ex_dense_p": f"{e4['mcnemar_p']:.2f}",
+        "ex_sift_nm": f"{e3['sift_matches_median']:.0f}",
+        "ex_grp_k": str(x["E5"]["n_testable"]), "ex_grp_min": f"{x['E5']['min_auroc']:.2f}",
+        "ex_grp_max": f"{x['E5']['max_auroc']:.2f}",
+        "ex_slip_n": str(x["E5"]["groups"]["SlipPartitioning"]["n"]),
+        "ex_frac_n": str(x["E5"]["groups"]["FractureSurfaces"]["n"]),
+        "ex_cons": str(x["E6"]["consensus_pairs"]), "ex_cons_fail": str(x["E6"]["consensus_all_fail"]),
+        "ex_fa": str(x["E7"]["false_accepts"]),
+        "ex_fa_tem": str(x["E7"]["by_group"].get("DislocationCharacterization", 0)),
+        "ex_tem_fail": str(x["E7"]["tem_failures_heldout"]),
+    }
+
+
 def main() -> None:
     s = json.loads(SUMMARY.read_text(encoding="utf-8"))
     nums = numbers(s)
+    ex = ROOT / "results/triage/exploratory.json"
+    if ex.exists():
+        nums.update(exploratory(json.loads(ex.read_text(encoding="utf-8")), s["n_pairs"]))
     res = RESULTS.read_text(encoding="utf-8") if RESULTS.exists() else "ABSTRACT_RESULTS:\n\n---\n"
     abs_part, _, body_part = res.partition("\n---\n")
     nums["ABSTRACT_RESULTS"] = fill(abs_part.replace("ABSTRACT_RESULTS:", "").strip(), nums)

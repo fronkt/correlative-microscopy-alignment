@@ -46,16 +46,17 @@ def schematic(ax) -> None:
     ax.set_axis_off()
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 1.6)
-    boxes = [(0.1, "Image pair\n(wide + narrow)"), (2.1, "15 registrations\n(matchers, zoom search,\nimage transforms)"),
-             (4.35, "Label-free scores\nS1 retained fraction\nS2 agreement, S3 both"),
-             (6.6, "Pick the top-scoring\nregistration"), (8.45, "Accept, or flag\nfor a human")]
-    for x, t in boxes:
-        ax.add_patch(FancyBboxPatch((x, 0.2), 1.55 if x > 8 else 1.9, 1.2, boxstyle="round,pad=0.03",
-                                    fc="#EEF3F8", ec="0.3", lw=0.6))
-        ax.text(x + (0.78 if x > 8 else 0.95), 0.8, t, ha="center", va="center", fontsize=6.8)
-    for x0, x1 in [(2.0, 2.1), (4.0, 4.35), (6.25, 6.6), (8.5, 8.45)]:
-        ax.annotate("", xy=(x1 + 0.02, 0.8), xytext=(x0 - 0.02, 0.8),
-                    arrowprops=dict(arrowstyle="->", lw=0.8, color="0.2"))
+    texts = ["Image pair\n(wide + narrow)", "15 registrations\n(matchers, zoom search,\nimage transforms)",
+             "Label-free scores\nS1 retained fraction\nS2 agreement, S3 both", "Pick the top-scoring\nregistration",
+             "Accept, or flag\nfor a human"]
+    w, gap = 1.64, 0.4
+    for i, t in enumerate(texts):
+        x = 0.05 + i * (w + gap)
+        ax.add_patch(FancyBboxPatch((x, 0.2), w, 1.2, boxstyle="round,pad=0.03", fc="#EEF3F8", ec="0.3", lw=0.6))
+        ax.text(x + w / 2, 0.8, t, ha="center", va="center", fontsize=6.8)
+        if i:
+            ax.annotate("", xy=(x - 0.04, 0.8), xytext=(x - gap + 0.06, 0.8),
+                        arrowprops=dict(arrowstyle="->", lw=0.8, color="0.2"))
 
 
 def panel(ax, loader, recs, pid, cand, H, Hgt, s3, err, accepted) -> None:
@@ -68,8 +69,17 @@ def panel(ax, loader, recs, pid, cand, H, Hgt, s3, err, accepted) -> None:
     ax.plot(gt[:, 0], gt[:, 1], color="#F0E442", lw=1.4)
     ax.plot(pr[:, 0], pr[:, 1], color="#009E73" if accepted else "#D55E00", lw=1.4, ls="--")
     hs, ws = g.shape
-    ax.set_xlim(0, ws)
-    ax.set_ylim(hs, 0)
+    both = np.vstack([gt, pr])
+    both = both[np.all(np.isfinite(both), axis=1)]
+    (x0, y0), (x1, y1) = both.min(axis=0), both.max(axis=0)
+    if (x1 - x0) * (y1 - y0) < 0.25 * ws * hs:  # small footprint: zoom in around it
+        m = 0.6 * max(x1 - x0, y1 - y0, 0.08 * max(ws, hs))
+        ax.set_xlim(max(0, x0 - m), min(ws, x1 + m))
+        ax.set_ylim(min(hs, y1 + m), max(0, y0 - m))
+    else:  # large footprint: show the whole image and the whole outline
+        m = 0.03 * max(ws, hs)
+        ax.set_xlim(min(0, x0) - m, max(ws, x1) + m)
+        ax.set_ylim(max(hs, y1) + m, min(0, y0) - m)
     ax.set_xticks([])
     ax.set_yticks([])
     sub = recs[pid].subclass.replace("_", " ")
@@ -106,7 +116,7 @@ def main() -> None:
     flag_pid = bad.s3_sel.idxmin()
 
     loader = AmalgaMatchLoader(args.root)
-    recs = {r.pair_id: r for r in loader.records()}
+    recs = {r.pair_id: r for r in loader.records}
     fig = plt.figure(figsize=(6.8, 3.6))
     gs = fig.add_gridspec(2, 2, height_ratios=[0.42, 1])
     schematic(fig.add_subplot(gs[0, :]))

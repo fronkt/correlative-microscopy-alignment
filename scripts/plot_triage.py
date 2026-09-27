@@ -44,10 +44,10 @@ def fig2(pp: pd.DataFrame, summ: dict, out: Path) -> None:
     ax.set_yscale("log")
     ax.axhline(20, color="0.3", ls="--", lw=0.7)
     ax.axvline(cut, color="0.3", ls=":", lw=0.9)
-    ax.text(cut, ax.get_ylim()[1], f" cut-off {cut:.3f}", va="top", ha="left", fontsize=7)
+    ax.text(cut, ax.get_ylim()[1], f" cut-off {cut:.3f}", va="top", ha="left", fontsize=6.5)
     ax.set_xlabel("Retained fraction of correspondences (inliers / proposed)")
     ax.set_ylabel("Registration error (pixels)")
-    ax.legend(fontsize=6, frameon=False, loc="upper right", handletextpad=0.2)
+    ax.legend(fontsize=6, frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.01), ncol=3, handletextpad=0.2, columnspacing=0.8)
     fig.tight_layout()
     fig.savefig(out / "fig2_retained_fraction.png")
     fig.savefig(out / "fig2_retained_fraction.pdf")
@@ -67,7 +67,7 @@ def fig3(pp: pd.DataFrame, summ: dict, out: Path) -> None:
     a.set_ylabel("Accepted that are correct (%)")
     a.set_ylim(0, 102)
     a.legend(fontsize=6.5, frameon=False)
-    a.set_title("(a) Triage, MA-RoMa", fontsize=8)
+    a.set_title("(a) Triage, MatchAnything-RoMa", fontsize=8)
 
     h3 = summ["H3"]
     names = ["Best single\nmethod", "Pick by\nS1", "Pick by\nS2", "Pick by\nS3", "Oracle\n(any correct)"]
