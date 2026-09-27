@@ -767,3 +767,36 @@ asserted copied strings and is removed. `pyramid_v1_audit.py`, `fov_ratios_gt.py
 3. Optional ~<$2 GPU run to complete pooled tiling on the 106 crashed pairs (and, if
    wanted, a second arm with tiles sized in wide-image pixels). The text is correct without it.
 4. The ICLR / STS deadlines come first; nothing here is time-bound.
+
+## Phase R2 — MAM-26-277 unsubmitted on figure grounds (2026-09-27)
+
+Submitted 08:10Z as **MAM-26-277**; the Editor-in-Chief endorsed the new submission (12:12Z);
+the MSA admin office (A.B. Johnson) **unsubmitted** it at 13:11Z: pixels per line ~850-1500
+(need 2550 px at 300 dpi); multi-panel figures (each panel = each image uploaded separately);
+images read as TIFs of Word pages, text and images blurry; no legends inside image files.
+Root cause: `show()` capped every micrograph at 900 px and each 174 mm figure was saved at
+300 dpi (~1600 px); panel titles and modality/FOV sub-labels read as captions.
+Note: the OUP instructions page says the opposite (one file per multi-panel figure); the
+office's email governs this manuscript.
+
+- [x] R2.1 `plot_mam_rewrite.py`: one image per file, 900 dpi LZW TIFF, >= 2550 px wide,
+      micrographs from source pixels, no titles or captions in the files, letter top-left;
+      layout sheets per figure for QA. 7 figures -> 32 panels (1A-F, 2A-E, 3A-F, 4A-I, 5-7 A-B).
+- [x] R2.2 Manuscript: remap body panel references, rewrite legends 1-7 to absorb the
+      removed in-image text, alt text re-read against the renders; rebuild docx.
+- [x] R2.3 Cover letter: one-file-per-image note + Figure 4E deliberately pixelated.
+- [x] R2.4 `verify_mam_rewrite.py`: legend letters = body citations = panel files;
+      `build_mam_figures.py` becomes the panel-package checker.
+- [x] R2.5 Look at all 32 panels and 7 layout sheets; pytest; commit + push.
+- [ ] R2.6 ScholarOne: replace files in the unsubmitted MAM-26-277; Frank presses Submit.
+
+**R2 review (2026-09-27).** 32 panels, 2,992-6,191 pixels wide at 900 dpi, RGB, LZW (294 MB,
+gitignored); 7 layout sheets `paper/mam/figures/Figure<N>_layout.jpg` committed as previews.
+`build_mam_figures.py`: 32/32 OK. `verify_mam_rewrite.py`: 324 checks, 0 failures (was 278;
+the new letter checks were mutation-tested: a dropped legend letter and a cited panel with
+no file both fail). pytest 67 passed. Every panel looked at; 1:1 crops confirm micrographs
+at source resolution. Fixed on the way: dots on an image's last pixel had pushed the view past
+the image's sticky edge and added white strips (3C, 3D); clamped with `fit_to_image`.
+Numbers moved from the images into the legends were recomputed from the data, not copied.
+Figure 4E stays coarse by design (239 x 195 wide-image pixels, nearest-neighbour); the
+legend and the cover letter both say so.

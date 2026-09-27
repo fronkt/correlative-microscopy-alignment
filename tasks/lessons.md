@@ -259,3 +259,18 @@ between the commits that produced them.
 A multi-replacement `python -c "..."` with `\*` and nested quotes raised SyntaxWarnings,
 applied the first file's edit and aborted the second, leaving a half-edited state.
 Use the Edit tool, or write the script to a file and run it.
+
+## A dpi tag is not a resolution check (2026-09-27, MAM-26-277 unsubmitted)
+
+`build_mam_figures.py` passed every composite figure as "300 dpi", and the office bounced
+them at ~1600 pixels per line. The tag said 300 dpi because the figure was 5.3 in wide;
+the office measures pixels, and wanted 2550. Worse, `show()` had capped every micrograph at
+900 pixels before plotting, so a 2048-pixel STEM image went out at ~500. No gate looked at
+either number, and the "images embedded in word-type documents" look came from long panel
+titles and captions drawn inside the images.
+**Rules.** (1) Gate on pixel dimensions, and on the source-to-output pixel ratio of every
+embedded image, not on a dpi tag. (2) Never cap a micrograph below the output pixels it will
+occupy. (3) Before a first submission, read the journal's figure rules AND expect the
+office to apply its own; M&M's office wanted one file per image, although the OUP page says
+one file per multi-panel figure. (4) Caption text belongs in the legend. A panel title
+longer than a few words reads as a caption baked into the image.
