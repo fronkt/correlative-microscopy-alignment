@@ -1,3 +1,20 @@
+> **SUPERSEDED — historical record of the Scientific Reports submission.**
+>
+> This is the cover letter as submitted to *Scientific Reports* (submission
+> 46c1e084-d0e4-4fb1-b217-a2b79135181f), which was **rejected** on 2026-08-24.
+> It is kept unchanged as the record of what was sent.
+>
+> Do not reuse it as-is. It names the pre-revision title, "For foundation-model
+> registration in correlative microscopy, cross-modal appearance matters more than
+> field of view", which the round-6 revision retired because a directly measured
+> appearance axis does not support it (see `REVISIONS.md`, round 6). The current
+> title is "Pyramidal wrappers break non-abstaining dense matchers: a diagnostic
+> study of foundation-model registration in correlative microscopy".
+>
+> A new cover letter is required and cannot be written until the target venue is
+> chosen. It should lead with the non-abstention mechanism and the controlled FOV
+> ladder, and should disclose the prior review history.
+
 # Cover letter — *Scientific Reports*
 
 Frank Cai

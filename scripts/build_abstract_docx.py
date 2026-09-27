@@ -1,100 +1,116 @@
-"""Render reports/abstract.docx from the abstract text.
+"""Render reports/abstract.{md,txt,docx} from the manuscript.
 
-Keeps the .docx regenerable and in sync with abstract.md / abstract.txt.
+Title and abstract are PARSED FROM paper/paper.md rather than duplicated here.
+An earlier version of this script hardcoded both, and they silently drifted: the
+stored copy kept a retracted claim ("cross-modal appearance -- not scale -- is
+what fails"), an intensifier the manuscript had already removed, and one-sided
+p-values from before the two-sided correction. Parsing removes that failure mode.
+
 Usage: python scripts/build_abstract_docx.py
 """
 
 from __future__ import annotations
 
+import re
+import sys
 from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 
-TITLE = ("Multi-Scale Alignment of Correlative Materials Microscopy with "
-         "Foundational Dense Matchers")
+PAPER = Path("paper/paper.md")
 
-ABSTRACT = (
-    "Correlative materials microscopy pairs images of the same specimen "
-    "across modalities (SEM, EBSD, TEM, optical) that share little visual "
-    "appearance and often differ in field of view (FOV) by more than an "
-    "order of magnitude, defeating classical feature-based registration. We "
-    "asked whether a scale-aware pyramidal patching wrapper around pretrained "
-    "dense matchers (RoMa, ELoFTR-family, MatchAnything) could lift "
-    "cross-modal registration on AmalgaMatch (Durmaz et al.; 187 pairs, 19 "
-    "subsets), particularly at severe FOV mismatch. Across a full "
-    "controls-and-ablations pass we find: (1) a naive tiling pyramid "
-    "catastrophically degrades dense matchers, because they never abstain — "
-    "every tile returns thousands of confident matches that flood robust "
-    "estimation (median error 76 → 1794 px); (2) a redesigned verified "
-    "coarse-to-fine wrapper recovers a small but significant gain (SR@10 0.10 "
-    "→ 0.12, p = 0.017) without losing any pair, yet leaves success at FOV "
-    "≤ 5% at zero. The largest off-the-shelf lever was instead the backbone: "
-    "swapping in cross-modal-trained MatchAnything-RoMa weights gave the only "
-    "significant zero-shot-bar headline gain (SR@10 +0.032, p = 0.018), "
-    "entirely among high-FOV pairs. This isolates the binding constraint: on "
-    "AmalgaMatch, cross-modal appearance — not scale — is what fails. A "
-    "controlled FOV-ladder experiment, which crops real base-matchable pairs "
-    "to sweep FOV with appearance fixed, confirms both halves: the same "
-    "wrapper triples success at 10% FOV (SR@10 0.07 → 0.23, p = 0.0014), so "
-    "the scale mechanism is sound — the real distribution simply never "
-    "isolates scale as the failure mode. Finally, we test the appearance "
-    "lever directly: decoder-only fine-tuning of MatchAnything-RoMa on 131 "
-    "held-out-split training pairs cuts median error on in-distribution TEM "
-    "pairs 5.2× (321 → 62 px, the largest single movement in the study), "
-    "but regresses overall SR@20 (0.393 → 0.250) by catastrophically "
-    "forgetting a modality combination absent from training. Appearance is "
-    "therefore attackable with domain data, but a 131-pair budget trades "
-    "modality coverage for in-domain depth. We conclude that deployable "
-    "cross-modal microscopy registration needs a forgetting-robust domain "
-    "fine-tune over broad modality coverage, with the pyramid wrapper as a "
-    "complementary — and provably effective — scale layer on top."
-)
-
+# Kept in step with the manuscript's "Hypothesis verdicts" subsection.
 VERDICTS = [
-    ("H1 (pyramid ≥ 35% gain at FOV ≤ 5%): ", "rejected."),
-    ("H2 (RoMa beats ELoFTR-family at low FOV): ", "supported."),
+    ("H1 (pyramid >= 35% gain at FOV <= 5%): ",
+     "rejected; and untestable on this benchmark, which holds only four pairs "
+     "below area ratio 0.05."),
+    ("H2 (RoMa beats the ELoFTR family at low FOV): ", "supported."),
     ("H3 (affine sufficient vs. homography): ",
      "mostly supported (affine selected on 69% of well-registered pairs)."),
 ]
 
-PROVENANCE = ("Full methods, tables, and figures: reports/final_report.md. "
-              "All numbers regenerable from results/ via the scripts "
-              "referenced therein.")
+PROVENANCE = (
+    "Full methods, tables, and figures: paper/paper.md. Metric-sensitivity and "
+    "appearance-axis analyses: reports/metric_sensitivity.md and "
+    "reports/appearance_axis.md. All numbers regenerate from results/ via the "
+    "scripts referenced therein."
+)
+
+
+def strip_markdown(s: str) -> str:
+    """Flatten inline markdown to plain text for the .txt/.docx renderings."""
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s)
+    s = re.sub(r"\*(.+?)\*", r"\1", s)
+    s = re.sub(r"`(.+?)`", r"\1", s)
+    return s
+
+
+def parse_paper() -> tuple[str, str]:
+    if not PAPER.exists():
+        sys.exit(f"{PAPER} not found; run from the repo root")
+    text = PAPER.read_text(encoding="utf-8")
+
+    m = re.search(r"^#\s+(.+?)\s*$", text, re.M)
+    if not m:
+        sys.exit("could not find the title (a leading '# ' line) in paper.md")
+    title = m.group(1).strip()
+
+    m = re.search(r"^##\s+Abstract\s*$(.+?)^---\s*$", text, re.M | re.S)
+    if not m:
+        sys.exit("could not find the '## Abstract' section in paper.md")
+    body = "\n".join(
+        ln.strip() for ln in m.group(1).strip().splitlines() if ln.strip()
+    )
+    if len(body) < 400:
+        sys.exit(f"parsed abstract looks truncated ({len(body)} chars)")
+    return title, body
 
 
 def main() -> None:
+    title, abstract_md = parse_paper()
+    abstract_txt = strip_markdown(abstract_md)
+
+    Path("reports").mkdir(exist_ok=True)
+
+    md = [f"# {title}", "", "## Abstract", "", abstract_md, "",
+          "## Hypothesis verdicts", ""]
+    md += [f"- **{p.rstrip(': ')}**: {v}" for p, v in VERDICTS]
+    md += ["", f"*{PROVENANCE}*", ""]
+    Path("reports/abstract.md").write_text("\n".join(md), encoding="utf-8")
+
+    txt = [title, "", "ABSTRACT", "", abstract_txt, "", "HYPOTHESIS VERDICTS", ""]
+    txt += [f"  - {p}{v}" for p, v in VERDICTS]
+    txt += ["", PROVENANCE, ""]
+    Path("reports/abstract.txt").write_text("\n".join(txt), encoding="utf-8")
+
     doc = Document()
     normal = doc.styles["Normal"]
     normal.font.name = "Calibri"
     normal.font.size = Pt(11)
 
-    title = doc.add_paragraph()
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = title.add_run(TITLE)
+    tp = doc.add_paragraph()
+    tp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = tp.add_run(title)
     run.bold = True
     run.font.size = Pt(14)
 
-    h = doc.add_paragraph()
-    h.add_run("Abstract").bold = True
-
-    body = doc.add_paragraph(ABSTRACT)
+    doc.add_paragraph().add_run("Abstract").bold = True
+    body = doc.add_paragraph(abstract_txt)
     body.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
-    hv = doc.add_paragraph()
-    hv.add_run("Hypothesis verdicts").bold = True
+    doc.add_paragraph().add_run("Hypothesis verdicts").bold = True
     for prefix, verdict in VERDICTS:
         p = doc.add_paragraph(style="List Bullet")
         p.add_run(prefix)
         p.add_run(verdict).bold = True
 
-    prov = doc.add_paragraph()
-    prov.add_run(PROVENANCE).italic = True
+    doc.add_paragraph().add_run(PROVENANCE).italic = True
+    doc.save("reports/abstract.docx")
 
-    out = Path("reports/abstract.docx")
-    doc.save(out)
-    print(f"wrote {out}")
+    for f in ("reports/abstract.md", "reports/abstract.txt", "reports/abstract.docx"):
+        print(f"wrote {f}")
 
 
 if __name__ == "__main__":

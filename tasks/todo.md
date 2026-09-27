@@ -390,3 +390,380 @@ so tile pooling floods RANSAC (inlier frac 0.114 -> 0.005). Box recycled once
 - 31 default tests + 2 slow tests, all green at handoff.
 - Open backbone: ELoFTR remains a shell. MatchAnything wrapper already covers
   the ELoFTR architecture via HF transformers, so this may not need wiring.
+
+
+## Phase 11 — TMLR submission package (2026-08-24)
+
+**Why:** Scientific Reports rejected the manuscript (all six reviewer points
+sustained). Venue decision: TMLR primary, Microscopy and Microanalysis fallback.
+TMLR's first acceptance criterion is whether claims are supported by the
+evidence, and its remedy for over-claiming is to adjust the claims -- which is
+what the Sci Rep revision already did. Branch `tmlr-submission`, kept separate
+from `sci-rep-revision` so the latter remains the record of what reviewers saw.
+
+- [x] **Headline metric decided: unrefined parametric error.** The refined (TPS)
+      column has coverage ranging 0.000-1.000 across configurations, so a
+      TPS-scored table is two metrics interleaved by configuration. The raw
+      metric scores all nine identically. Cost: both native-pair headline results
+      go null. Note the direction -- the switch *removes* significance, so it
+      cannot be metric-shopping.
+- [x] Figure scripts made metric-switchable (`plot_baselines.py [csv] [raw|tps]`);
+      `group_heatmap_raw.png` and `fov_curves_raw.png` added. Regenerating the
+      tps variant reproduces the previous files byte-for-byte.
+- [x] Every number in the new draft recomputed from the result files under raw.
+- [x] Manuscript rewritten for an ML audience: mechanism-first structure,
+      Related Work added, Methods moved to an appendix, metric sensitivity
+      promoted from a defensive note to a numbered contribution.
+- [x] Converted wlscirep -> tmlr.sty; 33 `\cite` -> `\citep`/`\citet`;
+      starred headings -> numbered; style files vendored in `paper/tmlr/`.
+- [x] Anonymised for double-blind: no author block, real repo URL replaced with
+      an anonymous.4open.science placeholder, no Zenodo DOI, no ORCID.
+- [x] Compiled against the real `tmlr.sty` with MiKTeX: 16 pages, zero errors,
+      zero undefined references or citations, no overfull box above 20 pt.
+- [x] `scripts/verify_tmlr_draft.py` added as a re-runnable gate: 32 must-appear
+      values, 12 banned phrasings, 2 withdrawn-claim retraction checks, plus
+      structural and rendered-PDF anonymity checks.
+- [x] Test suite green (67 passed, 3 deselected).
+
+### Review
+
+Five claims carried over from the Sci Rep text were **false or differently
+valued under the raw metric**, and the verification pass caught all five:
+
+1. Certainty gating was quoted as significantly worse (SR@20 -0.037). That is
+   the TPS value; on raw it is *exactly null* (0.219 -> 0.219, p = 1.00). Now
+   both are reported. The argument it supports -- that thresholding certainty
+   does not recover abstention -- survives, since the gate never helps.
+2. The MatchAnything-RoMa wrapper was described as "two pairs gained and two
+   lost ... the fourth a recovery from 84.8 to 8.3 px". Under raw it gains two
+   and loses **none** (11.8 -> 8.3 and 325.8 -> 8.1). Rewritten.
+3. H3 claimed homography-selected pairs "show no accuracy advantage". They are
+   in fact *more* accurate (median 6.5 vs 11.3 px). Withdrawn and replaced with
+   the selection-confound caveat; the 69 % affine claim itself stands.
+4. "Median 10,000 matches, which is the cap we impose" understated the
+   mechanism. RoMa hits exactly 10,000 per invocation on every pair, and
+   pyramid v1 pools up to **9,420,000** on one pair -- 942 tiles' worth. This
+   made the central argument stronger, not weaker.
+5. The match cap was stated as global; it is per invocation.
+
+Two results improved under the raw metric rather than degrading:
+
+- The wrapper's null aggregate resolves into a **composition shift** -- one
+  low-FOV failure converted to a success, one high-FOV success lost, 17 = 17 --
+  which is the trade its scale mechanism predicts and could have failed.
+- H2 is now supported in the low-FOV strata (RoMa 1/33 vs MA-ELoFTR 0/33) where
+  under TPS both were tied at zero.
+
+**Open:** submission itself is the user's action. Needs an OpenReview account,
+an anonymised code mirror at the placeholder URL, and the abstract pasted into
+the submission form.
+
+---
+
+## Phase M — Microscopy & Microanalysis submission (opened 2026-08-28)
+
+Context: Sci Rep rejected 2026-08-24; TMLR **desk-rejected 2026-08-28** without review
+(volume/AE-bandwidth boilerplate — no signal on correctness). Frank's call: skip the
+AI4Mat workshop, go straight to M&M. Branch `mam-submission` off `tmlr-submission`.
+
+**Verified target facts (2026-08-28):** M&M is published by **Oxford University Press**,
+not Cambridge (our note was stale). Hybrid OA; the **standard subscription licence carries
+no charge**, so the free route survives the publisher move. MSA members may get discounts
+on the paid route (not needed).
+
+### M0 — Base text
+- [x] Base = `paper/tmlr/main.tex` (settled science: **unrefined parametric error primary**)
+- [x] NOT `paper/paper.md` — that is the Sci Rep text, still TPS-primary, and carries the
+      five claims the forensic audit falsified (wrapper p=0.034, MA-RoMa p=0.035, H3, etc.)
+- [x] De-anonymise: author block, real repo URL, Zenodo DOI, drop anonymous.4open.science
+
+### M1 — Restructure to M&M's mandated section order
+Required, "in the order listed herein": Introduction → Materials and Methods → Results →
+Discussion → Summary or Conclusions → Acknowledgments → References.
+- [x] Fold `Related work` into Introduction
+- [x] `Setting` → Materials and Methods (benchmark, pipeline, metric, strata, statistics)
+- [x] §4–§8 → Results subsections
+- [x] Mechanism argument + limitations → Discussion
+- [x] H1/H2/H3 verdicts → Summary/Conclusions
+
+### M2 — Retitle + abstract (the binding constraint)
+- [x] Retitle: M&M states "jargon should not be used". "Non-abstaining dense matchers" is
+      exactly that. Lead with the practitioner takeaway.
+- [x] Abstract: **≤200 words, no reference citations, NO ABBREVIATIONS.** Current is ~400
+      words and leans on FOV/SEM/EBSD/TEM/SR@10/TPS/NMI. Near-total rewrite, not a trim.
+
+### M3 — References → author-date
+- [x] 17 entries → author-date in-text (surname, year)
+- [x] Journal names abbreviated per CASSI
+- [x] **All authors listed; "et al." unacceptable in the reference list** (DINOv2,
+      MatchAnything, LoFTR have long author lists to expand)
+
+### M4 — Figures to spec
+- [x] Already 300 dpi colour ✓ (verified: all 8 PNGs at 299.999 dpi)
+- [x] Use the `_raw` variants as primary — consistent with the unrefined headline metric
+- [x] Multi-panel → ONE file per figure, panels labelled A/B/C upper-left
+- [x] Flatten RGBA → RGB
+- [x] **Alt text for every figure** (M&M requires it)
+- [~] Legibility: figures are 198–305 mm wide at 300 dpi. Figs 1 and 3 (279, 305 mm)
+      are full-page-width figures, not 84 mm single-column; flag to the editor at
+      submission, or re-export at larger font if a single column is required.
+
+### M5 — Required statements
+- [x] Conflict of interest (title page, all authors)
+- [x] Author contributions via **CRediT** taxonomy
+- [x] Data availability (Fordatis DOI 10.24406/fordatis/436 + repo + Zenodo)
+- [x] Acknowledgments
+
+### M6 — Format + build
+- [x] Double-spaced throughout, 12 pt, ~1 inch (2.5 cm) margins
+- [x] Build via the `journal-submission` skill (requirements.md YAML → apply_format + audit)
+
+### M7 — Cover letter + verification gate
+- [x] Cover letter to the editor
+- [x] `scripts/verify_mam_draft.py`, adapted from `verify_tmlr_draft.py`: re-assert every
+      number against the result files, plus M&M gates — abstract ≤200 words / 0 abbreviations
+      / 0 citations, mandated section order, no "et al." in the reference list
+
+**Not doing:** AI4Mat (Frank declined, 2026-08-28). Deadline was Aug 29 AOE = Sat Aug 30
+~08:00 ET, and there was a 5 pp Findings/Tools/Open-Challenges track that fit. Recorded in
+case the M&M route stalls and a non-archival airing becomes attractive again.
+
+### M8 — Status 2026-08-28
+Manuscript, figures, cover letter and both gates are **built and green**:
+- `paper/mam/manuscript.md` → `manuscript.docx` (12 pt, double-spaced, 1 in margins,
+  continuous line numbers, no theme fonts — audited by `build_mam_docx.py`)
+- `paper/mam/figures/Figure1..5.png` (300 dpi, RGB, one file per figure)
+- `paper/mam/cover_letter.md` / `.docx`
+- `scripts/verify_mam_draft.py` — **106 checks, all pass**
+- 67 pytest tests pass
+
+**Two things the gate caught that reading did not:** (1) the abstract came in at 205
+words against a hard 200-word cap; (2) **LoRA (Hu et al., 2022) was an orphan
+reference** — listed but never cited, because folding Related Work into the
+Introduction dropped its only mention. Both fixed; an orphan/dangling-citation
+check is now a permanent gate.
+
+**Publisher correction:** M&M is **Oxford University Press**, not Cambridge. The
+free (standard, subscription) licence route survives the move, so no charge.
+
+**Remaining = Frank's actions only:** OUP ScholarOne account, paste title/abstract,
+upload manuscript + 5 figure files + cover letter, supply CRediT roles and
+suggested reviewers if prompted. Nothing about the science is open.
+
+---
+
+## Phase N — Figure 1 redrawn (2026-08-30)
+
+Brief: "redraw fig.1 to make it more cleaner, concise, and publishable grade."
+Scope held to craft, not content: the panel-A/panel-B split, every claim and the
+manuscript legend are unchanged. New generator `paper/schematics/gen_fig1.py`
+(palette + verify + crop copied from the vector-schematics skill); the old
+`paper/make_schematic.py` is archived, with a guard, as
+`paper/make_schematic-archive-2026-08-30.py`.
+
+- [x] N0 Defects found in the old Fig. 1, by looking at it at 4x
+  - **The ladder had no denominator.** Panel B's outermost square was the 0.5
+    rung, not the source field, while the axis text read "target field-of-view
+    area / source area". The source was never drawn, so none of the five ratios
+    named anything on the page.
+  - **The drawn areas were not the stated areas.** Rung sides went as
+    `sqrt(r / 0.5)`, i.e. relative to the 0.5 rung. The 0.25 rung was drawn at
+    half the outer square's area, which is 0.25 of the source only by accident of
+    the outer square also being 0.5. Now `side = SRC_SIDE * sqrt(r)` with the
+    identity asserted per rung.
+  - **The alt text described a figure that did not exist** — "a wide-field
+    micrograph with successively smaller crop boxes drawn on it". No micrograph
+    was ever in the panel. Alt text rewritten to the drawing that is there.
+  - Label collisions: "direct" straddled two box edges; "weak?" sat on the target
+    box corner; "if better, replace T*" overlapped the return connector.
+  - Two large text boxes floated in panel B carrying prose the legend already had.
+- [x] N1 Panel A rebuilt on a lattice: inputs -> matcher -> fit -> incumbent as a
+      spine, an explicit decision diamond for "direct support weak?", and the two
+      candidate stages drawn as the sequence they are rather than a bulleted list.
+      Both the accept and the reject outcome are now drawn; before, only accept was.
+- [x] N2 Field of view encoded by **frame size, not colour**. Okabe-Ito blue and
+      orange already mean backbone in Figs 3-4 and error threshold in Figs 2 and 5;
+      a third meaning on the same hues was avoidable, and size is what actually
+      distinguishes a wide field from a narrow one. Green and vermillion are left
+      to mark the only two things the wrapper adds: the branch and the gate.
+- [x] N3 Panel B: source frame drawn, rungs as a sequential ramp, all six in one
+      key. Labelling rungs in place cannot be done evenly — the 0.10/0.05 and
+      0.05/0.02 bands are thinner than a line of 5.9 pt type, forced by the square
+      roots being close — and a mixed inline/leader scheme reads as two systems
+      with leaders crossing every rung outside the one they name.
+- [x] N4 Ground-truth markers placed by 2-D blue noise in inches, not `rng.uniform`
+      and not in axes fractions (panel B is wider than tall, so equal separation in
+      axes units is unequal separation on the page). Asserted: no two markers touch,
+      counts inside the rungs fall monotonically, and the 0.05 rung is not empty —
+      an empty small rung would say the small crops carry no ground truth.
+- [x] N5 Export gates: zero Type 3, zero rasters, one font family, 42 live `<text>`
+      elements, ten expected strings present.
+- [x] N6 **Package-wide problems this turned up, now fixed**
+  - `scripts/plot_baselines.py` and `scripts/plot_fov_ladder.py` never set
+    `pdf.fonttype=42`, so **every vector export of Figs 2-5 carried Type 3 fonts**,
+    which publishers reject. Set in both, along with `ps.fonttype` and `svg.fonttype`.
+  - M&M asks for **vector with embedded fonts for charts and diagrams**, and sets
+    600-900 dpi for line art if raster is used. The package shipped 300 dpi PNGs
+    only — below the journal's own floor for what these are. All five figures now
+    have a PDF submission copy; the PNG stays for the manuscript file.
+  - `build_mam_figures.py` re-stamped every PNG to 300 dpi, which would have told
+    Word the 600 dpi schematic was twice its true size.
+- [x] N7 Gates green: `verify_mam_draft.py` 106/106, `build_mam_docx.py` format
+      audit clean, `build_mam_figures.py` 0 problems, pytest exit 0.
+
+### Open, and Frank's call
+- **Printed width.** M&M states no maximum figure width, so this is reported, not
+  gated. Fig. 1 is 182 mm; Figs 2 and 5 are 198 mm, Fig. 4 249 mm, Fig. 3 305 mm.
+  Production will scale them to the column, so Fig. 3 loses ~43 % of its linear
+  size and its 8 pt type lands near 4.6 pt. Re-tuning the four data plots is a
+  separate job from this one and was not done.
+- **Hue reuse across the paper.** Blue and orange mean backbone in Figs 3-4 and
+  error threshold in Figs 2 and 5. Each figure has its own legend so neither is
+  wrong, but it is worth one pass if the figures are ever revised together.
+  Deliberately not acted on here.
+
+### N8 — Figure 1 cut entirely (2026-08-30, author's call)
+
+Frank's call on the drawing. Removed rather than reworked, and the cost is low:
+Methods 2.8 and 2.9 already state the wrapper's control flow and the ladder
+construction in prose, and the schematic illustrated those two things rather than
+the paper's actual mechanism (non-abstention flooding the estimator), so nothing
+argued in the text lost its only visual support.
+
+- [x] Legend and alt text excised; the one body reference ("pyramid v2; Figure 1a")
+      dropped, since the sentence reads correctly without it.
+- [x] Figures 2-5 renumbered to 1-4 through a placeholder, not in sequence — a
+      straight run of replacements would have taken 2->1 and then 3->2 on top of it.
+- [x] `build_mam_figures.py` FIGURES list cut to four; stale package files deleted
+      and the directory rebuilt from empty so no orphan Figure5.* could survive.
+- [x] Generator kept at `paper/schematics/gen_fig1.py`; only the rendered artefacts
+      were deleted, so the figure is one command away if it is ever wanted back.
+- [x] **New gate, and it caught something.** `verify_mam_draft.py` now checks that
+      legends run 1..N with no gap, that no body reference names a figure without a
+      legend, and that no figure has a legend without a body reference. The last of
+      those failed immediately — the refined-metric bar chart (Fig. 5, now Fig. 4)
+      was cited **only from inside another figure's legend** and never from the
+      text. That predates this edit. Fixed with a citation in Section 3.8, which is
+      the section the figure exists to support.
+- [x] Gates green: 109/109 manuscript checks, figure package 0 problems, DOCX
+      format audit clean. The paper now carries **four figures and four tables**.
+
+---
+
+## Phase R — M&M rewrite after MAM-26-246 rejection (opened 2026-09-25, branch `mam-rewrite`)
+
+Decision letter (2026-09-11, Editor J. Michael, no reviewer reports): "extremely difficult to
+read ... written in a more tutorial way so that terms and methods are better described and
+examples of the failures are shown. The use of the existing known database is useful."
+Frank, 2026-09-25: "continue with the rewrites, continue with everything." The submitted
+package stays untouched on `mam-submission` (pushed); a copy lives in `paper/mam/MAM-26-246/`.
+
+### R0 — Correctness defects found while picking failure examples (must fix in any version)
+- [x] **The 106 pyramid-v1 "hard failures" are a GPU crash, not estimator failures.** Every
+      one of the 106 failed rows carries `CUDA error: unknown error`; the run died at the
+      82nd pair (loader order) and every later pair inherited the poisoned context. The
+      submitted text said "the estimator cannot return a transform at all". v1 was only
+      ever evaluated on 81 pairs (10 subsets, alphabetical head of the loader).
+- [x] **The 80 -> 2708 px headline compared different pair sets** (direct over 187, v1 median
+      over its 81 finite rows). Same 81 pairs: direct 335.8 -> v1 2707.6 px; SR@10 11 -> 1.
+      Same for the inlier fraction ("all 187 pairs", 0.114 -> 0.005): same 81 pairs,
+      0.092 -> 0.005.
+- [x] **48 of the 81 evaluated v1 pairs never tiled.** Tile side = target's shorter side in
+      TARGET pixels; when the target has finer pixels than the source (71/187 pairs) no
+      pyramid level is built, and when the source is smaller than that side the source is
+      reflect-padded to one square tile (61/187 pairs overall, all 48 single-tile rows).
+      Example: AF9628 0#2 source 4096x2028 padded into a 5628x5628 tile (26 % real content).
+      These pairs test mirror padding, an implementation defect, not tiling.
+- [x] **Genuinely tiled pairs (33 of 81, 2-942 tiles, median 75):** direct median 67.6 ->
+      v1 537.7 px, inlier fraction 0.102 -> 0.00092, v1 worse on 26/33, SR@20 4 -> 1,
+      SR@10 1 -> 0. The flooding mechanism stands on these; the success collapse mostly
+      came from the padded pairs (SR@10 10 -> 1).
+- [x] Section 3.8's "187/187 refinement coverage for every dense RoMa-family row" was false
+      for the v1 row (72/187). Moot once v1 leaves the 187-pair table.
+- [ ] **Frank's call — complete the v1 run on a rented GPU.** 106 crashed pairs = 4,303 tile
+      matches (97 multi-tile, 9 padded); includes 6 pairs direct RoMa registers (TRIP1 x2,
+      Ti3AlC2 x3, X2CrNi12), i.e. the real test of "tiling destroys a working fit". CPU is
+      not an option (one direct match takes minutes here, and the CPU is shared with other
+      sessions). ~1 h on a 5090 incl. the 4.2 GB dataset fetch, well under $2. Optional
+      second arm: fix the tiler (tile side in source pixels = target side x scale ratio) so
+      the 61 padded pairs are tested too. The rewrite text is correct WITHOUT either run.
+
+### R1 — Structure for a microscopist reader
+- [x] Keep the title. Rewrite the abstract (<=200 words, no abbreviations, no citations).
+- [x] Intro: the task in pictures (new Fig. 1: real AmalgaMatch pairs, target footprint drawn
+      in the wide image), what a matcher is, the tiling idea, what we found, a reading guide.
+- [x] Methods as a walkthrough: Table 1 = glossary of every technical term; step-by-step
+      pipeline on one real pair (new Fig. 2); how error and success are measured and why
+      the unrefined error; the two wrappers step by step; ladder; appearance measure;
+      fine-tuning; statistics in plain words.
+- [x] Results: each subsection opens with the question it answers and closes with the
+      one-sentence answer; failure examples shown as images (new Figs 3-4).
+- [x] Discussion opens with practical guidance for someone registering their own data.
+- [x] Move protocol minutiae to Supplementary Material (PDF): fine-tuning protocol defects,
+      earlier draw, per-run table, hypothesis verdicts, refined-metric figure + table,
+      full crash/padding accounting for v1. Every item cited from the main text.
+- [x] Pyramid v1 restated on its 81 evaluated pairs, split multi-tile vs padded (R0).
+
+### R2 — New figures (real images; AmalgaMatch is CC-BY-4.0, credit in legends)
+- [x] Fig. 1 the task: 3 pairs spanning FOV ratio and modality, GT footprint + GT points.
+- [x] Fig. 2 the pipeline on one pair: correspondences (inlier/outlier), fitted footprint vs
+      GT footprint, per-point error vectors, the number that gets scored.
+- [x] Fig. 3 why tiling fails: tile grid on a real multi-tile pair; a tile that does not
+      contain the target still returns 10,000 correspondences at high certainty; pooled
+      inlier fraction direct vs v1 on the 33 tiled pairs.
+- [x] Fig. 4 failure gallery: severe FOV, appearance, and the fine-tuned model forgetting a
+      C103 SEM/LOM pair, each with predicted vs true footprint and its error. Re-run on CPU
+      for display only; legend states the displayed error comes from that re-run.
+- [x] Keep: success-rate bars (v1 bar removed), FOV ladder (+ crops of a real pair),
+      strata plot. Refined-metric bars -> Supplementary.
+
+### R3 — Gates, package, correspondence
+- [x] `verify_mam_draft.py` updated for the rewrite: numeric parity incl. the new v1
+      same-pair numbers, a failure-reason audit (no infrastructure failure scored as a
+      method failure), glossary coverage, abbreviations defined at first use.
+- [x] Build manuscript.docx, supplementary.pdf, figures; gates green; pytest green.
+- [x] Cover letter: new submission, discloses MAM-26-246, lists changes incl. the R0 fix.
+- [x] AI-assistance statement drafted for Frank to confirm (OUP policy check).
+- [x] Gmail DRAFT (never send) to the editor asking whether he will consider the
+      rewritten manuscript as a new submission.
+- [x] Commit (explicit paths, no co-author trailer), push, memory + review section.
+
+### R4 — Review (2026-09-25)
+
+**Delivered on `mam-rewrite`:** `paper/mam/manuscript.md|.docx` (tutorial rewrite, 198-word
+abstract, 7 figures, 5 tables incl. a glossary), `supplementary.md|.docx|.pdf` (S1-S7, 3
+figures, 6 tables), `cover_letter.md|.docx` (discloses MAM-26-246 and the corrections),
+`figures/Figure1-7, S1-S3` (PDF + 300 dpi PNG), and a Gmail DRAFT to the editor asking
+whether he will take the rewrite as a new submission (not sent). The submitted version is
+archived in `paper/mam/MAM-26-246/` and on branch `mam-submission`.
+
+**New tooling:** `mam_rewrite_numbers.py` recomputes every quoted number from the result
+CSVs into `results/mam_rewrite_numbers.json`; `verify_mam_rewrite.py` builds its expected
+strings FROM that JSON (278 checks, 0 failures) and replaces `verify_mam_draft.py`, which
+asserted copied strings and is removed. `pyramid_v1_audit.py`, `fov_ratios_gt.py`,
+`mam_examples_run.py` (seeded CPU re-runs for display), `plot_mam_rewrite.py`.
+`build_mam_figures.py` now only checks the package (copying would overwrite the new figures).
+`build_mam_docx.py` takes src/out, `--single`, `--no-line-numbers`, `--pdf` (via Word).
+
+**Corrections found (beyond R0):**
+- The certainty-0.5 gate compared against the ONE-zoom v2 rows, but c50 ran after commit
+  eef81ce made three zooms the default. Against z3 (same zoom count) the gate is null on
+  both metrics (p = 0.24 raw, 0.18 refined); the old "significantly worse, p = 0.002" is
+  withdrawn. MatchAnything-RoMa + v2, the ladder and the ft runs all used three zooms.
+- RoMa's sampler sets certainty > 0.05 to exactly 1, so "gate at 0.5" = keep above 0.05.
+- The v2 tile stage (runs below 50 inliers) essentially never fires: every direct RoMa fit
+  kept >= 50 inliers, including 2,000-px misses. v2's effect is the ZOOM (37 of 187 native
+  answers; 7 of the 9 ladder successes). Paper now says so.
+- Ceiling: a homography fitted to the annotated points themselves registers only 93/187
+  within 10 px (156 within 20). Now reported against every method.
+- Certainty share separates outcomes in-sample: all 15 registered direct-accepted pairs had
+  >= 93 % of correspondences above the cut-off; 48 of 51 gross failures had less (rho -0.71).
+  Reported as in-sample, untested elsewhere.
+- Refinement on the ladder is invalid (out-of-crop GT points), not "near-zero effect".
+
+**Frank's calls (open):**
+1. Confirm or edit the AI-use paragraph (manuscript Section 2.14).
+2. Send the editor query (Gmail draft) or submit directly.
+3. Optional ~<$2 GPU run to complete pooled tiling on the 106 crashed pairs (and, if
+   wanted, a second arm with tiles sized in wide-image pixels). The text is correct without it.
+4. The ICLR / STS deadlines come first; nothing here is time-bound.

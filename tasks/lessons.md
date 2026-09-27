@@ -109,3 +109,153 @@ single-image homographic warps of generic textures.
 H1 test for MatchAnything requires either AmalgaMatch or a multi-view
 natural-image dataset (MegaDepth / ScanNet pairs). The wrapper is
 production-quality and will work the moment real correlative pairs land.
+
+## Numbers written into a manuscript must be re-derived from source (2026-08-24)
+
+The Scientific Reports revision surfaced three failure modes worth keeping.
+
+**1. A metric choice can manufacture significance.** Accuracy was reported after
+thin-plate-spline refinement. Both native-pair headlines were significant on that
+metric and null on raw matcher error (p = 0.034 -> 1.00 and 0.035 -> 0.33), because
+refinement converts 13 otherwise-successful fits into failures, and its coverage is
+non-uniform across configurations (1.000 for the dense RoMa family, 0.000 for
+Control B). *Therefore: whenever a pipeline has a post-processing stage, report the
+headline under both with and without it before believing either.*
+
+**2. The declared statistical protocol was not the one implemented.** Methods said
+"two-sided bootstrap probabilities"; every p-value was a one-sided tail mass. The
+code was honest (`bootstrap_ci.py` printed "p(one-sided)"), but nobody reconciled the
+two for months. One conclusion flipped when corrected. *Therefore: grep the Methods
+claims against the code that produces them, as a checklist, before submitting.*
+
+**3. Agent-supplied numbers are not verified numbers.** During this revision an agent
+supplied 2x2 contrast p-values that were written into the Discussion. Re-running the
+committed script showed two of them wrong (0.040 -> 0.052, 0.045 -> 0.049), and one
+crossed 0.05. A follow-up forensic audit of *every* number in the manuscript then found
+17 more errors, including a fabricated causal mechanism, a sentence quoting the wrong
+backbone's numbers, and two claims that contradicted each other across sections.
+*Therefore: no number goes into a deliverable until it has been recomputed from the
+source data in this session. Delegation is fine for finding numbers; it is not
+sufficient for publishing them.*
+
+**Corollary that bit twice:** a results CSV is not append-only-safe. Adding
+`ma_roma_ft` rows to `baselines_A.csv` silently (a) would have put train-contaminated
+configurations into regenerated figures, and (b) broke the H3 readout so the published
+69 % affine figure no longer regenerated. *Therefore: any script that aggregates over
+"all backbones" needs an explicit exclusion list for models trained on the benchmark.*
+
+## Changing the primary metric invalidates prose, not just tables (2026-08-24)
+
+Moving the correlative-microscopy paper from the TPS-refined error to the
+unrefined error for the TMLR submission required recomputing the tables, which
+was obvious, and recomputing **every sentence that quotes a number**, which was
+not. Five claims survived the table rewrite and were still wrong: an ablation
+whose significance existed only under the old metric, a per-pair narrative
+("two gained, two lost") that had a different shape under the new one, a
+comparison that reversed sign, and two statements about a match cap.
+
+*Therefore: when the primary metric changes, treat every numeric claim in the
+prose as unverified, including ones that were correct in the previous version.
+The table is the easy part.*
+
+**What caught them:** an explicit list of carried-over claims, checked one at a
+time against the source data, rather than a read-through. A read-through would
+have passed all five, because each was internally plausible and each had been
+true under the old metric.
+
+**Corollary worth keeping:** the verification is now a script
+(`scripts/verify_tmlr_draft.py`) that asserts 32 specific values appear, that 12
+retired phrasings do not, and that two deliberately-retained withdrawn claims
+still sit inside their retraction. A phrase-level ban list produced two false
+positives on the first run -- both were retractions naming the old claim -- which
+is itself the signal that the ban list needed to encode *context*, not just
+presence.
+
+---
+
+## A schematic's proportions are claims, and claims get asserted (2026-08-30)
+
+Fig. 1's field-of-view ladder drew its rungs at `sqrt(r / 0.5)` of a base size —
+relative to the 0.5 rung — while the caption said the ratios were relative to the
+source. The 0.25 rung therefore sat at half the outer square's area, and the
+figure was right only because the outer square happened to also be 0.5. The
+source field, the actual denominator, was never drawn at all.
+
+Nobody catches that by reading the code; it reads fine. It is caught by writing
+the identity down as an assertion next to the constant:
+
+```python
+_sides = [SRC_SIDE_IN * np.sqrt(r) for r in FOV_RATIOS]
+for _r, _s in zip(FOV_RATIOS, _sides):
+    assert abs((_s / SRC_SIDE_IN) ** 2 - _r) < 1e-12
+```
+
+**Rule:** every proportion a schematic asserts gets a named constant, its source
+in a comment, and an assertion that the drawn geometry produces it. If a caption
+states a ratio, the thing it is a ratio *of* has to be on the page.
+
+## Alt text drifts from the figure, silently
+
+The Fig. 1 alt text described "a wide-field micrograph with successively smaller
+crop boxes drawn on it". No micrograph was ever in that panel — it was always an
+abstract nest of rectangles. The alt text was written from the *intent* and never
+re-checked against the render. The word-count gate, the citation gate and the
+section-order gate all passed over it, because none of them look at the figure.
+
+**Rule:** re-read alt text against the rendered PNG, not against the legend. It
+is prose about an image, so it is the one part of a manuscript that no text gate
+can check.
+
+## A house style that lives in one figure is not a house style
+
+Fig. 1 set `pdf.fonttype=42` via the skill's palette. `plot_baselines.py` and
+`plot_fov_ladder.py` did not, so every vector export of Figs 2-5 carried Type 3
+fonts — the single most common reason a publisher bounces artwork. It went
+unnoticed for the whole project because those scripts only ever wrote PNGs, where
+the setting has no effect; it surfaced the moment PDFs were needed.
+
+**Rule:** publisher rcParams belong to every figure script in the repo, not to
+the one that happens to import the shared palette. And a compliance check has to
+run over the whole figure package, not the figure being worked on.
+
+## verify.py silently drops any --expect containing a colon
+
+`--expect "verifier: mutual"` is parsed as stem `verifier`, text ` mutual`, and
+since no figure is named `verifier` the check is skipped — reported as neither
+pass nor fail, just absent from the output. The PASS looked complete. Only
+counting the printed lines against the number of `--expect` flags revealed it.
+
+**Rule:** when a checker reports per-item results, count them. A gate that can
+silently skip an item is a gate that can pass an unchecked figure.
+
+## A gate that checks copied strings cannot find a data error (2026-09-25)
+
+`verify_mam_draft.py` passed 109 checks on a submitted paper that called a GPU crash "106
+estimator failures" and binned pairs by a metadata ratio it described as GT-implied. Every
+check compared the manuscript with an earlier manuscript, so it could only prove that two
+texts agreed. Both errors were found by LOOKING at data while choosing figure examples:
+the `error` column of the failed rows, and a ground-truth outline drawn over its image.
+
+**Rules.** (1) A numeric gate builds its expected strings from a script that recomputes
+them from the raw result files, never from a string typed into the gate
+(`mam_rewrite_numbers.py` -> JSON -> `verify_mam_rewrite.py`). (2) Before any count of
+failures goes into a table, group the failed rows by their error message; an
+infrastructure error (CUDA, OOM, timeout) is a missing measurement, not a method failure.
+A contiguous block of identical errors at the end of a run is a crash signature.
+(3) Any quantity derived from metadata gets cross-checked against an independent estimate
+from the data (here: pixel-size FOV ratio vs the ratio implied by the annotated points).
+
+## A code default that changes between runs silently confounds a comparison
+
+`register_v2` did one zoom when the RoMa v2 rows were produced; a later commit made
+"up to three zooms" the default, so the gated variant (run after) differed from its
+comparator in two ways. The published "gate is significantly worse" came from the zoom
+count, not the gate. **Rule:** every results row should record the effective value of each
+tunable (or the commit it ran at); before comparing two configurations, diff the code
+between the commits that produced them.
+
+## Inline `python -c` edits with escapes break silently here
+
+A multi-replacement `python -c "..."` with `\*` and nested quotes raised SyntaxWarnings,
+applied the first file's edit and aborted the second, leaving a half-edited state.
+Use the Edit tool, or write the script to a file and run it.

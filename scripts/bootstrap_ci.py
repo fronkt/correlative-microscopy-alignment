@@ -1,8 +1,9 @@
 """Paired bootstrap over the 187 pairs: method B vs method A (task 4.3).
 
 Resamples pairs with replacement, computing the delta in SR@{5,10,20} and
-median ED on each replicate. Reports 95% percentile CIs and the one-sided
-bootstrap p-value for "B is no better than A".
+median ED on each replicate. Reports 95% percentile CIs and the two-sided
+bootstrap p-value against the null "A and B do not differ", which is the
+convention the manuscript's methods text declares.
 
 Usage:
   python scripts/bootstrap_ci.py results/baselines_A.csv roma:direct roma:pyramid_v2
@@ -20,6 +21,19 @@ from pathlib import Path
 import numpy as np
 
 B = 10_000
+
+
+def two_sided_p(d_boot: np.ndarray) -> float:
+    """Two-sided bootstrap p-value: twice the smaller tail mass, capped at 1.
+
+    Convention: p = min(1, 2 * min(P(d <= 0), P(d >= 0))).  This is the
+    convention the manuscript's methods text declares, and it is symmetric --
+    the value does not depend on which configuration is labelled A and which
+    is labelled B, nor on the sign of the observed difference.
+    """
+    p_le = float((d_boot <= 0).mean())
+    p_ge = float((d_boot >= 0).mean())
+    return min(1.0, 2.0 * min(p_le, p_ge))
 
 
 def ed(r: dict) -> float:
@@ -65,8 +79,8 @@ def main() -> None:
         d_obs = float((eb < t).mean() - (ea < t).mean())
         d_boot = (eb[idx] < t).mean(axis=1) - (ea[idx] < t).mean(axis=1)
         lo, hi = np.percentile(d_boot, [2.5, 97.5])
-        p = float((d_boot <= 0).mean())
-        print(f"delta SR@{t:>4.0f}px: {d_obs:+.3f}  95% CI [{lo:+.3f}, {hi:+.3f}]  p(one-sided)={p:.4f}")
+        p = two_sided_p(d_boot)
+        print(f"delta SR@{t:>4.0f}px: {d_obs:+.3f}  95% CI [{lo:+.3f}, {hi:+.3f}]  p(two-sided)={p:.4f}")
 
     fa, fb = np.isfinite(ea), np.isfinite(eb)
     both = fa & fb
@@ -79,9 +93,9 @@ def main() -> None:
         d_boot.append(np.median(eb[row][m]) - np.median(ea[row][m]))
     d_boot = np.asarray(d_boot)
     lo, hi = np.percentile(d_boot, [2.5, 97.5])
-    p = float((d_boot >= 0).mean())
+    p = two_sided_p(d_boot)
     print(f"delta median ED (finite-both): {d_obs:+.1f}px  "
-          f"95% CI [{lo:+.1f}, {hi:+.1f}]  p(one-sided, B<A)={p:.4f}")
+          f"95% CI [{lo:+.1f}, {hi:+.1f}]  p(two-sided)={p:.4f}")
 
 
 if __name__ == "__main__":

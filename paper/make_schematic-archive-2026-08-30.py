@@ -1,4 +1,21 @@
-"""Generate the method schematic (Fig. 1) for the manuscript.
+"""ARCHIVED 2026-08-30. Superseded by paper/schematics/gen_fig1.py.
+
+Provenance: this is the original Fig. 1 generator, kept verbatim below for
+reference. It is archived rather than deleted because it wrote to the same path
+as its replacement (paper/figs/method_schematic.png), so running it would have
+silently overwritten the redraw with the old design. The guard below stops that.
+
+Why it was replaced: panel B drew the ladder rungs without the source frame, so
+the "target area / source area" ratios had no denominator on the page; the rung
+sizes were computed against the 0.5 rung rather than the source, so the drawn
+areas did not equal the stated ratios; and several labels collided with the boxes
+and connectors they belonged to. See tasks/todo.md, Phase N.
+"""
+import sys
+sys.exit("archived: run paper/schematics/gen_fig1.py instead")
+
+"""ORIGINAL SOURCE FOLLOWS
+'''Generate the method schematic (Fig. 1) for the manuscript.
 
 Two panels:
   (a) Verified coarse-to-fine wrapper (pyramid v2) around a frozen dense matcher.
@@ -6,7 +23,7 @@ Two panels:
 
 Vector-clean, colourblind-safe, no external assets. Saves PNG (300 dpi) + PDF.
 Run: python paper/make_schematic.py
-"""
+'''
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -53,7 +70,7 @@ for ax in (axA, axB):
     ax.axis("off")
 
 # ---------------------------------------------------------------- panel (a)
-axA.text(0.02, 0.96, "a", fontsize=14, fontweight="bold", va="top")
+axA.text(0.02, 0.96, "A", fontsize=14, fontweight="bold", va="top")
 axA.text(0.5, 0.965, "Verified coarse-to-fine wrapper (pyramid v2)",
          ha="center", va="top", fontsize=10, fontweight="bold")
 
@@ -94,10 +111,10 @@ arrow(axA, (0.905, 0.135), (0.905, 0.66), RED, ls="--")
 axA.text(0.86, 0.16, "if better,\nreplace $T^\\star$", fontsize=7, color=RED, ha="center")
 
 # ---------------------------------------------------------------- panel (b)
-axB.text(0.02, 0.96, "b", fontsize=14, fontweight="bold", va="top")
+axB.text(0.02, 0.96, "B", fontsize=14, fontweight="bold", va="top")
 axB.text(0.5, 0.965, "FOV-ladder protocol", ha="center", va="top",
          fontsize=10, fontweight="bold")
-axB.text(0.5, 0.885, "appearance fixed, scale swept on real pairs",
+axB.text(0.30, 0.885, "appearance fixed, scale swept on real pairs",
          ha="center", va="top", fontsize=8.2, color=GREY, style="italic")
 
 # nested crops illustrating shrinking FOV
@@ -108,17 +125,20 @@ for r, col in ratios:
     s = base * (r / 0.5) ** 0.5
     axB.add_patch(plt.Rectangle((cx - s / 2, cy - s / 2), s, s, fill=False,
                                 ec=col, lw=1.6, zorder=3))
-axB.text(cx, cy + base / 2 + 0.03, "target FOV / source area", ha="center",
+axB.text(cx, cy + base / 2 + 0.03, "target field-of-view area / source area",
+         ha="center",
          fontsize=7.5, color=GREY)
 axB.text(cx, cy - base / 2 - 0.05, "0.5 → 0.25 → 0.1 → 0.05 → 0.02",
          ha="center", fontsize=8, color=INK)
 
-# outcome annotation
+# protocol annotation. This is a METHODS figure: it states what is done at
+# each rung and must not assert an outcome, so no success rates, effect sizes
+# or p-values appear here. The ladder results are Fig. 4.
 box(axB, 0.60, 0.55, 0.37, 0.30,
-    "Direct match\ncollapses\nbetween 0.25 and 0.1",
+    "All ground-truth points\nretained, including those\noutside the crop",
     fc="#EDEDED", ec=INK, fs=8.5)
 box(axB, 0.60, 0.14, 0.37, 0.32,
-    "Wrapper restores\nSR@10 at 0.1\n(0.07 → 0.23,\n$p$ = 0.0014)",
+    "Each backbone evaluated\nat every rung, direct\nand wrapped",
     fc="#F3FBF7", ec=GREEN, fs=8.5)
 arrow(axB, (0.52, 0.55), (0.60, 0.62), INK)
 arrow(axB, (0.45, 0.30), (0.60, 0.30), GREEN)
@@ -127,3 +147,5 @@ fig.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.02, wspace=0.06)
 fig.savefig(OUT / "method_schematic.png", dpi=300, bbox_inches="tight")
 fig.savefig(OUT / "method_schematic.pdf", bbox_inches="tight")
 print("wrote", OUT / "method_schematic.png")
+
+"""
