@@ -23,6 +23,13 @@ the Editor-in-Chief). Submit is pressed by the author, not recorded here until d
   panel references remapped; verifier now requires legend letters = cited letters = files.
   Intended arrangement per figure: `figures/Figure<N>_layout.jpg`. Cover letter gained a
   "Figure files" paragraph, including that Figure 4E is coarse on purpose.
+- **Re-staged at Step 7 (2026-09-27, evening):** old manuscript + the seven rejected TIFs
+  removed; 34 files in order (manuscript.docx, Figure1A..7B, supplementary.pdf, 294.29 of
+  341.8 MB). 21 panels uploaded via Chrome automation, the 11 over 10 MB (1B-D, 3B-C, 4A-D,
+  4F, 4I) by the author (the automation's upload tool caps files at 10 MB). Step 6: cover
+  letter = the portal text plus the "Figure files" paragraph, nothing else changed; Number
+  of Figures 7 -> 32 (the form counts each file); graphical abstract "Figure 3" -> "Figure 3F".
+  Left for the author: view the PDF proof (required before Submit), press Submit.
 - **Conflict on record:** the OUP instructions page says "Submit all panels of a multi-panel
   figure as one single figure file". The office's email for this manuscript says the
   opposite, and the office's email is what we followed.
