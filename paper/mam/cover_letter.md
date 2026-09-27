@@ -20,6 +20,8 @@ This is a rewritten version of manuscript MAM-26-246, which you declined on 11 S
 
 None of these changes the conclusions. On the genuinely tiled pairs, pooled tiling raised the median error from 68 to 538 pixels. The checked coarse-to-fine search still gains nothing on the real pairs and still triples success when field of view is the only difficulty. Every number in the rewrite is now recomputed from the released result files by a script, and a separate check confirms that the text matches it.
 
+**Figure files.** As the editorial office asked on 27 September, when it returned this submission (MAM-26-277) for its figures, each image is now supplied as its own file: 32 files for Figures 1 to 7, lettered in reading order. Every file is at least 2,550 pixels wide at 900 dpi, and all caption text has been moved into the figure legends. Figure 4E is coarse on purpose. It shows the narrow image's region at the wide image's own pixel size, enlarged without interpolation, and that coarseness is what the panel shows.
+
 This work has not been published and is not under consideration elsewhere. The author declares no competing interests. The code, the per-pair result files and every analysis script are openly available, and the benchmark itself is public. The use of an artificial-intelligence assistant is described in Section 2.14.
 
 Thank you for your comment on the earlier version, and for considering this one.

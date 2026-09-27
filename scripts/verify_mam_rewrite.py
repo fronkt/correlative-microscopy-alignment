@@ -290,19 +290,50 @@ fig_leg = [int(x) for x in re.findall(r"^\*\*Figure (\d+)\.\*\*", MS, re.M)]
 checks += 1
 if fig_leg != list(range(1, len(fig_leg) + 1)):
     fails.append(f"FIGS     legends not 1..N: {fig_leg}")
+
+# One file per image (the MSA office's condition for MAM-26-277): the panel letters a legend
+# describes, the letters the body cites and the files in figures/panels must agree.
+def letters(spec: str) -> set[str]:
+    """'A, B' / 'A–C' / 'E' -> the set of panel letters."""
+    out = set()
+    for part in re.split(r",\s*", spec.strip()):
+        m = re.fullmatch(r"([A-I])(?:[–-]([A-I]))?", part.strip())
+        if not m:
+            return set()
+        out |= {chr(c) for c in range(ord(m[1]), ord(m[2] or m[1]) + 1)}
+    return out
+
+
+panel_files: dict[int, set[str]] = {}
+for p in sorted((ROOT / "paper/mam/figures/panels").glob("*.tif")):
+    m = re.fullmatch(r"Figure(\d+)([A-I])\.tif", p.name)
+    checks += 1
+    if not m:
+        fails.append(f"FIGS     unexpected file panels/{p.name}")
+        continue
+    panel_files.setdefault(int(m[1]), set()).add(m[2])
+checks += 1
+if set(panel_files) != set(fig_leg):
+    fails.append(f"FIGS     panel files exist for figures {sorted(panel_files)}, legends for {fig_leg}")
 for k in fig_leg:
     checks += 2
-    if not re.search(rf"Figure {k}[A-E]?\b|Figures [0-9, and]*\b{k}\b", body):
+    if not re.search(rf"Figure {k}[A-I]?\b|Figures [0-9, and]*\b{k}\b", body):
         fails.append(f"FIGS     Figure {k} never cited in the body")
     leg = re.search(rf"^\*\*Figure {k}\.\*\*.*?(?=^\*\*Figure {k + 1}\.\*\*|\Z)", MS, re.M | re.S).group(0)
     if "*Alt text:*" not in leg:
         fails.append(f"FIGS     Figure {k} has no alt text")
-    checks += 1
-    if not (ROOT / f"paper/mam/figures/Figure{k}.pdf").exists():
-        fails.append(f"FIGS     paper/mam/figures/Figure{k}.pdf missing")
-checks += 1
-if (ROOT / f"paper/mam/figures/Figure{len(fig_leg) + 1}.pdf").exists():
-    fails.append(f"FIGS     orphan file Figure{len(fig_leg) + 1}.pdf with no legend")
+    caption = leg.split("*Alt text:*")[0]
+    in_legend = set().union(*[letters(s.rstrip(":")) for s in re.findall(r"\*\*([^*]+)\*\*", caption)[1:]])
+    files = panel_files.get(k, set())
+    want = {chr(ord("A") + i) for i in range(len(files))}
+    checks += 3
+    if files != want:
+        fails.append(f"FIGS     Figure {k}: panel files {sorted(files)} are not A.. without gaps")
+    if in_legend != files:
+        fails.append(f"FIGS     Figure {k}: legend describes panels {sorted(in_legend)}, files are {sorted(files)}")
+    cited = set().union(set(), *[letters(s) for s in re.findall(rf"Figure {k}([A-I](?:[–-][A-I])?(?:, [A-I])*)", body)])
+    if not cited <= files:
+        fails.append(f"FIGS     Figure {k}: body cites panels {sorted(cited - files)} that have no file")
 tab_leg = [int(x) for x in re.findall(r"^\*\*Table (\d+)\.\*\*", MS, re.M)]
 checks += 1
 if tab_leg != list(range(1, len(tab_leg) + 1)):
@@ -358,12 +389,12 @@ if (cache / "pipeline_5842.npz").exists():
                                 f"{c(10_000 - int(ex('pipeline_5842', 'inliers').sum()))}")
     need("Fig 3 inside share", f"{100 * share('tile_inside'):.0f} % of them with certainty above the 0.05 cut-off")
     need("Fig 3 outside share", f"Only {100 * share('tile_outside'):.0f} % of those cleared the cut-off")
-    need("Fig 3B tile alone", f"the inside tile of Figure 3B misses by {round(float(ex('tile_inside', 'mu_ed')))} pixels")
+    need("Fig 3C tile alone", f"the inside tile of Figure 3C misses by {round(float(ex('tile_inside', 'mu_ed')))} pixels")
     need("S6 tile rows", f"| RoMa | {round(float(ex('tile_inside', 'mu_ed')))} (this tile alone) | – | "
                          f"{share('tile_inside'):.2f} |", SUP, "SUP")
     need("S6 tile rows", f"| RoMa | {c(round(float(ex('tile_outside', 'mu_ed'))))} (this tile alone) | – | "
                          f"{share('tile_outside'):.2f} |", SUP, "SUP")
-    for job, fig in (("pipeline_5842", "2"), ("gal_appearance", "4A"), ("gal_fov", "4B"), ("gal_c103_zs", "4C"), ("gal_c103_ft", "4C")):
+    for job, fig in (("pipeline_5842", "2"), ("gal_appearance", "4A"), ("gal_fov", "4D"), ("gal_c103_zs", "4G"), ("gal_c103_ft", "4H")):
         need(f"S6 share {job}", f"| {share(job):.2f} |", SUP, "SUP")
     need("Fig 4A error", f"{c(round(float(ex('gal_appearance', 'mu_ed'))))} pixels from where it belongs")
     need("Fig 4B error", f"places it {round(float(ex('gal_fov', 'mu_ed')))} pixels away")
