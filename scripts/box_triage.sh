@@ -17,7 +17,7 @@ until [ "$(stat -c%s "$ZIP" 2>/dev/null || echo 0)" -eq "$EXPECTED" ]; do
   echo "waiting for dataset: $(stat -c%s "$ZIP" 2>/dev/null || echo 0)/$EXPECTED"; sleep 15
 done
 mkdir -p data/AmalgaMatch
-unzip -q -o "$ZIP" -d data/AmalgaMatch
+python -m zipfile -e "$ZIP" data/AmalgaMatch
 rm -f "$ZIP"
 python -m pytest -q tests/test_triage.py
 
