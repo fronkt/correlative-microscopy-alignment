@@ -243,6 +243,7 @@ def main() -> None:
     pp["err_oracle"] = Ev.min(axis=1)
     pp["err_gt_homography"] = gt["homography"]
     pp.to_csv(outdir / "per_pair.csv")
+    df[["pair_id", "cand", "pool", "S1", "S2", "S3", "err"]].to_csv(outdir / "per_pair_scores.csv", index=False)
     print(json.dumps({k: out[k] for k in ("n_pairs", "n_scenes", "ceiling")}, indent=1))
     print("H1", json.dumps(out["H1"]["auroc_S1_at_20"]), "transfer", json.dumps(out["H1"]["transfer"], default=float))
     print("H2", json.dumps({k: v for k, v in out["H2"].items() if "delta" in k or k == "supported"}, default=float))
