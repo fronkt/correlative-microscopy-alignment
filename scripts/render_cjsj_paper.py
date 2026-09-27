@@ -73,6 +73,18 @@ def numbers(s: dict) -> dict[str, str]:
         **{f"tri_{lab}_{c}_hi": pct(tri[lab][f"accepted_success_at_{c}"]["hi"])
            for lab in ("primary_S1", "primary_S3", "selected_S3") for c in (25, 50, 75)},
         **{f"tri_{lab}_base": pct(tri[lab]["base_rate"]) for lab in ("primary_S1", "selected_S3")},
+        "aurc": f"{tri['primary_S1']['aurc']:.2f}", "aurc_lo": f"{tri['primary_S1']['aurc_ci']['lo']:.2f}",
+        "aurc_hi": f"{tri['primary_S1']['aurc_ci']['hi']:.2f}", "aurc_random": f"{1 - tri['primary_S1']['base_rate']:.2f}",
+        "auc_s1_10": f"{h1['auroc_S1_at_10']['auroc']:.2f}", "auc_s1_10_lo": f"{h1['auroc_S1_at_10']['lo']:.2f}",
+        "auc_s1_10_hi": f"{h1['auroc_S1_at_10']['hi']:.2f}",
+        "auc_s1_8_lo": f"{h1['auroc_S1_at_8']['lo']:.2f}", "auc_s1_8_hi": f"{h1['auroc_S1_at_8']['hi']:.2f}",
+        "d_s2": sgn(h2['primary_delta_S2_minus_S1']['delta']),
+        "d_s2_lo": sgn(h2['primary_delta_S2_minus_S1']['lo']), "d_s2_hi": sgn(h2['primary_delta_S2_minus_S1']['hi']),
+        **{f"sel_{k}_gain_lo": f"{100 * v['gain_ci']['lo']:.0f}".replace("-", "−") for k, v in sel.items()},
+        **{f"sel_{k}_gain_hi": f"{100 * v['gain_ci']['hi']:.0f}".replace("-", "−") for k, v in sel.items()},
+        "rerun_roma_n": str(round(h3["rerun_control"]["roma"]["gain"] * n)),
+        "rerun_ma_n": str(round(h3["rerun_control"]["ma_roma"]["gain"] * n)),
+        "design_prec": pct(tr["design_accepted_success"]),
     }
 
 
@@ -106,6 +118,20 @@ def exploratory(x: dict, n: int) -> dict[str, str]:
         "ex_fa": str(x["E7"]["false_accepts"]),
         "ex_fa_tem": str(x["E7"]["by_group"].get("DislocationCharacterization", 0)),
         "ex_tem_fail": str(x["E7"]["tem_failures_heldout"]),
+        "ex_fa_min": f"{x['E7']['fa_err_min']:.0f}", "ex_fa_med": f"{x['E7']['fa_err_median']:.0f}",
+        "ex_fa_max": f"{x['E7']['fa_err_max']:.0f}", "ex_fa_scenes": str(x["E7"]["fa_scenes"]),
+        "ex_fa_alloy_n": str(x["E7"]["fa_alloys"].get("MoTaTiZrHf", 0)),
+        "pilot_ma": f"{x['E0']['pilot_auroc_ma_roma']:.2f}", "pilot_roma": f"{x['E0']['pilot_auroc_roma']:.2f}",
+        "ex_topq_n": str(x["E8"]["top_quarter_n"]), "ex_topq_fail": str(x["E8"]["top_quarter_failures"]),
+        "ex_topq_fail_tem": str(x["E8"]["top_quarter_failures_tem"]),
+        "ex_bottom_fail": str(x["E8"]["bottom_all_fail_n"]), "ex_lowest_succ": f"{x['E8']['lowest_success_rank_pct']:.0f} %",
+        "ex_held_scenes": str(x["E9"]["heldout_scenes"]), "ex_tem_scenes": str(x["E9"]["tem_scenes"]),
+        "ex_tem_n": str(x["E9"]["tem_pairs"]), "ex_tem_alloy_n": str(x["E9"]["tem_pairs_top_alloy"]),
+        "ex_dense_voters": str(x["E9"]["dense_voters"]), "ex_ma_ever": str(x["E9"]["ma_roma_ever"]),
+        "ex_seed_min": str(x["E9"]["ma_roma_seed_min"]), "ex_seed_max": str(x["E9"]["ma_roma_seed_max"]),
+        "ex_w_min": f"{x['E9']['wide_width_min']:,}", "ex_w_max": f"{x['E9']['wide_width_max']:,}",
+        "ex_loftr_nm": f"{x['E9']['loftr_matches_median']:.0f}",
+        "ex_mael_nm": f"{x['E9']['matchanything_matches_median']:.0f}",
     }
 
 

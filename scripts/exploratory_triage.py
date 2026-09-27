@@ -91,7 +91,44 @@ def main() -> None:
     fa = held[(held.S1_primary >= cut) & (held.err_primary > 20)]
     out["E7"] = {"false_accepts": int(len(fa)), "by_group": fa.group.value_counts().to_dict(),
                  "tem_failures_heldout": int(((held.group == "DislocationCharacterization") & (held.err_primary > 20)).sum())}
+    fa_err = fa.err_primary.replace(np.inf, np.nan).dropna()
+    out["E7"].update(fa_err_min=float(fa_err.min()), fa_err_median=float(fa_err.median()),
+                     fa_err_max=float(fa_err.max()), fa_under_100=int((fa_err < 100).sum()),
+                     fa_alloys=fa.subclass.str.split("-").str[0].value_counts().to_dict(), fa_scenes=int(fa.scene.nunique()))
+    # E8: what ranking a mixed batch by S1 does at each end (primary candidate, all pairs)
+    order = pr.sort_values("S1_primary", ascending=False)
+    okr = (order.err_primary <= 20).values
+    q = int(round(0.25 * len(order)))
+    topq = order.iloc[:q]
+    first_success_from_bottom = int(np.argmax(okr[::-1]))  # lowest-scoring pairs before the first success
+    out["E8"] = {"top_quarter_n": q, "top_quarter_failures": int((topq.err_primary > 20).sum()),
+                 "top_quarter_failures_tem": int(((topq.err_primary > 20) & (topq.group == "DislocationCharacterization")).sum()),
+                 "top_quarter_tem": int((topq.group == "DislocationCharacterization").sum()),
+                 "bottom_all_fail_n": first_success_from_bottom,
+                 "lowest_success_rank_pct": float(100 * (np.flatnonzero(okr).max() + 1) / len(okr))}
+    # E9: facts for the limitations paragraph
+    tem = pr[pr.group == "DislocationCharacterization"]
+    out["E9"] = {
+        "heldout_scenes": int(held.scene.nunique()), "tem_scenes": int(tem.scene.nunique()),
+        "tem_pairs": int(len(tem)),
+        "tem_pairs_top_alloy": int(tem.subclass.str.split("-").str[0].value_counts().iloc[0]),
+        "tem_top_alloy": str(tem.subclass.str.split("-").str[0].value_counts().index[0]),
+        "design_precision": float(s["H1"]["transfer"]["design_accepted_success"]),
+        "dense_voters": int(sum(c.split("|")[0] in ("roma", "ma_roma") for c in voters)),
+        "ma_roma_ever": int((k > 0).sum()),
+        "ma_roma_seed_min": int((E[seeds] <= 20).sum().min()), "ma_roma_seed_max": int((E[seeds] <= 20).sum().max()),
+    }
     cand = pd.read_csv(IND / "candidates.csv")
+    w = cand[cand.backbone == "gt"].drop_duplicates("pair_id").w_s
+    out["E9"].update(wide_width_min=int(w.min()), wide_width_max=int(w.max()))
+    for bb in ("loftr", "matchanything"):
+        out["E9"][f"{bb}_matches_median"] = float(pd.to_numeric(cand[cand.backbone == bb].n_matches, errors="coerce").median())
+    # E0: the pilot seen before pre-registration (stored M&M runs, results/baselines_A.csv), recomputed here
+    b = pd.read_csv("results/baselines_A.csv")
+    for bb in ("ma_roma", "roma"):
+        r = b[(b.backbone == bb) & (b["mode"] == "direct")]
+        yb = (pd.to_numeric(r.mu_ed, errors="coerce").fillna(np.inf).where(r.status.eq("ok"), np.inf) <= 20).values
+        out.setdefault("E0", {})[f"pilot_auroc_{bb}"] = auroc(r.n_inliers.fillna(-1).values, yb)
     out["E3"]["sift_matches_median"] = float(cand[cand.backbone == "sift"].n_matches.median())
     (IND / "exploratory.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print(json.dumps(out, indent=1, default=float))

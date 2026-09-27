@@ -80,6 +80,42 @@
   "by_group": {
    "DislocationCharacterization": 42
   },
-  "tem_failures_heldout": 61
+  "tem_failures_heldout": 61,
+  "fa_err_min": 20.69,
+  "fa_err_median": 186.844,
+  "fa_err_max": 526.855,
+  "fa_under_100": 15,
+  "fa_alloys": {
+   "MoTaTiZrHf": 42
+  },
+  "fa_scenes": 3
+ },
+ "E8": {
+  "top_quarter_n": 47,
+  "top_quarter_failures": 20,
+  "top_quarter_failures_tem": 20,
+  "top_quarter_tem": 26,
+  "bottom_all_fail_n": 69,
+  "lowest_success_rank_pct": 63.101604278074866
+ },
+ "E9": {
+  "heldout_scenes": 13,
+  "tem_scenes": 4,
+  "tem_pairs": 69,
+  "tem_pairs_top_alloy": 66,
+  "tem_top_alloy": "MoTaTiZrHf",
+  "design_precision": 0.7142857142857143,
+  "dense_voters": 12,
+  "ma_roma_ever": 51,
+  "ma_roma_seed_min": 41,
+  "ma_roma_seed_max": 44,
+  "wide_width_min": 293,
+  "wide_width_max": 10147,
+  "loftr_matches_median": 245.0,
+  "matchanything_matches_median": 410.5
+ },
+ "E0": {
+  "pilot_auroc_ma_roma": 0.8347417840375587,
+  "pilot_auroc_roma": 0.9374384236453202
  }
 }

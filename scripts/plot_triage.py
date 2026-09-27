@@ -27,7 +27,7 @@ GROUP_ORDER = ["SameSlice", "SerialSectioning", "Multiscale", "DislocationCharac
 GROUP_LABEL = {"SameSlice": "Same slice", "SerialSectioning": "Serial sectioning", "Multiscale": "Multiscale",
                "DislocationCharacterization": "Dislocation (TEM)", "FractureSurfaces": "Fracture surfaces",
                "SlipPartitioning": "Slip partitioning"}
-COLORS = ["#0072B2", "#56B4E9", "#E69F00", "#D55E00", "#009E73", "#CC79A7"]  # Okabe-Ito
+COLORS = ["#0072B2", "#56B4E9", "#009E73", "#D55E00", "#E69F00", "#CC79A7"]  # Okabe-Ito, distinct hues
 
 
 def fig2(pp: pd.DataFrame, summ: dict, out: Path) -> None:
@@ -45,7 +45,7 @@ def fig2(pp: pd.DataFrame, summ: dict, out: Path) -> None:
     ax.axhline(20, color="0.3", ls="--", lw=0.7)
     ax.axvline(cut, color="0.3", ls=":", lw=0.9)
     ax.text(cut, ax.get_ylim()[1], f" cut-off {cut:.3f}", va="top", ha="left", fontsize=6.5)
-    ax.set_xlabel("Retained fraction of correspondences (inliers / proposed)")
+    ax.set_xlabel("Retained fraction S1 (correspondences kept / proposed)")
     ax.set_ylabel("Registration error (pixels)")
     ax.legend(fontsize=6, frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.01), ncol=3, handletextpad=0.2, columnspacing=0.8)
     fig.tight_layout()
@@ -74,13 +74,15 @@ def fig3(pp: pd.DataFrame, summ: dict, out: Path) -> None:
     vals = [h3["best_single_sr20"], h3["select_S1"]["sr20"], h3["select_S2"]["sr20"],
             h3["select_S3"]["sr20"], h3["oracle_sr20"]]
     cols = ["0.6", "#0072B2", "#009E73", "#D55E00", "0.85"]
-    bars = b.bar(range(5), np.array(vals) * 100, color=cols, edgecolor="k", lw=0.4)
-    for r, v in zip(bars, vals):
-        b.text(r.get_x() + r.get_width() / 2, v * 100 + 1, f"{v * 100:.1f}", ha="center", fontsize=6.5)
+    n = len(pp)
+    counts = np.round(np.array(vals) * n).astype(int)
+    bars = b.bar(range(5), counts, color=cols, edgecolor="k", lw=0.4)
+    for r, v in zip(bars, counts):
+        b.text(r.get_x() + r.get_width() / 2, v + 1, str(v), ha="center", fontsize=6.5)
     b.set_xticks(range(5), names, fontsize=6.5)
-    b.set_ylabel("Pairs registered within 20 px (%)")
+    b.set_ylabel(f"Pairs registered within 20 px (of {n})")
     b.set_title("(b) Choosing one registration per pair", fontsize=8)
-    b.set_ylim(0, max(vals) * 100 + 10)
+    b.set_ylim(0, counts.max() + 12)
     fig.tight_layout()
     fig.savefig(out / "fig3_triage_selection.png")
     fig.savefig(out / "fig3_triage_selection.pdf")
