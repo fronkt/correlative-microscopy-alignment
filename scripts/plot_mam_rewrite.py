@@ -140,7 +140,8 @@ def fig1() -> None:
         ax = axes[1, col]
         f2 = show(ax, pair.target)
         ax.plot(pair.gt.tgt_xy[:, 0] * f2, pair.gt.tgt_xy[:, 1] * f2, "o", ms=2.2, mfc=TRUE, mec="black", mew=0.4)
-        ax.set_xlabel(f"Narrow: {L.modality_label(rec, 'target')}\n{fov_label(pid)} of the wide image's area, "
+        # three short lines: one long line ran into the neighbouring caption
+        ax.set_xlabel(f"Narrow: {L.modality_label(rec, 'target')}\n{fov_label(pid)} of the wide image's area\n"
                       f"{len(pair.gt)} annotated points", fontsize=6.5, labelpad=2)
     save(fig, "Figure1")
 
@@ -232,7 +233,7 @@ def fig3() -> None:
     pair, rec = L.load(str(ci["pair_id"]))
     tiles = build(pair.source, pair.scale_ratio, tile_size=int(min(pair.target.shape[:2])), overlap=0.5)
     fig = plt.figure(figsize=(FULL, 128 * MM))
-    gs = fig.add_gridspec(2, 4, height_ratios=[1, 1], width_ratios=[1, 1, 0.9, 1.1], hspace=0.5, wspace=0.75)
+    gs = fig.add_gridspec(2, 4, height_ratios=[1, 1], width_ratios=[1, 1, 0.9, 1.1], hspace=0.5, wspace=1.1)
     axa = fig.add_subplot(gs[0, 0:2])
     f = show(axa, pair.source, 1000, clahe=True)
     lvl0 = [t for t in tiles if t.level == 0]
@@ -276,7 +277,8 @@ def fig3() -> None:
     for k, (cc, col, lab) in enumerate(((ci, IN_T, "inside"), (co, OUT_T, "outside"))):
         ax = fig.add_subplot(gs[1, k])
         share = _tile_panel(ax, cc, pair, col)
-        ax.set_title(f"Tile {lab} the outline:\n10,000 returned, {100 * share:.0f} % above\nthe certainty cut-off",
+        # short lines: the B and C columns are narrow, and a longer title ran into panel E's axis
+        ax.set_title(f"Tile {lab} the outline:\n10,000 returned,\n{100 * share:.0f} % above the cut-off",
                      fontsize=6.8)
         panel(ax, "BC"[k])
     fig.axes[-1].legend(handles=[plt.Line2D([], [], ls="", marker="o", ms=3, color=ABOVE, label="above cut-off"),
@@ -341,7 +343,8 @@ def fig4() -> None:
         name = {"ma_roma": "MatchAnything-RoMa", "roma": "RoMa"}[str(c["matcher"])]
         ax = axes[row, 0]
         _outlines_panel(ax, pair, c["H"])
-        ax.set_title(f"{name}: error {float(c['mu_ed']):.0f} pixels", fontsize=7)
+        # two lines, like the other titles in the row: on one line it ran into its neighbour
+        ax.set_title(f"{name}:\nerror {float(c['mu_ed']):.0f} pixels", fontsize=7)
         panel(ax, letter)
         ax.set_xlabel(f"wide: {L.modality_label(rec, 'source')}", fontsize=6.5)
         ax.text(0.0, 1.30, title, transform=ax.transAxes, fontsize=7.5, fontweight="bold")
@@ -349,7 +352,7 @@ def fig4() -> None:
         if job2:
             c2 = np.load(L.cache_path(job2), allow_pickle=False)
             _outlines_panel(ax2, pair, c2["H"])
-            ax2.set_title(f"after fine-tuning: error {float(c2['mu_ed']):.0f} pixels", fontsize=7)
+            ax2.set_title(f"after fine-tuning:\nerror {float(c2['mu_ed']):.0f} pixels", fontsize=7)
             ax2.set_xlabel("same wide image", fontsize=6.5)
         else:
             cw, ch = _same_area_panel(ax2, pair)
