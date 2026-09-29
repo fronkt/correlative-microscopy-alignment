@@ -1,0 +1,641 @@
+{
+ "reproduction_E4": {
+  "n_candidates": 12,
+  "n_ok": 56,
+  "best_single_n": 47,
+  "won": 14,
+  "lost": 5,
+  "mcnemar_p": 0.063568115234375,
+  "oracle_n": 80,
+  "dense_candidates": [
+   "ma_roma|direct|clahe|s0",
+   "ma_roma|direct|gradmag|s0",
+   "ma_roma|direct|histmatch|s0",
+   "ma_roma|direct|invert|s0",
+   "ma_roma|direct|none|s0",
+   "ma_roma|pyramid_v2|none|s0",
+   "roma|direct|clahe|s0",
+   "roma|direct|gradmag|s0",
+   "roma|direct|histmatch|s0",
+   "roma|direct|invert|s0",
+   "roma|direct|none|s0",
+   "roma|pyramid_v2|none|s0"
+  ],
+  "matches_exploratory_json": true,
+  "pairs_with_S1_tie_at_max": 29,
+  "tied_pairs_where_outcome_depends_on_tiebreak": 0
+ },
+ "wins_losses_summary": {
+  "wins_by_group": {
+   "DislocationCharacterization": 10,
+   "SerialSectioning": 2,
+   "Multiscale": 1,
+   "SameSlice": 1
+  },
+  "losses_by_group": {
+   "DislocationCharacterization": 3,
+   "Multiscale": 1,
+   "SameSlice": 1
+  },
+  "wins_by_scene_n": 5,
+  "wins_chosen": {
+   "ma_roma|direct|invert|s0": 4,
+   "roma|direct|invert|s0": 3,
+   "roma|direct|histmatch|s0": 2,
+   "roma|direct|clahe|s0": 2,
+   "roma|direct|none|s0": 1,
+   "roma|pyramid_v2|none|s0": 1,
+   "roma|direct|gradmag|s0": 1
+  },
+  "losses_chosen": {
+   "roma|direct|histmatch|s0": 1,
+   "roma|direct|gradmag|s0": 1,
+   "ma_roma|direct|gradmag|s0": 1,
+   "roma|pyramid_v2|none|s0": 1,
+   "roma|direct|none|s0": 1
+  },
+  "wins_best_single_err_finite": 14
+ },
+ "logo_E4": {
+  "DislocationCharacterization": {
+   "n_pairs": 118,
+   "rule_n": 41,
+   "best_n": 39,
+   "gain_n": 2,
+   "won": 4,
+   "lost": 2,
+   "mcnemar_p": 0.6875
+  },
+  "FractureSurfaces": {
+   "n_pairs": 181,
+   "rule_n": 50,
+   "best_n": 41,
+   "gain_n": 9,
+   "won": 14,
+   "lost": 5,
+   "mcnemar_p": 0.063568115234375
+  },
+  "Multiscale": {
+   "n_pairs": 174,
+   "rule_n": 48,
+   "best_n": 39,
+   "gain_n": 9,
+   "won": 13,
+   "lost": 4,
+   "mcnemar_p": 0.049041748046875
+  },
+  "SameSlice": {
+   "n_pairs": 161,
+   "rule_n": 40,
+   "best_n": 31,
+   "gain_n": 9,
+   "won": 13,
+   "lost": 4,
+   "mcnemar_p": 0.049041748046875
+  },
+  "SerialSectioning": {
+   "n_pairs": 145,
+   "rule_n": 45,
+   "best_n": 38,
+   "gain_n": 7,
+   "won": 12,
+   "lost": 5,
+   "mcnemar_p": 0.143463134765625
+  },
+  "SlipPartitioning": {
+   "n_pairs": 156,
+   "rule_n": 56,
+   "best_n": 47,
+   "gain_n": 9,
+   "won": 14,
+   "lost": 5,
+   "mcnemar_p": 0.063568115234375
+  }
+ },
+ "per_group_E4": {
+  "DislocationCharacterization": {
+   "n_pairs": 69,
+   "rule_n": 15,
+   "best_n": 8,
+   "gain_n": 7,
+   "won": 10,
+   "lost": 3,
+   "mcnemar_p": 0.09228515625
+  },
+  "FractureSurfaces": {
+   "n_pairs": 6,
+   "rule_n": 6,
+   "best_n": 6,
+   "gain_n": 0,
+   "won": 0,
+   "lost": 0,
+   "mcnemar_p": 1.0
+  },
+  "Multiscale": {
+   "n_pairs": 13,
+   "rule_n": 8,
+   "best_n": 8,
+   "gain_n": 0,
+   "won": 1,
+   "lost": 1,
+   "mcnemar_p": 1.0
+  },
+  "SameSlice": {
+   "n_pairs": 26,
+   "rule_n": 16,
+   "best_n": 16,
+   "gain_n": 0,
+   "won": 1,
+   "lost": 1,
+   "mcnemar_p": 1.0
+  },
+  "SerialSectioning": {
+   "n_pairs": 42,
+   "rule_n": 11,
+   "best_n": 9,
+   "gain_n": 2,
+   "won": 2,
+   "lost": 0,
+   "mcnemar_p": 0.5
+  },
+  "SlipPartitioning": {
+   "n_pairs": 31,
+   "rule_n": 0,
+   "best_n": 0,
+   "gain_n": 0,
+   "won": 0,
+   "lost": 0,
+   "mcnemar_p": 1.0
+  }
+ },
+ "loso_E4_summary": {
+  "n_scenes": 35,
+  "gain_min": 1,
+  "gain_max": 10,
+  "p_min": 0.0308837890625,
+  "p_max": 1.0,
+  "top_net_contributing_scenes": [
+   [
+    "eval_MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization_0",
+    8
+   ],
+   [
+    "eval_5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale_0",
+    1
+   ],
+   [
+    "eval_AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice_3",
+    1
+   ],
+   [
+    "eval_In718-PrecipitationStrengthened_SEM-BSE_EBSD_SameSliceSerialSectioning_0",
+    1
+   ],
+   [
+    "eval_In718-SolutionStrengthened_SEM-SE_EBSD_SameSliceSerialSectioning_0",
+    1
+   ]
+  ]
+ },
+ "rules": {
+  "R5_S1_all15 (baseline: max S1 over all 15; = H3 select_S1)": {
+   "n_ok": 42,
+   "sr20": 0.22459893048128343,
+   "won": 6,
+   "lost": 11,
+   "gain_n": -5,
+   "mcnemar_p": 0.332305908203125,
+   "picks": {
+    "sift|direct|none|s0": 79,
+    "roma|direct|invert|s0": 16,
+    "matchanything|direct|none|s0": 15,
+    "ma_roma|direct|none|s0": 11,
+    "roma|direct|clahe|s0": 10,
+    "roma|direct|histmatch|s0": 10,
+    "ma_roma|direct|invert|s0": 9,
+    "roma|direct|gradmag|s0": 9,
+    "ma_roma|direct|histmatch|s0": 7,
+    "roma|direct|none|s0": 7,
+    "roma|pyramid_v2|none|s0": 5,
+    "ma_roma|direct|clahe|s0": 4,
+    "ma_roma|pyramid_v2|none|s0": 4,
+    "ma_roma|direct|gradmag|s0": 1
+   },
+   "note": ""
+  },
+  "R1_S1_all15_nmatches>=50": {
+   "n_ok": 46,
+   "sr20": 0.24598930481283424,
+   "won": 6,
+   "lost": 7,
+   "gain_n": -1,
+   "mcnemar_p": 1.0,
+   "picks": {
+    "sift|direct|none|s0": 58,
+    "roma|direct|invert|s0": 24,
+    "roma|direct|histmatch|s0": 14,
+    "roma|direct|gradmag|s0": 14,
+    "roma|direct|clahe|s0": 12,
+    "ma_roma|direct|invert|s0": 11,
+    "ma_roma|direct|none|s0": 11,
+    "roma|direct|none|s0": 11,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|direct|clahe|s0": 9,
+    "ma_roma|direct|histmatch|s0": 8,
+    "ma_roma|pyramid_v2|none|s0": 4,
+    "ma_roma|direct|gradmag|s0": 2
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.7700534759358288,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R1_S1_all15_nmatches>=100": {
+   "n_ok": 46,
+   "sr20": 0.24598930481283424,
+   "won": 6,
+   "lost": 7,
+   "gain_n": -1,
+   "mcnemar_p": 1.0,
+   "picks": {
+    "sift|direct|none|s0": 57,
+    "roma|direct|invert|s0": 25,
+    "roma|direct|histmatch|s0": 14,
+    "roma|direct|gradmag|s0": 14,
+    "roma|direct|clahe|s0": 12,
+    "ma_roma|direct|invert|s0": 11,
+    "ma_roma|direct|none|s0": 11,
+    "roma|direct|none|s0": 11,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|direct|clahe|s0": 9,
+    "ma_roma|direct|histmatch|s0": 8,
+    "ma_roma|pyramid_v2|none|s0": 4,
+    "ma_roma|direct|gradmag|s0": 2
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.6684491978609626,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R1_S1_all15_nmatches>=200": {
+   "n_ok": 46,
+   "sr20": 0.24598930481283424,
+   "won": 6,
+   "lost": 7,
+   "gain_n": -1,
+   "mcnemar_p": 1.0,
+   "picks": {
+    "sift|direct|none|s0": 56,
+    "roma|direct|invert|s0": 25,
+    "roma|direct|histmatch|s0": 14,
+    "roma|direct|gradmag|s0": 14,
+    "roma|direct|clahe|s0": 12,
+    "ma_roma|direct|invert|s0": 11,
+    "ma_roma|direct|none|s0": 11,
+    "roma|direct|none|s0": 11,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|direct|clahe|s0": 9,
+    "ma_roma|direct|histmatch|s0": 8,
+    "ma_roma|pyramid_v2|none|s0": 4,
+    "ma_roma|direct|gradmag|s0": 3
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.49376114081996436,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R1_S1_all15_nmatches>=500": {
+   "n_ok": 46,
+   "sr20": 0.24598930481283424,
+   "won": 6,
+   "lost": 7,
+   "gain_n": -1,
+   "mcnemar_p": 1.0,
+   "picks": {
+    "sift|direct|none|s0": 56,
+    "roma|direct|invert|s0": 25,
+    "roma|direct|histmatch|s0": 14,
+    "roma|direct|gradmag|s0": 14,
+    "roma|direct|clahe|s0": 12,
+    "ma_roma|direct|invert|s0": 11,
+    "ma_roma|direct|none|s0": 11,
+    "roma|direct|none|s0": 11,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|direct|clahe|s0": 9,
+    "ma_roma|direct|histmatch|s0": 8,
+    "ma_roma|pyramid_v2|none|s0": 4,
+    "ma_roma|direct|gradmag|s0": 3
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.39750445632798576,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R1_S1_all15_nmatches>=1000": {
+   "n_ok": 56,
+   "sr20": 0.2994652406417112,
+   "won": 14,
+   "lost": 5,
+   "gain_n": 9,
+   "mcnemar_p": 0.063568115234375,
+   "picks": {
+    "roma|direct|invert|s0": 28,
+    "roma|direct|gradmag|s0": 20,
+    "ma_roma|direct|invert|s0": 20,
+    "ma_roma|direct|gradmag|s0": 19,
+    "roma|direct|histmatch|s0": 17,
+    "ma_roma|direct|none|s0": 16,
+    "roma|direct|clahe|s0": 15,
+    "ma_roma|direct|histmatch|s0": 12,
+    "roma|direct|none|s0": 12,
+    "ma_roma|direct|clahe|s0": 10,
+    "roma|pyramid_v2|none|s0": 9,
+    "matchanything|direct|none|s0": 5,
+    "ma_roma|pyramid_v2|none|s0": 4
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.1408199643493761,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R1_S1_all15_nmatches>=5000": {
+   "n_ok": 56,
+   "sr20": 0.2994652406417112,
+   "won": 14,
+   "lost": 5,
+   "gain_n": 9,
+   "mcnemar_p": 0.063568115234375,
+   "picks": {
+    "roma|direct|invert|s0": 28,
+    "roma|direct|gradmag|s0": 24,
+    "ma_roma|direct|invert|s0": 20,
+    "ma_roma|direct|gradmag|s0": 19,
+    "roma|direct|histmatch|s0": 17,
+    "ma_roma|direct|none|s0": 16,
+    "roma|direct|clahe|s0": 15,
+    "ma_roma|direct|histmatch|s0": 13,
+    "roma|direct|none|s0": 12,
+    "ma_roma|direct|clahe|s0": 10,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|pyramid_v2|none|s0": 4
+   },
+   "note": "",
+   "pairs_with_no_eligible_candidate": 0,
+   "eligible_frac_by_family": {
+    "sparse(sift,loftr,matchanything)": 0.0106951871657754,
+    "dense(roma,ma_roma)": 1.0
+   }
+  },
+  "R2_S1_dense12 (= E4)": {
+   "n_ok": 56,
+   "sr20": 0.2994652406417112,
+   "won": 14,
+   "lost": 5,
+   "gain_n": 9,
+   "mcnemar_p": 0.063568115234375,
+   "picks": {
+    "roma|direct|invert|s0": 28,
+    "roma|direct|gradmag|s0": 24,
+    "ma_roma|direct|invert|s0": 20,
+    "ma_roma|direct|gradmag|s0": 19,
+    "roma|direct|histmatch|s0": 17,
+    "ma_roma|direct|none|s0": 16,
+    "roma|direct|clahe|s0": 15,
+    "ma_roma|direct|histmatch|s0": 13,
+    "roma|direct|none|s0": 12,
+    "ma_roma|direct|clahe|s0": 10,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|pyramid_v2|none|s0": 4
+   },
+   "note": ""
+  },
+  "R3a_S1_dense_direct10": {
+   "n_ok": 54,
+   "sr20": 0.2887700534759358,
+   "won": 13,
+   "lost": 6,
+   "gain_n": 7,
+   "mcnemar_p": 0.1670684814453125,
+   "picks": {
+    "roma|direct|invert|s0": 29,
+    "roma|direct|gradmag|s0": 27,
+    "ma_roma|direct|invert|s0": 21,
+    "ma_roma|direct|gradmag|s0": 20,
+    "ma_roma|direct|none|s0": 18,
+    "roma|direct|histmatch|s0": 17,
+    "roma|direct|clahe|s0": 17,
+    "roma|direct|none|s0": 14,
+    "ma_roma|direct|histmatch|s0": 14,
+    "ma_roma|direct|clahe|s0": 10
+   },
+   "note": ""
+  },
+  "R3b_S1_dense_pyramid2": {
+   "n_ok": 51,
+   "sr20": 0.2727272727272727,
+   "won": 9,
+   "lost": 5,
+   "gain_n": 4,
+   "mcnemar_p": 0.4239501953125,
+   "picks": {
+    "roma|pyramid_v2|none|s0": 94,
+    "ma_roma|pyramid_v2|none|s0": 93
+   },
+   "note": ""
+  },
+  "R3c_S1_roma_only6 (extra)": {
+   "n_ok": 49,
+   "sr20": 0.2620320855614973,
+   "won": 18,
+   "lost": 16,
+   "gain_n": 2,
+   "mcnemar_p": 0.8641662404406816,
+   "picks": {
+    "roma|direct|gradmag|s0": 44,
+    "roma|direct|invert|s0": 44,
+    "roma|direct|clahe|s0": 33,
+    "roma|direct|none|s0": 28,
+    "roma|direct|histmatch|s0": 27,
+    "roma|pyramid_v2|none|s0": 11
+   },
+   "note": ""
+  },
+  "R3d_S1_ma_roma_only6 (extra)": {
+   "n_ok": 59,
+   "sr20": 0.3155080213903743,
+   "won": 16,
+   "lost": 4,
+   "gain_n": 12,
+   "mcnemar_p": 0.01181793212890625,
+   "picks": {
+    "ma_roma|direct|invert|s0": 48,
+    "ma_roma|direct|gradmag|s0": 41,
+    "ma_roma|direct|none|s0": 38,
+    "ma_roma|direct|histmatch|s0": 28,
+    "ma_roma|direct|clahe|s0": 26,
+    "ma_roma|pyramid_v2|none|s0": 6
+   },
+   "note": ""
+  },
+  "R4_max_n_inliers_all15": {
+   "n_ok": 56,
+   "sr20": 0.2994652406417112,
+   "won": 14,
+   "lost": 5,
+   "gain_n": 9,
+   "mcnemar_p": 0.063568115234375,
+   "picks": {
+    "roma|direct|invert|s0": 28,
+    "roma|direct|gradmag|s0": 24,
+    "ma_roma|direct|invert|s0": 20,
+    "ma_roma|direct|gradmag|s0": 19,
+    "roma|direct|histmatch|s0": 17,
+    "ma_roma|direct|none|s0": 16,
+    "roma|direct|clahe|s0": 15,
+    "ma_roma|direct|histmatch|s0": 13,
+    "roma|direct|none|s0": 12,
+    "ma_roma|direct|clahe|s0": 10,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|pyramid_v2|none|s0": 4
+   },
+   "note": ""
+  },
+  "R4b_max_n_inliers_dense12 (extra)": {
+   "n_ok": 56,
+   "sr20": 0.2994652406417112,
+   "won": 14,
+   "lost": 5,
+   "gain_n": 9,
+   "mcnemar_p": 0.063568115234375,
+   "picks": {
+    "roma|direct|invert|s0": 28,
+    "roma|direct|gradmag|s0": 24,
+    "ma_roma|direct|invert|s0": 20,
+    "ma_roma|direct|gradmag|s0": 19,
+    "roma|direct|histmatch|s0": 17,
+    "ma_roma|direct|none|s0": 16,
+    "roma|direct|clahe|s0": 15,
+    "ma_roma|direct|histmatch|s0": 13,
+    "roma|direct|none|s0": 12,
+    "ma_roma|direct|clahe|s0": 10,
+    "roma|pyramid_v2|none|s0": 9,
+    "ma_roma|pyramid_v2|none|s0": 4
+   },
+   "note": ""
+  }
+ },
+ "bootstrap_gain": {
+  "R2 (E4)": {
+   "gain": 0.048128342245989275,
+   "lo": -0.01639569446946495,
+   "hi": 0.1239373601789708,
+   "n_boot": 10000,
+   "frac_boot_gain_le_0": 0.1509
+  },
+  "best R1 = R1_S1_all15_nmatches>=1000": {
+   "gain": 0.048128342245989275,
+   "lo": -0.01639569446946495,
+   "hi": 0.1239373601789708,
+   "n_boot": 10000,
+   "frac_boot_gain_le_0": 0.1509
+  }
+ },
+ "best_R1": "R1_S1_all15_nmatches>=1000",
+ "logo_best_R1": {
+  "DislocationCharacterization": {
+   "n_pairs": 118,
+   "rule_n": 41,
+   "best_n": 39,
+   "gain_n": 2,
+   "won": 4,
+   "lost": 2,
+   "mcnemar_p": 0.6875
+  },
+  "FractureSurfaces": {
+   "n_pairs": 181,
+   "rule_n": 50,
+   "best_n": 41,
+   "gain_n": 9,
+   "won": 14,
+   "lost": 5,
+   "mcnemar_p": 0.063568115234375
+  },
+  "Multiscale": {
+   "n_pairs": 174,
+   "rule_n": 48,
+   "best_n": 39,
+   "gain_n": 9,
+   "won": 13,
+   "lost": 4,
+   "mcnemar_p": 0.049041748046875
+  },
+  "SameSlice": {
+   "n_pairs": 161,
+   "rule_n": 40,
+   "best_n": 31,
+   "gain_n": 9,
+   "won": 13,
+   "lost": 4,
+   "mcnemar_p": 0.049041748046875
+  },
+  "SerialSectioning": {
+   "n_pairs": 145,
+   "rule_n": 45,
+   "best_n": 38,
+   "gain_n": 7,
+   "won": 12,
+   "lost": 5,
+   "mcnemar_p": 0.143463134765625
+  },
+  "SlipPartitioning": {
+   "n_pairs": 156,
+   "rule_n": 56,
+   "best_n": 47,
+   "gain_n": 9,
+   "won": 14,
+   "lost": 5,
+   "mcnemar_p": 0.063568115234375
+  }
+ },
+ "multiplicity": {
+  "prior_rules_on_these_pairs": [
+   "H3 select_S1 (all 15)",
+   "H3 select_S2",
+   "H3 select_S3",
+   "E4 dense-only S1"
+  ],
+  "new_rules_this_task": [
+   "R1_S1_all15_nmatches>=50",
+   "R1_S1_all15_nmatches>=100",
+   "R1_S1_all15_nmatches>=200",
+   "R1_S1_all15_nmatches>=500",
+   "R1_S1_all15_nmatches>=1000",
+   "R1_S1_all15_nmatches>=5000",
+   "R3a_S1_dense_direct10",
+   "R3b_S1_dense_pyramid2",
+   "R3c_S1_roma_only6 (extra)",
+   "R3d_S1_ma_roma_only6 (extra)",
+   "R4_max_n_inliers_all15",
+   "R4b_max_n_inliers_dense12 (extra)"
+  ],
+  "n_variants_total": 16,
+  "best_p_variant": "R3d_S1_ma_roma_only6 (extra)",
+  "best_p": 0.01181793212890625,
+  "bonferroni_adj_best_p": 0.1890869140625,
+  "bonferroni_adj_E4_p": 1.0,
+  "bonferroni_alpha_per_test": 0.003125,
+  "note": "counts pick rules only; excludes LOGO/LOSO (sensitivity of one rule) and upstream E1-E9 diagnostics. E4's own choice of 'dense-only' was made after seeing SIFT dominate the S1 picks (E3), so the true forking-path count is larger than stated."
+ },
+ "B": 10000,
+ "best_single": "ma_roma|pyramid_v2|none|s0"
+}

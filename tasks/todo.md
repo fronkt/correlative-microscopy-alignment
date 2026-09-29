@@ -5,7 +5,10 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
 ## Triage extension — follow-up paper (opened 2026-09-29, branch `triage-ext`, worktree `cma-triage-ext`)
 
-**Status: PLAN ONLY. Waiting for Frank's go-ahead before any step runs.**
+**Status (2026-09-29): Frank approved Phase A. A1–A5 are running as Sonnet agents.**
+**Frank's decision: the replication benchmark must be MATERIALS ONLY.** That rules out the biology sets from the
+first scan (SuperCUT, Eliceiri SHG-BF, Lu et al.). A second, materials-only search of the places the first scan
+skipped is running and writes to `cma-cjsj/research/materials_benchmark_scan.md`.
 
 **Separation.** A separate follow-up paper to the CJSJ study. The CJSJ submission (due Wed 2026-09-30, worktree
 `cma-cjsj`, branch `cjsj-tta`) stays unchanged. Nothing from this branch goes into the CJSJ or M&M papers. The
