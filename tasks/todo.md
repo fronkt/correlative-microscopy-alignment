@@ -3,6 +3,103 @@
 Track in this file. Check items off as completed.
 Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
+## Triage extension — follow-up paper (opened 2026-09-29, branch `triage-ext`, worktree `cma-triage-ext`)
+
+**Status: PLAN ONLY. Waiting for Frank's go-ahead before any step runs.**
+
+**Separation.** A separate follow-up paper to the CJSJ study. The CJSJ submission (due Wed 2026-09-30, worktree
+`cma-cjsj`, branch `cjsj-tta`) stays unchanged. Nothing from this branch goes into the CJSJ or M&M papers. The
+follow-up cites CJSJ (and M&M) for the base triage results and reports only new analyses and the new benchmark. If CJSJ
+makes the paper a finalist, CJSJ gets exclusive rights to *that* paper, not to these new results. This branch forks
+from `cjsj-tta` at 2983bde. Frank's uncommitted docx edits in `cma-cjsj` are never touched from here.
+
+**Who does what.** Opus 5.5 (main session) designs the analyses, writes the pre-registration, and judges results.
+Sonnet 5.5 subagents (`model: sonnet`) write and run the code, one focused task per agent, each ending with a short
+report and the numbers in a JSON file. Opus reads every JSON and spot-checks one number per task against the CSV
+before it goes into a claim.
+
+**Inputs.** `results/triage/candidates.csv` (5,049 rows = 27 configurations × 187 pairs; 31 failed runs count as
+error = ∞). The stored columns are H (9 floats), n_matches, n_inliers, mu_ed, image sizes, and group, subclass and
+scene. **Correspondences were not stored**, so any score that needs match positions (spatial coverage, local
+consistency) needs a re-run. SIFT and LoFTR run locally on CPU; the dense matchers need a GPU (Phase C). Images are
+read-only from `../correlative-microscopy-alignment/data/AmalgaMatch` (9.3 GB). RANSAC threshold 5.5 px.
+
+**Forking-paths rule.** Every Phase A analysis is exploratory on data already seen. Nothing from Phase A counts as
+confirmed on AmalgaMatch. `results/phaseA/analysis_log.md` lists every variant tried, including the dead ends, so the
+paper can report how many were tried. Only what Phase B pre-registers and Phase C tests on a new benchmark is
+confirmatory.
+
+### Phase A — exploratory, CPU only, existing CSV (Sonnet executes, one agent per item)
+Outputs: `scripts/phaseA_<x>.py` → `results/phaseA/<x>.json` (+ figures in `results/phaseA/fig/`).
+- [ ] A0. Shared helpers only where `src/cma/triage.py` lacks them (grid displacement between two H, clustered
+      bootstrap, and AUROC already exist; reuse them). Define "the 42": MA-RoMa direct seed 0, S1 ≥ 0.171,
+      mu_ed > 20 px, held-out groups. Assert the count = 42 before anything else runs.
+- [ ] A1. **The 42 confident TEM false accepts.**
+  - (i) Shared vs matcher-specific: for each of the 42, compute the grid displacement from every other candidate's
+    H (SIFT, LoFTR, MatchAnything, RoMa, transforms, seeds) to MA-RoMa's H, and each candidate's own error. Do the
+    others land in the *same* wrong place (< 20 px apart), somewhere else, or on the truth?
+  - (ii) Error geometry: decompose H_gt⁻¹·H_est into translation, rotation, scale, shear and perspective. Is the
+    error mostly a translation? Do the translations cluster, or fall on multiples of one vector?
+  - (iii) Repeating structure: compute the target image's autocorrelation (FFT) and find the dominant period
+    vectors. Test whether the error translations fall near integer multiples of them, against a
+    shuffled-vector null.
+  - (iv) Threshold sensitivity: how many of the 42 remain at 25 and 30 px (8 are 20–30 px). Confirm "GT-fit
+    homography < 20 px on 41/42" from the gt rows, so the model family is not the cause.
+  - (v) One figure: 4 of the 42 (2 near-miss, 2 gross) with GT points, estimated points and the displacement
+    field. Opus picks the examples after seeing (i)–(iii).
+- [ ] A2. **Seed disagreement as a failure signal.** Per pair, for RoMa and for MA-RoMa, take the 6 seed runs
+      (core seed 0 + control seeds 1–5) and compute D = median pairwise grid displacement (px, source frame).
+      Report: the distribution of D (is it almost always ~0? E1 says only 16 pairs flip success across MA-RoMa
+      seeds); AUROC of −D for seed-0 success, with a scene-clustered CI; AUROC of S1 + D (rank mean) vs S1 alone
+      (paired CI); D among the 42. Cost note: D needs 6× compute per pair, so it has to beat S1 by a margin worth
+      that.
+- [ ] A3. **Per-image-type calibration from k hand-checked pairs.** For each subclass (19) and each
+      k ∈ {1, 2, 3, 5}, draw k labelled pairs (1,000 draws). Choose a cut-off from them (rule fixed in advance:
+      the midpoint between the lowest-S1 success and the highest-S1 failure among the k; if all k have one
+      label, fall back to the global 0.171). Score the rest of that subclass. Report false-accept rate and recall
+      vs the single global cut-off, overall and on the TEM subclass. Also report the within-subclass AUROC, since
+      calibration helps only where there is within-subclass separation. Say plainly which subclasses have too
+      few pairs.
+- [ ] A4. **A score comparable across matchers.** S1 favours matchers that return few matches (SIFT median 99
+      matches; SIFT picked on 79 pairs, 9 of 11 losses). From stored columns only:
+  - (a) a-contrario log-NFA. Under a null of random matches, each match is an inlier with probability
+    p = π·5.5² / (w_t·h_t). log-NFA = log(#RANSAC hypotheses) + log BinomTail(n_inliers; n_matches, p). A
+    more negative value means the match is less likely to be chance.
+  - (b) a Wilson lower bound on the inlier fraction.
+  - (c) raw n_inliers.
+  For each score: AUROC per matcher, pooled AUROC across all voting candidates (the H2-style pooled test), and
+  the H3-style per-pair pick (by score) vs the best single candidate and vs pick-by-S1. Also note that p is
+  tiny for large images, so (a) may saturate; check this before reading the AUROC.
+- [ ] A5. **The RoMa-family-only pick rule (56 vs 47, p = 0.06).** List the 14 wins and 5 losses by group and
+      scene. Leave-one-group-out: does the gain survive dropping each group? Is it "exclude sparse matchers" or
+      "exclude low n_matches"? Compare with "pick max S1 among candidates with n_matches ≥ N" for N on a coarse
+      grid, which is exploratory and gets logged. Compare with pick-by-A4 score over all candidates, since A4
+      might recover the same gain without a hand-made family rule.
+- [ ] A6. Opus synthesis: `results/phaseA/synthesis.md`. For each item, what it shows, how many variants were
+      tried, and whether it earns a confirmatory hypothesis. **Check in with Frank here before Phase B.**
+
+### Phase B — pre-registration (Opus writes, Frank approves, commit + push before any Phase C run)
+- [ ] B1. `prereg/triage_ext_prereg.md`: dataset (from the scan), hypotheses from A6 with direction, metric,
+      success thresholds (20 px primary; plus one threshold scaled to image size, since a second benchmark may
+      have very different pixel sizes), fixed cut-offs **carried over from AmalgaMatch unchanged** (for example
+      S1 0.171), statistics (scene-clustered bootstrap, McNemar), stopping rule, and exclusions.
+- [ ] B2. Candidate list for Phase C: the smallest set the hypotheses need, not all 27. That cuts GPU cost.
+- [ ] B3. Commit + push. The commit hash is the timestamp and goes in the paper.
+
+### Phase C — GPU replication on a second benchmark (needs Frank's $ approval)
+- [ ] C0. Benchmark choice from `research/second_benchmark_scan.md` (licence without NC/ND conflicts preferred;
+      not in RoMa or MatchAnything training data; GT points or known transform; a global homography is
+      adequate). Frank picks from a shortlist.
+- [ ] C1. Check vast.ai credit first (~$17 on 09-27, with other boxes burning). Give the cost estimate
+      (GPU-h × $/h) and **get Frank's OK**.
+- [ ] C2. Sonnet runs the box: resumable CSV, and this time store correspondences (npz) so match-position scores
+      can be computed later. Pull the results, then destroy the box.
+- [ ] C3. Confirmatory analysis exactly as pre-registered; deviations get their own section.
+
+### Open questions for Frank
+1. Target venue for the follow-up paper. This sets its length and how much Phase A goes in.
+2. Is the scope of Phase A OK, or should any item be dropped?
+
 ## CJSJ 2026-27 — label-free triage of registrations (2026-09-27, branch `cjsj-tta`)
 
 **Venue:** Columbia Junior Science Journal, original research, 2-3 pages. **Due Wed 2026-09-30 11:59 PM ET, no
