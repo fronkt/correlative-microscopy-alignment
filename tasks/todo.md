@@ -5,7 +5,7 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
 ## Triage extension — follow-up paper (opened 2026-09-29, branch `triage-ext`, worktree `cma-triage-ext`)
 
-**Status (2026-09-29): Frank approved Phase A. A1–A5 are running as Sonnet agents.**
+**Status (2026-09-29): Phase A is DONE, and the findings are in `results/phaseA/synthesis.md`. Waiting for Frank's decisions before Phase B.**
 **Frank's decision: the replication benchmark must be MATERIALS ONLY.** That rules out the biology sets from the
 first scan (SuperCUT, Eliceiri SHG-BF, Lu et al.). A second, materials-only search of the places the first scan
 skipped is running and writes to `cma-cjsj/research/materials_benchmark_scan.md`.
@@ -34,10 +34,10 @@ confirmatory.
 
 ### Phase A — exploratory, CPU only, existing CSV (Sonnet executes, one agent per item)
 Outputs: `scripts/phaseA_<x>.py` → `results/phaseA/<x>.json` (+ figures in `results/phaseA/fig/`).
-- [ ] A0. Shared helpers only where `src/cma/triage.py` lacks them (grid displacement between two H, clustered
+- [x] A0. Shared helpers only where `src/cma/triage.py` lacks them (grid displacement between two H, clustered
       bootstrap, and AUROC already exist; reuse them). Define "the 42": MA-RoMa direct seed 0, S1 ≥ 0.171,
       mu_ed > 20 px, held-out groups. Assert the count = 42 before anything else runs.
-- [ ] A1. **The 42 confident TEM false accepts.**
+- [x] A1. **The 42 confident TEM false accepts.**
   - (i) Shared vs matcher-specific: for each of the 42, compute the grid displacement from every other candidate's
     H (SIFT, LoFTR, MatchAnything, RoMa, transforms, seeds) to MA-RoMa's H, and each candidate's own error. Do the
     others land in the *same* wrong place (< 20 px apart), somewhere else, or on the truth?
@@ -50,20 +50,20 @@ Outputs: `scripts/phaseA_<x>.py` → `results/phaseA/<x>.json` (+ figures in `re
     homography < 20 px on 41/42" from the gt rows, so the model family is not the cause.
   - (v) One figure: 4 of the 42 (2 near-miss, 2 gross) with GT points, estimated points and the displacement
     field. Opus picks the examples after seeing (i)–(iii).
-- [ ] A2. **Seed disagreement as a failure signal.** Per pair, for RoMa and for MA-RoMa, take the 6 seed runs
+- [x] A2. **Seed disagreement as a failure signal.** Per pair, for RoMa and for MA-RoMa, take the 6 seed runs
       (core seed 0 + control seeds 1–5) and compute D = median pairwise grid displacement (px, source frame).
       Report: the distribution of D (is it almost always ~0? E1 says only 16 pairs flip success across MA-RoMa
       seeds); AUROC of −D for seed-0 success, with a scene-clustered CI; AUROC of S1 + D (rank mean) vs S1 alone
       (paired CI); D among the 42. Cost note: D needs 6× compute per pair, so it has to beat S1 by a margin worth
       that.
-- [ ] A3. **Per-image-type calibration from k hand-checked pairs.** For each subclass (19) and each
+- [x] A3. **Per-image-type calibration from k hand-checked pairs.** For each subclass (19) and each
       k ∈ {1, 2, 3, 5}, draw k labelled pairs (1,000 draws). Choose a cut-off from them (rule fixed in advance:
       the midpoint between the lowest-S1 success and the highest-S1 failure among the k; if all k have one
       label, fall back to the global 0.171). Score the rest of that subclass. Report false-accept rate and recall
       vs the single global cut-off, overall and on the TEM subclass. Also report the within-subclass AUROC, since
       calibration helps only where there is within-subclass separation. Say plainly which subclasses have too
       few pairs.
-- [ ] A4. **A score comparable across matchers.** S1 favours matchers that return few matches (SIFT median 99
+- [x] A4. **A score comparable across matchers.** S1 favours matchers that return few matches (SIFT median 99
       matches; SIFT picked on 79 pairs, 9 of 11 losses). From stored columns only:
   - (a) a-contrario log-NFA. Under a null of random matches, each match is an inlier with probability
     p = π·5.5² / (w_t·h_t). log-NFA = log(#RANSAC hypotheses) + log BinomTail(n_inliers; n_matches, p). A
@@ -73,12 +73,13 @@ Outputs: `scripts/phaseA_<x>.py` → `results/phaseA/<x>.json` (+ figures in `re
   For each score: AUROC per matcher, pooled AUROC across all voting candidates (the H2-style pooled test), and
   the H3-style per-pair pick (by score) vs the best single candidate and vs pick-by-S1. Also note that p is
   tiny for large images, so (a) may saturate; check this before reading the AUROC.
-- [ ] A5. **The RoMa-family-only pick rule (56 vs 47, p = 0.06).** List the 14 wins and 5 losses by group and
+- [x] A5. **The RoMa-family-only pick rule (56 vs 47, p = 0.06).** List the 14 wins and 5 losses by group and
       scene. Leave-one-group-out: does the gain survive dropping each group? Is it "exclude sparse matchers" or
       "exclude low n_matches"? Compare with "pick max S1 among candidates with n_matches ≥ N" for N on a coarse
       grid, which is exploratory and gets logged. Compare with pick-by-A4 score over all candidates, since A4
       might recover the same gain without a hand-made family rule.
-- [ ] A6. Opus synthesis: `results/phaseA/synthesis.md`. For each item, what it shows, how many variants were
+- [x] A6b. Overlay audit (added after A1 found the banner lock): `results/phaseA/a6_*`.
+- [x] A6. Opus synthesis: `results/phaseA/synthesis.md`. For each item, what it shows, how many variants were
       tried, and whether it earns a confirmatory hypothesis. **Check in with Frank here before Phase B.**
 
 ### Phase B — pre-registration (Opus writes, Frank approves, commit + push before any Phase C run)

@@ -1,0 +1,662 @@
+{
+ "n_images": 156,
+ "n_images_overlay": 37,
+ "params": {
+  "WORK_MAX": 3072,
+  "MAX_DEPTH": 0.12,
+  "MIN_DEPTH_PX": 6,
+  "FLAT_FRAC": 0.5,
+  "GAP": 3,
+  "MIN_GLYPHS": 20,
+  "GLYPH_CONTRAST": 50,
+  "LABEL_WHITE": 250,
+  "LABEL_CORNER": 0.3,
+  "LABEL_MIN_HOLES": 2,
+  "NEAR_ID_PX": 20.0,
+  "GT_DISP_MIN": 40.0
+ },
+ "images_by_subclass": {
+  "5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale": {
+   "sum": 0,
+   "count": 2
+  },
+  "AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice": {
+   "sum": 0,
+   "count": 20
+  },
+  "C103_SEM-SE_LOM-DC-Height_FractureSurfaces": {
+   "sum": 8,
+   "count": 9
+  },
+  "CoNi-AM67_OM-SEM_Multiscale": {
+   "sum": 0,
+   "count": 4
+  },
+  "CoNi-AM67_SEM-EBSD_SameSliceSerialSectioning": {
+   "sum": 0,
+   "count": 15
+  },
+  "CoNi-AM90_OM-SEM_Multiscale": {
+   "sum": 0,
+   "count": 3
+  },
+  "CoNi-AM90_SEM-DIC_EBSD_SlipPartitioning": {
+   "sum": 0,
+   "count": 12
+  },
+  "CoNi-AM90_SEM-EBSD_SameSlice": {
+   "sum": 0,
+   "count": 5
+  },
+  "CoNi_SEM-SE_SEM-BSE_Cracks-SameSliceSerialSectioning": {
+   "sum": 0,
+   "count": 2
+  },
+  "In718-PrecipitationStrengthened_SEM-BSE_EBSD_SameSliceSerialSectioning": {
+   "sum": 0,
+   "count": 8
+  },
+  "In718-PrecipitationStrengthened_SEM-DIC_EBSD_SlipPartitioning": {
+   "sum": 0,
+   "count": 5
+  },
+  "In718-SolutionStrengthened_SEM-SE_EBSD_SameSliceSerialSectioning": {
+   "sum": 0,
+   "count": 14
+  },
+  "MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization": {
+   "sum": 12,
+   "count": 12
+  },
+  "MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization": {
+   "sum": 8,
+   "count": 8
+  },
+  "MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization": {
+   "sum": 9,
+   "count": 9
+  },
+  "TRIP1-Bainitic_LOM_SEM_EBSD_Multiscale": {
+   "sum": 0,
+   "count": 8
+  },
+  "Ta-AM-Spalled_SEM-BSE_EBSD_SameSliceSerialSectioning": {
+   "sum": 0,
+   "count": 12
+  },
+  "Ti3AlC2-MAX-Phase_TEM_DislocationCharacterization": {
+   "sum": 0,
+   "count": 4
+  },
+  "X2CrNi12-Ferritic_SEM-SE-Stitch_EBSD_Fatigue-SameSlice": {
+   "sum": 0,
+   "count": 4
+  }
+ },
+ "pairs_by_group": {
+  "DislocationCharacterization": {
+   "n_pairs": 69,
+   "SHARED_OVERLAY": 66,
+   "SHARED_FIXED": 66,
+   "same_image_size": 66,
+   "any_overlay_one_side": 66
+  },
+  "FractureSurfaces": {
+   "n_pairs": 6,
+   "SHARED_OVERLAY": 1,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0,
+   "any_overlay_one_side": 6
+  },
+  "Multiscale": {
+   "n_pairs": 13,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0,
+   "any_overlay_one_side": 0
+  },
+  "SameSlice": {
+   "n_pairs": 26,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0,
+   "any_overlay_one_side": 0
+  },
+  "SerialSectioning": {
+   "n_pairs": 42,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0,
+   "any_overlay_one_side": 0
+  },
+  "SlipPartitioning": {
+   "n_pairs": 31,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0,
+   "any_overlay_one_side": 0
+  }
+ },
+ "pairs_by_subclass": {
+  "5842WCu-Spalled_SEM-SE_SEM-BSE_Multiscale": {
+   "n_pairs": 1,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "AF9628-Martensitic_SEM-SE-Stitch_EBSD_SameSlice": {
+   "n_pairs": 15,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "C103_SEM-SE_LOM-DC-Height_FractureSurfaces": {
+   "n_pairs": 6,
+   "SHARED_OVERLAY": 1,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi-AM67_OM-SEM_Multiscale": {
+   "n_pairs": 3,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi-AM67_SEM-EBSD_SameSliceSerialSectioning": {
+   "n_pairs": 18,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi-AM90_OM-SEM_Multiscale": {
+   "n_pairs": 2,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi-AM90_SEM-DIC_EBSD_SlipPartitioning": {
+   "n_pairs": 27,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi-AM90_SEM-EBSD_SameSlice": {
+   "n_pairs": 6,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "CoNi_SEM-SE_SEM-BSE_Cracks-SameSliceSerialSectioning": {
+   "n_pairs": 1,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "In718-PrecipitationStrengthened_SEM-BSE_EBSD_SameSliceSerialSectioning": {
+   "n_pairs": 4,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "In718-PrecipitationStrengthened_SEM-DIC_EBSD_SlipPartitioning": {
+   "n_pairs": 4,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "In718-SolutionStrengthened_SEM-SE_EBSD_SameSliceSerialSectioning": {
+   "n_pairs": 10,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization": {
+   "n_pairs": 32,
+   "SHARED_OVERLAY": 32,
+   "SHARED_FIXED": 32,
+   "same_image_size": 32
+  },
+  "MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization": {
+   "n_pairs": 16,
+   "SHARED_OVERLAY": 16,
+   "SHARED_FIXED": 16,
+   "same_image_size": 16
+  },
+  "MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization": {
+   "n_pairs": 18,
+   "SHARED_OVERLAY": 18,
+   "SHARED_FIXED": 18,
+   "same_image_size": 18
+  },
+  "TRIP1-Bainitic_LOM_SEM_EBSD_Multiscale": {
+   "n_pairs": 7,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "Ta-AM-Spalled_SEM-BSE_EBSD_SameSliceSerialSectioning": {
+   "n_pairs": 9,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "Ti3AlC2-MAX-Phase_TEM_DislocationCharacterization": {
+   "n_pairs": 3,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  },
+  "X2CrNi12-Ferritic_SEM-SE-Stitch_EBSD_Fatigue-SameSlice": {
+   "n_pairs": 5,
+   "SHARED_OVERLAY": 0,
+   "SHARED_FIXED": 0,
+   "same_image_size": 0
+  }
+ },
+ "totals": {
+  "n_pairs": 187,
+  "SHARED_OVERLAY": 67,
+  "SHARED_FIXED": 66,
+  "same_image_size": 66
+ },
+ "nif_all_candidates": {
+  "overall": {
+   "n": 2805,
+   "n_fail": 2315,
+   "near_id": 490,
+   "NIF": 475,
+   "NIF_shared": 475,
+   "NIF_noshared": 0,
+   "NIF_shared_fixed": 475,
+   "NIF_same_size": 475,
+   "NIF_noshared_samesize": 0,
+   "NIF_noshared_diffsize": 0
+  },
+  "by_shared": {
+   "false": {
+    "n": 1800,
+    "n_fail": 1421,
+    "near_id": 15,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "true": {
+    "n": 1005,
+    "n_fail": 894,
+    "near_id": 475,
+    "NIF": 475,
+    "NIF_shared": 475,
+    "NIF_noshared": 0
+   }
+  },
+  "by_group": {
+   "DislocationCharacterization": {
+    "n": 1035,
+    "n_fail": 889,
+    "near_id": 489,
+    "NIF": 475,
+    "NIF_shared": 475,
+    "NIF_noshared": 0
+   },
+   "FractureSurfaces": {
+    "n": 90,
+    "n_fail": 56,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "Multiscale": {
+    "n": 195,
+    "n_fail": 129,
+    "near_id": 1,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SameSlice": {
+    "n": 390,
+    "n_fail": 226,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SerialSectioning": {
+    "n": 630,
+    "n_fail": 557,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SlipPartitioning": {
+    "n": 465,
+    "n_fail": 458,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   }
+  },
+  "by_backbone": {
+   "loftr": {
+    "n": 187,
+    "n_fail": 172,
+    "near_id": 41,
+    "NIF": 40,
+    "NIF_shared": 40,
+    "NIF_noshared": 0
+   },
+   "ma_roma": {
+    "n": 1122,
+    "n_fail": 878,
+    "near_id": 193,
+    "NIF": 187,
+    "NIF_shared": 187,
+    "NIF_noshared": 0
+   },
+   "matchanything": {
+    "n": 187,
+    "n_fail": 182,
+    "near_id": 67,
+    "NIF": 65,
+    "NIF_shared": 65,
+    "NIF_noshared": 0
+   },
+   "roma": {
+    "n": 1122,
+    "n_fail": 900,
+    "near_id": 123,
+    "NIF": 117,
+    "NIF_shared": 117,
+    "NIF_noshared": 0
+   },
+   "sift": {
+    "n": 187,
+    "n_fail": 183,
+    "near_id": 66,
+    "NIF": 66,
+    "NIF_shared": 66,
+    "NIF_noshared": 0
+   }
+  },
+  "by_group_x_shared": {
+   "DislocationCharacterization|False": {
+    "n": 45,
+    "n_fail": 3,
+    "near_id": 14,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "DislocationCharacterization|True": {
+    "n": 990,
+    "n_fail": 886,
+    "near_id": 475,
+    "NIF": 475,
+    "NIF_shared": 475,
+    "NIF_noshared": 0
+   },
+   "FractureSurfaces|False": {
+    "n": 75,
+    "n_fail": 48,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "FractureSurfaces|True": {
+    "n": 15,
+    "n_fail": 8,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "Multiscale|False": {
+    "n": 195,
+    "n_fail": 129,
+    "near_id": 1,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SameSlice|False": {
+    "n": 390,
+    "n_fail": 226,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SerialSectioning|False": {
+    "n": 630,
+    "n_fail": 557,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SlipPartitioning|False": {
+    "n": 465,
+    "n_fail": 458,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   }
+  },
+  "by_backbone_x_shared": {
+   "loftr|False": {
+    "n": 120,
+    "n_fail": 105,
+    "near_id": 1,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "loftr|True": {
+    "n": 67,
+    "n_fail": 67,
+    "near_id": 40,
+    "NIF": 40,
+    "NIF_shared": 40,
+    "NIF_noshared": 0
+   },
+   "ma_roma|False": {
+    "n": 720,
+    "n_fail": 507,
+    "near_id": 6,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "ma_roma|True": {
+    "n": 402,
+    "n_fail": 371,
+    "near_id": 187,
+    "NIF": 187,
+    "NIF_shared": 187,
+    "NIF_noshared": 0
+   },
+   "matchanything|False": {
+    "n": 120,
+    "n_fail": 115,
+    "near_id": 2,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "matchanything|True": {
+    "n": 67,
+    "n_fail": 67,
+    "near_id": 65,
+    "NIF": 65,
+    "NIF_shared": 65,
+    "NIF_noshared": 0
+   },
+   "roma|False": {
+    "n": 720,
+    "n_fail": 578,
+    "near_id": 6,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "roma|True": {
+    "n": 402,
+    "n_fail": 322,
+    "near_id": 117,
+    "NIF": 117,
+    "NIF_shared": 117,
+    "NIF_noshared": 0
+   },
+   "sift|False": {
+    "n": 120,
+    "n_fail": 116,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "sift|True": {
+    "n": 67,
+    "n_fail": 67,
+    "near_id": 66,
+    "NIF": 66,
+    "NIF_shared": 66,
+    "NIF_noshared": 0
+   }
+  }
+ },
+ "nif_ma_roma_direct_seed0": {
+  "overall": {
+   "n": 187,
+   "n_fail": 143,
+   "near_id": 36,
+   "NIF": 35,
+   "NIF_shared": 35,
+   "NIF_noshared": 0
+  },
+  "by_group": {
+   "DislocationCharacterization": {
+    "n": 69,
+    "n_fail": 61,
+    "near_id": 36,
+    "NIF": 35,
+    "NIF_shared": 35,
+    "NIF_noshared": 0
+   },
+   "FractureSurfaces": {
+    "n": 6,
+    "n_fail": 0,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "Multiscale": {
+    "n": 13,
+    "n_fail": 8,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SameSlice": {
+    "n": 26,
+    "n_fail": 10,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SerialSectioning": {
+    "n": 42,
+    "n_fail": 33,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "SlipPartitioning": {
+    "n": 31,
+    "n_fail": 31,
+    "near_id": 0,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   }
+  },
+  "by_shared": {
+   "false": {
+    "n": 120,
+    "n_fail": 82,
+    "near_id": 1,
+    "NIF": 0,
+    "NIF_shared": 0,
+    "NIF_noshared": 0
+   },
+   "true": {
+    "n": 67,
+    "n_fail": 61,
+    "near_id": 35,
+    "NIF": 35,
+    "NIF_shared": 35,
+    "NIF_noshared": 0
+   }
+  }
+ },
+ "nif_noshared_detail": {
+  "by_subclass": {},
+  "by_backbone": {},
+  "pairs": 0,
+  "same_size_rows": 0
+ },
+ "s1": {
+  "cutoff": 0.1711,
+  "n_accepted": 89,
+  "n_false_accept": 50,
+  "n_false_accept_heldout": 42,
+  "fa_near_identity": 29,
+  "fa_NIF": 29,
+  "fa_NIF_shared": 29,
+  "fa_NIF_shared_fixed": 29,
+  "fa_NIF_noshared": 0,
+  "fa_shared_but_not_NIF": 13,
+  "fa_not_shared_not_NIF": 8,
+  "fa_by_group": {
+   "DislocationCharacterization": 42,
+   "SerialSectioning": 4,
+   "SameSlice": 4
+  },
+  "fa_not_NIF_by_group": {
+   "DislocationCharacterization": 13,
+   "SerialSectioning": 4,
+   "SameSlice": 4
+  },
+  "fa_NIF_shared_by_subclass": {
+   "MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization": 15,
+   "MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization": 13,
+   "MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization": 1
+  },
+  "heldout": {
+   "n": 42,
+   "NIF_shared": 29
+  }
+ },
+ "gpu_sizing": {
+  "n_pairs_shared_overlay": 67,
+  "n_pairs_shared_fixed": 66,
+  "subsets": {
+   "MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization": 32,
+   "MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization": 18,
+   "MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization": 16,
+   "C103_SEM-SE_LOM-DC-Height_FractureSurfaces": 1
+  },
+  "n_distinct_images": 31,
+  "n_pairs_shared_nif_maroma": 35
+ }
+}

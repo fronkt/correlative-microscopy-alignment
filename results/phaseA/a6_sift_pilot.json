@@ -1,0 +1,11 @@
+{
+ "n": 24,
+ "stored_success": 0,
+ "crop0_success": 0,
+ "cropband_success": 0,
+ "crop0_near_identity": 24,
+ "cropband_near_identity": 0,
+ "crop0_reproduces_stored_within_1px": 24,
+ "median_err_crop0": 59.226621197493095,
+ "median_err_cropband": 1365.4287131721421
+}
