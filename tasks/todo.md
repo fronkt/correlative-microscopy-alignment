@@ -40,11 +40,15 @@ cost $0.50. Fordatis stalled at 47%, so the rest of the zip was uploaded from th
     (6 MatchAnything, 1 SIFT) each had fewer than 4 correspondences; they count as failures and are not rerun,
     because they are not infrastructure errors. Box 53534141 is destroyed; it cost about $0.30 and credit is $16.97.
   - The results are NOT analysed yet (gate first).
-- **LEFT:**
-  1. Frank runs the hand-check (the 20-pair command in `tools/handcheck/README.md`, clicks to
-     `materials-bench/nist/handcheck_clicks.csv`).
-  2. Write Addendum B with the gate outcome per NIST type.
-  3. Run `analyze_arm2.py`.
+- **Arm 2 ANALYSED (09-30), primary set 55 pairs after the gate (Addendum B dc71e54; optical types excluded):**
+  - **H2-1 SUPPORTED:** AUROC 0.983 [0.950, 1.000].
+  - **H2-2 SUPPORTED:** +0.10 [0.03, 0.21].
+  - **H2-3 NOT supported:** R 50 vs pick-by-S1 49, p = 0.5.
+  - **H2-4 NOT supported:** R 50 vs 47, p = 0.125.
+  - **Caveat:** 41 of the 55 pairs are same-modality NIST BSE pairs where nearly everything succeeds, so there are only
+    9 failures and the AUROC is largely a between-dataset contrast. P alone (14 pairs, 7/7) has AUROC 0.96.
+    Report: results/arm2/arm2_report.md.
+- **NEXT:** write-up / venue decision (Frank).
 
 **Order:**
 1. Arm 1 tooling → fill in the pre-registration → commit + push → rent box → run → analyse.
