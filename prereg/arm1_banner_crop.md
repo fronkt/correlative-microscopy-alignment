@@ -102,3 +102,20 @@ below concern that unobserved outcome.
 ## Cost
 708 runs: 536 overlay, 12 Ti3AlC2, 160 sham. From the stored runtimes that is about 0.5 GPU-h of matching; about 1 h
 wall-clock with setup. One RTX 4090 on vast.ai at about $0.4/h comes to under $1. Credit was $17.79 on 2026-09-29.
+
+## Addendum A, written before any results (2026-09-30)
+Added after the pre-registration commit 91c8b67 while the box was still downloading the dataset: no Arm 1 run had
+started and `arm1.csv` did not exist. These notes resolve ambiguities the analysis script (`scripts/analyze_arm1.py`)
+had to settle. None of them changes a hypothesis, a threshold or a pair.
+1. **Tests are one-sided**, as the header of "Hypotheses" says: exact McNemar in the predicted direction. The
+   two-sided p is printed next to it for information only. The sham comparison is two-sided, because no direction is
+   predicted there.
+2. **H-A3 uses stored rows for held-out pairs that were not re-run.** Only the overlay, Ti3AlC2 and sham pairs are
+   re-run. Every other held-out pair (FractureSurfaces, Multiscale, SlipPartitioning, excluding the sham draws) uses
+   its stored CJSJ MA-RoMa direct row on BOTH sides of the comparison, so it cannot affect the McNemar test.
+   Absolute false-accept counts and the AUROC are reported with the number of rows from each source.
+3. **The lock thresholds are strict:** distance < 20 px, `mu_ed` > 20 px, GT distance > 40 px. The grid always uses
+   the ORIGINAL target size.
+4. **Offset configuration** means the GT displacement at the target centre, rounded to 20 px, within each scene.
+5. **Duplicate runs:** if a key appears twice after an infrastructure rerun, the last row is used, and both are
+   logged.
