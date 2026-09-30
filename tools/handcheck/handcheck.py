@@ -175,6 +175,10 @@ class HandCheckApp:
     def __init__(self, pairs, out_csv, n_points=N_POINTS, max_disp=MAX_DISP, backend_show=True):
         import matplotlib.pyplot as plt
 
+        # The tool's own keys (u, s, n, q) must not also fire matplotlib's defaults ('s' = save figure dialog,
+        # 'q' = close window without saving). Strip every tool key from every default keymap.
+        for name in [k for k in plt.rcParams if k.startswith("keymap.")]:
+            plt.rcParams[name] = [x for x in plt.rcParams[name] if x not in ("u", "s", "n", "q")]
         self.plt = plt
         self.pairs = pairs
         self.out_csv = out_csv
