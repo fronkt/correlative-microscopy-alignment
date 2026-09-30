@@ -92,3 +92,34 @@ hash is the timestamp. The final pair list goes in Addendum A, committed before 
 ## Cost
 About 95 pairs × 15 candidates × 1 ≈ 1,400 runs plus the GT rows. By analogy with the CJSJ run, that is about 3–4
 GPU-h, or about $2 on one RTX 4090. Credit was $17.29 on 2026-09-30.
+
+## Addendum A: final pair list, written before any Arm 2 matcher run (2026-09-30)
+Added after the pre-registration commit a59cb01. NIST's file server came back on the morning of 2026-09-30. No Arm 2
+candidate has been run, and no Arm 2 result file exists.
+- **Final pool: 95 pairs, 24 clusters.** The pair IDs, clusters, subclasses and image sha256s are frozen in
+  `prereg/arm2_addendumA_pairs.csv`.
+  - P = 14 (DefDAP 11, refodat.86 3), unchanged.
+  - N = 81 of 81. None was lost to the download outage. IN718: 20 BSE1-vs-OM, 20 BSE2-vs-BSE1, 20 BSE2-vs-OM.
+    IN625: 21 BSE2-vs-BSE1. There are 12 NIST clusters (alloy × block of 100 sections).
+- **Pack.** `matpool.tar.gz` is 762,732,961 bytes, sha256 `cb5a6571249db410dc4f21891b5bee989bdb30e34d7e6ca42821a344070821c8`.
+  The manifest sha256 is `d050fca4285d6ff113051d43135a23597df5166e47bcae067b9c69e9a0096c51`. The pack's round trip
+  loaded 95 of 95 pairs.
+- **NIST GT build.** 102 of 102 same-modality fits are OK. Two optical fits (IN718 s425 and s475) first failed with
+  MISSING, because a second copy of the download was still writing the file. Both were re-run on the finished
+  files. The GT-to-homography refit residual is at most 1.2e-4 px, and every NIST pair has all 25 grid points inside
+  the mask and the source image.
+- **Overlay check (frozen Arm 1 detector).** No pair has a SHARED overlay. Five pairs have an overlay on one side only:
+  - NIST_625_s200_bse2-bse1 (target bottom 95 px);
+  - NIST_718_s300_bse2-bse1 and NIST_718_s300_bse2-om (target top 86 px);
+  - defdap_14245480_Ti64_bulk (source top 55 px);
+  - defdap_16633511_Ti_CS1 (target bottom 106 px).
+  
+  As pre-registered, these stay in the pool uncropped. They are listed descriptively and are not a separate analysis
+  arm.
+- **GT-quality flags.** These carry over from P: affine LOO > 20 px on defdap Ti64_bulk, refodat86 site3 and site5.
+  The pairs stay in the pool and are reported. A dataset author told us on 2026-09-30 that the refodat.86 hand
+  alignment is "by no means perfect", which is consistent with these flags.
+- **Hand-check list.** The list is `tools/handcheck/nist_handcheck_pairs.json`: 20 pairs, seed 20260930, IN718
+  BSE1-vs-OM 6, BSE2-vs-BSE1 5, BSE2-vs-OM 5, and IN625 BSE2-vs-BSE1 4. It was generated after all 81 pairs existed,
+  and before any matcher run. The gate outcome goes in Addendum B, before `analyze_arm2.py` is run. The GPU run may
+  go ahead before the gate, because the gate only decides which NIST types enter the analysis.

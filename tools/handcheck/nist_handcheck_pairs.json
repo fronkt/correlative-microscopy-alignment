@@ -1,0 +1,442 @@
+[
+ {
+  "pair_id": "NIST_718_s175_bse2-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s175_bse2-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s175_bse2-om_0\\source.png",
+  "gt_h": [
+   [
+    0.31239748189836697,
+    0.001504426022169308,
+    410.15693735316114
+   ],
+   [
+    -0.002799599242984888,
+    0.31384196846464146,
+    759.3720414420843
+   ],
+   [
+    2.1003964110150188e-07,
+    8.476501960879292e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_625_s250_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s250_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s250_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5008248795104947,
+    -0.0009673856234724366,
+    218.6721357127817
+   ],
+   [
+    -0.0003369767673318224,
+    0.4987095826387713,
+    464.2885004480682
+   ],
+   [
+    6.417913388228306e-08,
+    -5.461346271902133e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s425_bse2-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s425_bse2-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s425_bse2-om_0\\source.png",
+  "gt_h": [
+   [
+    0.31065878958462234,
+    0.002080423616209436,
+    401.2441221881919
+   ],
+   [
+    -0.0039500648073875575,
+    0.31079939325990824,
+    745.4604708239146
+   ],
+   [
+    3.7104135384112897e-07,
+    -5.360648416708889e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s025_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s025_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s025_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5026874026602481,
+    -0.001634041314165253,
+    245.99218766376197
+   ],
+   [
+    -0.001141295310020342,
+    0.49956321298788975,
+    796.5691123413077
+   ],
+   [
+    -1.1797377162192652e-06,
+    1.2444307698723239e-06,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s025_bse2-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s025_bse2-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s025_bse2-om_0\\source.png",
+  "gt_h": [
+   [
+    0.31130361012263347,
+    0.003259028979162896,
+    423.4504967682076
+   ],
+   [
+    -0.004375276345100434,
+    0.31240758718477163,
+    697.1399611856725
+   ],
+   [
+    5.428654364416674e-07,
+    1.1662263190255565e-06,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s475_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s475_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s475_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.6172762384408761,
+    0.006625381010315292,
+    263.279795068722
+   ],
+   [
+    -0.012113423355640569,
+    0.6205131918429346,
+    193.66464221880375
+   ],
+   [
+    -1.6398325125399002e-06,
+    6.657317523639777e-08,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_625_s325_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s325_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s325_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.49982685947096367,
+    0.00021712153959171544,
+    217.87917225300254
+   ],
+   [
+    -0.0012304087082107556,
+    0.49959050345657213,
+    465.4697878703444
+   ],
+   [
+    -5.372788703364662e-07,
+    1.982247294413007e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s350_bse2-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s350_bse2-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s350_bse2-om_0\\source.png",
+  "gt_h": [
+   [
+    0.30879239666451763,
+    0.0026632638458810726,
+    406.9203755456676
+   ],
+   [
+    -0.006661624702167104,
+    0.3100609293743197,
+    749.2118234858394
+   ],
+   [
+    -1.5471421558279827e-06,
+    -3.3382961201593485e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s475_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s475_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s475_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5009518800772731,
+    -0.002225037731395458,
+    225.95805694704762
+   ],
+   [
+    0.002863952205408697,
+    0.4974623399065564,
+    888.2494266168212
+   ],
+   [
+    1.0741490491926712e-06,
+    -1.5488816382924932e-06,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_625_s200_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s200_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s200_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5007255630534627,
+    -0.001000696362013585,
+    218.57572511656198
+   ],
+   [
+    -0.0007282510700663245,
+    0.4987074487657269,
+    464.9286610887017
+   ],
+   [
+    -2.2011415519923108e-07,
+    -4.407228571331635e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s175_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s175_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s175_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5018125278425224,
+    -0.0015928721648317849,
+    224.98592254003353
+   ],
+   [
+    -0.0009176752978744865,
+    0.49929076663640287,
+    889.8438469278284
+   ],
+   [
+    -8.263702734838946e-07,
+    5.462790967994398e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s375_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s375_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s375_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.6185428983265426,
+    0.007066376416357806,
+    257.3421712160502
+   ],
+   [
+    -0.012341026551101999,
+    0.6210939670866894,
+    198.59848972063543
+   ],
+   [
+    -7.989775455924504e-07,
+    -2.154499776219576e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s275_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s275_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s275_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5019429989268189,
+    -0.0005760072987131956,
+    225.20709177355192
+   ],
+   [
+    0.0022856860925307833,
+    0.5019699611100891,
+    888.146490802951
+   ],
+   [
+    1.099617257329016e-06,
+    1.0767103202909852e-06,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s100_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s100_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s100_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.620969758143687,
+    0.008539353442777817,
+    267.9306504533308
+   ],
+   [
+    -0.007463913533691129,
+    0.6256142739628646,
+    207.09661372354515
+   ],
+   [
+    2.8472681787128432e-06,
+    4.343127256329883e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s325_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s325_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s325_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.6170810814580889,
+    0.006992765841648112,
+    253.4245640030876
+   ],
+   [
+    -0.013556198672353,
+    0.6204105302526407,
+    197.0472501612391
+   ],
+   [
+    -2.785849854166714e-06,
+    -3.6727959239688893e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s150_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s150_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s150_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.6215424774852294,
+    0.008321269608430933,
+    267.2579563827344
+   ],
+   [
+    -0.007034819110604533,
+    0.62599766732691,
+    204.01692622570215
+   ],
+   [
+    2.920881710492765e-06,
+    2.6419316036799004e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_625_s450_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s450_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_625_s450_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5000540895773185,
+    -0.0002710922226720397,
+    218.02525240952295
+   ],
+   [
+    -0.001358303200144129,
+    0.49871482304194487,
+    466.3037875521751
+   ],
+   [
+    -2.880870039929255e-07,
+    -2.9506554586944183e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s300_bse1-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s300_bse1-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s300_bse1-om_0\\source.png",
+  "gt_h": [
+   [
+    0.6170579152919025,
+    0.007856201833773425,
+    253.75159082460226
+   ],
+   [
+    -0.01444275281869242,
+    0.6220858382237434,
+    200.86371899980006
+   ],
+   [
+    -3.4578132741510982e-06,
+    8.92540552912693e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s400_bse2-bse1",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s400_bse2-bse1_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s400_bse2-bse1_0\\source.png",
+  "gt_h": [
+   [
+    0.5007730110685384,
+    -0.0021120590396496836,
+    226.21606662697624
+   ],
+   [
+    0.00226437864863529,
+    0.4987594908369996,
+    888.2339794462283
+   ],
+   [
+    7.31803345048417e-07,
+    -7.424728179243658e-07,
+    1.0
+   ]
+  ]
+ },
+ {
+  "pair_id": "NIST_718_s325_bse2-om",
+  "left_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s325_bse2-om_0\\target.png",
+  "right_path": "C:\\Users\\frank\\Documents\\materials-bench\\pairs\\NIST_718_s325_bse2-om_0\\source.png",
+  "gt_h": [
+   [
+    0.309166195954022,
+    0.0026922957409926786,
+    399.4603769963226
+   ],
+   [
+    -0.005760897229541109,
+    0.3103204845464921,
+    745.8461115005662
+   ],
+   [
+    -1.2695387221982258e-06,
+    -1.4127477617327304e-07,
+    1.0
+   ]
+  ]
+ }
+]

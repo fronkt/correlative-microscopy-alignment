@@ -1,18 +1,18 @@
 {
- "n_pairs": 24,
+ "n_pairs": 95,
  "pairs_per_component": {
-  "NIST": 10,
+  "NIST": 81,
   "A": 11,
   "D": 3
  },
  "clusters_per_component": {
-  "NIST": 4,
+  "NIST": 12,
   "A": 11,
   "D": 1
  },
- "n_clusters": 16,
+ "n_clusters": 24,
  "licences": {
-  "NIST public data (https://www.nist.gov/open/license); attribution requested": 10,
+  "NIST public data (https://www.nist.gov/open/license); attribution requested": 81,
   "CC BY 4.0": 11,
   "CC BY 4.0 (DataCite rightsList)": 3
  },
@@ -26,6 +26,21 @@
  "overlay_detector": "cma.overlay present: ['ANCHOR_FRAC', 'CropRule', 'FLAT_FRAC', 'FREE_MIN_GLYPHS', 'GAP', 'GLYPH_CONTRAST', 'LABEL_CORNER', 'LABEL_MARGIN']",
  "overlay_hits": [
   {
+   "pair_id": "NIST_625_s200_bse2-bse1#0",
+   "src": "none",
+   "tgt": "bottom:95"
+  },
+  {
+   "pair_id": "NIST_718_s300_bse2-bse1#0",
+   "src": "none",
+   "tgt": "top:86"
+  },
+  {
+   "pair_id": "NIST_718_s300_bse2-om#0",
+   "src": "none",
+   "tgt": "top:86"
+  },
+  {
    "pair_id": "defdap_14245480_Ti64_bulk#0",
    "src": "top:55",
    "tgt": "none"
@@ -36,5 +51,5 @@
    "tgt": "bottom:106"
   }
  ],
- "n_gt_points_total": 402
+ "n_gt_points_total": 2177
 }
