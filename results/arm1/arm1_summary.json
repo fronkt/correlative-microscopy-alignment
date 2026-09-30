@@ -1,0 +1,261 @@
+{
+  "csv": "C:\\Users\\frank\\Documents\\cma-triage-ext\\results\\arm1\\arm1.csv",
+  "row_counts": {
+    "n_rows": 708,
+    "n_unique": 708,
+    "n_duplicates": 0,
+    "expected": 708,
+    "ok": true,
+    "by_job": {
+      "overlay|none": {
+        "observed": 268,
+        "expected": 268
+      },
+      "overlay|overlay": {
+        "observed": 268,
+        "expected": 268
+      },
+      "ti3alc2|none": {
+        "observed": 12,
+        "expected": 12
+      },
+      "sham|none": {
+        "observed": 80,
+        "expected": 80
+      },
+      "sham|sham": {
+        "observed": 80,
+        "expected": 80
+      }
+    },
+    "stray_rows": 0,
+    "git_commits": [
+      "91c8b6725ea5b3fd117257056f9c9236e5a4ce1c"
+    ]
+  },
+  "failed_runs": {
+    "n_failed_rows": 0,
+    "groups": [],
+    "infrastructure_rows": 0
+  },
+  "sham": {
+    "n_runs": 80,
+    "discordant": 7,
+    "fraction_changed": 0.0875,
+    "successes_uncropped": 7,
+    "successes_sham": 4,
+    "only_uncropped": 5,
+    "only_sham": 2,
+    "p_two_sided": 0.453125,
+    "crop_itself_matters": false,
+    "per_config": {
+      "ma_roma|direct": {
+        "n": 20,
+        "discordant": 3
+      },
+      "ma_roma|pyramid_v2": {
+        "n": 20,
+        "discordant": 2
+      },
+      "roma|direct": {
+        "n": 20,
+        "discordant": 1
+      },
+      "roma|pyramid_v2": {
+        "n": 20,
+        "discordant": 1
+      }
+    }
+  },
+  "H-A1": {
+    "n": 268,
+    "base_count": 110,
+    "treat_count": 0,
+    "only_base": 110,
+    "only_treat": 0,
+    "n_pos": 110,
+    "n_neg": 0,
+    "direction_ok": true,
+    "p_one_sided": 7.703719777548943e-34,
+    "p_two_sided": 1.5407439555097887e-33,
+    "supported": true,
+    "supported_two_sided": true,
+    "hypothesis": "H-A1",
+    "criterion": "one-sided exact McNemar p < 0.05 and near-identity locks fall when cropped"
+  },
+  "H-A2": {
+    "primary": {
+      "n": 67,
+      "base_count": 6,
+      "treat_count": 16,
+      "only_base": 2,
+      "only_treat": 12,
+      "n_pos": 12,
+      "n_neg": 2,
+      "direction_ok": true,
+      "p_one_sided": 0.0064697265625,
+      "p_two_sided": 0.012939453125,
+      "supported": true,
+      "supported_two_sided": true,
+      "reported_as": "supported"
+    },
+    "secondary": {
+      "roma|direct": {
+        "n": 67,
+        "base_count": 14,
+        "treat_count": 16,
+        "only_base": 3,
+        "only_treat": 5,
+        "n_pos": 5,
+        "n_neg": 3,
+        "direction_ok": true,
+        "p_one_sided": 0.36328125,
+        "p_two_sided": 0.7265625,
+        "supported": false,
+        "supported_two_sided": false,
+        "p_holm": 0.7265625
+      },
+      "roma|pyramid_v2": {
+        "n": 67,
+        "base_count": 14,
+        "treat_count": 16,
+        "only_base": 3,
+        "only_treat": 5,
+        "n_pos": 5,
+        "n_neg": 3,
+        "direction_ok": true,
+        "p_one_sided": 0.36328125,
+        "p_two_sided": 0.7265625,
+        "supported": false,
+        "supported_two_sided": false,
+        "p_holm": 0.7265625
+      },
+      "ma_roma|pyramid_v2": {
+        "n": 67,
+        "base_count": 6,
+        "treat_count": 16,
+        "only_base": 2,
+        "only_treat": 12,
+        "n_pos": 12,
+        "n_neg": 2,
+        "direction_ok": true,
+        "p_one_sided": 0.0064697265625,
+        "p_two_sided": 0.012939453125,
+        "supported": true,
+        "supported_two_sided": true,
+        "p_holm": 0.0194091796875
+      }
+    },
+    "sham_confounded": false
+  },
+  "H-A3": {
+    "n": 119,
+    "base_count": 42,
+    "treat_count": 14,
+    "only_base": 30,
+    "only_treat": 2,
+    "n_pos": 30,
+    "n_neg": 2,
+    "direction_ok": true,
+    "p_one_sided": 1.2316741049289703e-07,
+    "p_two_sided": 2.4633482098579407e-07,
+    "supported": true,
+    "supported_two_sided": true,
+    "hypothesis": "H-A3",
+    "criterion": "one-sided exact McNemar p < 0.05 and fewer false accepts with cropped rows",
+    "cutoff": 0.1711,
+    "n_heldout_pairs": 119,
+    "rows_by_source": {
+      "fresh_uncropped": 77,
+      "stored_CJSJ": 42,
+      "fresh_cropped": 67,
+      "missing": 0
+    },
+    "n_not_rerun_stored": 42,
+    "n_not_rerun_stored_overlay_pairs": 0,
+    "fresh_unc_heldout": 77,
+    "false_accepts_overlay_pairs": {
+      "uncropped": 42,
+      "cropped": 14
+    },
+    "false_accepts_other_pairs": 0,
+    "auroc_dislocation": {
+      "n": 69,
+      "uncropped": 0.8114754098360656,
+      "cropped": 0.7864923747276689,
+      "diff": -0.024983035108396723,
+      "diff_ci95": [
+        -0.15069893383583008,
+        0.10635548381311094
+      ],
+      "note": "reported, not tested; pair-level paired bootstrap"
+    }
+  },
+  "ti3alc2": {
+    "n": 12,
+    "fresh_success": 12,
+    "stored_success": 12,
+    "stored_success_and_fresh_success": 12,
+    "reproduces_environment": true
+  },
+  "reproduction": {
+    "n": 360,
+    "matched": 360,
+    "fraction": 1.0,
+    "threshold": 0.95,
+    "reproduces": true,
+    "per_config": {
+      "ma_roma|direct": {
+        "n": 90,
+        "matched": 90
+      },
+      "ma_roma|pyramid_v2": {
+        "n": 90,
+        "matched": 90
+      },
+      "roma|direct": {
+        "n": 90,
+        "matched": 90
+      },
+      "roma|pyramid_v2": {
+        "n": 90,
+        "matched": 90
+      }
+    },
+    "per_set": {
+      "overlay": {
+        "n": 268,
+        "matched": 268
+      },
+      "sham": {
+        "n": 80,
+        "matched": 80
+      },
+      "ti3alc2": {
+        "n": 12,
+        "matched": 12
+      }
+    }
+  },
+  "offset_configurations": {
+    "eval_MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization_0 (-20,-60)": 16,
+    "eval_MoTaTiZrHf-HEA-DDRX-1100C_TEM_DislocationCharacterization_0 (-40,-160)": 16,
+    "eval_MoTaTiZrHf-HEA-DDRX-900C_TEM_DislocationCharacterization_0 (60,20)": 16,
+    "eval_MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization_0 (120,500)": 9,
+    "eval_MoTaTiZrHf-HEA-DDRX-900C_TEM_largeFOV-DislocationCharacterization_0 (200,380)": 9,
+    "eval_C103_SEM-SE_LOM-DC-Height_FractureSurfaces_2 (160,-960)": 1
+  },
+  "ambiguities": [
+    "One-sided vs two-sided: the prereg calls the hypotheses one-sided and directional (alpha 0.05) but its support rule says 'p < 0.05 and locks fall / more successes'. The primary p here is the ONE-SIDED exact McNemar (binomial tail in the predicted direction); the two-sided exact p (cma.triage.mcnemar_exact) is reported beside it. A hypothesis is supported only if the one-sided p < 0.05 AND the direction is right; where the two-sided p would give a different verdict this is flagged in the table.",
+    "Lock thresholds: 'within 20 px of identity' is implemented strictly (< 20), and 'more than 40 px' as > 40, matching the frozen A6 audit (NEAR_ID_PX / GT_DISP_MIN). The 5x5 grid uses the ORIGINAL target size (from the stored CJSJ row), because for cropped runs the Arm-1 row reports H in original coordinates but its h_t/w_t may describe the cropped image.",
+    "Failed / missing runs: no H means not a success and not a lock. A row the CSV lacks entirely is treated the same way in the paired tables, but the row-count check fails loudly (see 'Row counts').",
+    "Duplicate keys (an infrastructure rerun): the LAST row per (pair, backbone, mode, crop) is used, matching 'a second failure counts as a failure'. Number of duplicates is reported.",
+    "Sham '>10%' rule: computed as (runs whose success indicator differs between uncropped and sham-cropped, in either direction) / (paired sham runs) > 0.10, i.e. more than 8 of 80. The sham McNemar p is two-sided (no predicted direction).",
+    "Reproduction: a fresh-vs-stored pair 'matches' if both mu_ed are finite and differ by <= 1 px, or both runs failed. Denominator = every uncropped Arm-1 run (overlay-none, Ti3AlC2, sham-none).",
+    "Ti3AlC2 'succeed in the CJSJ run': judged from the stored CJSJ rows for the same configuration; the fresh rerun is compared to that.",
+    "Offset configuration: GT translation = H_gt(target centre) - target centre (source px), each component rounded to the nearest 20 px, grouped per scene; the found configurations are listed (the prereg says 'about 5').",
+    "H-A3 S1 = n_inliers / n_matches (as in the triage study; -inf for failed runs); false accept = S1 >= 0.1711 and mu_ed > 20. The AUROC bootstrap is a PAIR-level paired bootstrap (B = 10000, seed 0), because the prereg says 'paired bootstrap' and there are too few scenes for a cluster bootstrap; its CI is therefore optimistic.",
+    "Holm correction: applied to the ONE-SIDED p-values of the 3 secondary H-A2 configurations."
+  ],
+  "confound_caveat": "In AmalgaMatch, overlay, identical image size and TEM modality coincide perfectly. Arm 1 can show that removing the band changes the outcome; it cannot separate the band from anything else about these TEM images."
+}
