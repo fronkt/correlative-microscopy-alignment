@@ -30,6 +30,21 @@ The sham crop changed 8.8% of runs (rule: >10%), and the fresh runs reproduced t
 was not significant (14 → 16), and S1 AUROC on DislocationCharacterization did not improve (0.811 → 0.786). The box
 cost $0.50. Fordatis stalled at 47%, so the rest of the zip was uploaded from the laptop and checked by md5.
 
+**Arm 2 status (2026-09-30):**
+- Pre-registered at a59cb01; tooling at ee61e09.
+- The 14 public pairs are packed (`materials-bench/matpool.tar.gz`, repack after NIST).
+- NIST data.nist.gov has returned HTTP 524 on every file since about 22:00 on 09-29. Only 10 of 81 pairs are built.
+  The 2 h background download stopped at its time limit with no progress.
+- **RESUME:** when `curl -I` on a data.nist.gov/od/ds file returns 200:
+  1. Run `sh materials-bench/nist/runall.sh` in the background. It is resumable and writes `ALLDONE`.
+  2. Run, in order: `nist_build_pool.py`, `arm2_assemble.py`, `nist_loader_dryrun.py`, `nist_handcheck_list.py`.
+  3. Send Frank the hand-check command (`tools/handcheck/README.md`).
+  4. Commit Addendum A (the final pair list) and repack with `pack_arm2.py`.
+  5. Rent a box and run `box_arm2.sh`.
+  6. Once Frank's clicks exist, run `analyze_arm2.py`.
+- Fallback if NIST stays down: run on the 14 public pairs plus the 10 NIST pairs already built. The
+  pre-registration allows dropping pairs that can't be downloaded, but statistics would be weak.
+
 **Order:**
 1. Arm 1 tooling → fill in the pre-registration → commit + push → rent box → run → analyse.
 2. Arm 2: assemble → GT-quality gate → Arm 2 pre-registration (after assembly, before any matcher run) → commit +
