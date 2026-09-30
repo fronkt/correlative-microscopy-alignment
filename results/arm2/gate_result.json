@@ -1,0 +1,170 @@
+{
+  "handcheck_csv": "C:\\Users\\frank\\Documents\\materials-bench\\nist\\handcheck_clicks.csv",
+  "limit_target_px": 10.0,
+  "types": {
+    "IN625-BSE2-vs-BSE1": {
+      "pairs_clicked": 4,
+      "points": 24,
+      "median_target_px": 8.012869420987464,
+      "max_target_px": 30.96535048607524,
+      "passes": true,
+      "reason": "median <= 10 px",
+      "median_source_px": 4.014456097156463
+    },
+    "IN718-BSE1-vs-OM": {
+      "pairs_clicked": 4,
+      "points": 24,
+      "median_target_px": 12.54139777758694,
+      "max_target_px": 24.91565960338611,
+      "passes": false,
+      "reason": "median > 10 px",
+      "median_source_px": 7.773321784177632
+    },
+    "IN718-BSE2-vs-BSE1": {
+      "pairs_clicked": 5,
+      "points": 30,
+      "median_target_px": 9.767951381981355,
+      "max_target_px": 134.58124875182813,
+      "passes": true,
+      "reason": "median <= 10 px",
+      "median_source_px": 4.884784392380495
+    },
+    "IN718-BSE2-vs-OM": {
+      "pairs_clicked": 4,
+      "points": 24,
+      "median_target_px": 25.39882572081053,
+      "max_target_px": 1809.2667216913148,
+      "passes": false,
+      "reason": "median > 10 px",
+      "median_source_px": 7.901959486285394
+    }
+  },
+  "pairs_clicked": 17,
+  "pairs_clicked_not_in_manifest": [],
+  "skipped": [
+    {
+      "pair_id": "NIST_718_s025_bse2-om",
+      "reason": "no confident shared features"
+    },
+    {
+      "pair_id": "NIST_718_s100_bse1-om",
+      "reason": "no confident shared features"
+    },
+    {
+      "pair_id": "NIST_718_s150_bse1-om",
+      "reason": "no confident shared features"
+    }
+  ],
+  "per_pair": {
+    "NIST_625_s200_bse2-bse1": {
+      "type": "IN625-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 4.266495982528071,
+      "max_target_px": 7.97319663990496
+    },
+    "NIST_625_s250_bse2-bse1": {
+      "type": "IN625-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 6.525568324556591,
+      "max_target_px": 13.425553453482989
+    },
+    "NIST_625_s325_bse2-bse1": {
+      "type": "IN625-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 8.912860258536007,
+      "max_target_px": 30.96535048607524
+    },
+    "NIST_625_s450_bse2-bse1": {
+      "type": "IN625-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 10.101964402191701,
+      "max_target_px": 13.941515039911382
+    },
+    "NIST_718_s025_bse2-bse1": {
+      "type": "IN718-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 2.6072443929816376,
+      "max_target_px": 6.071607135438361
+    },
+    "NIST_718_s175_bse2-bse1": {
+      "type": "IN718-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 8.193407377841604,
+      "max_target_px": 11.823023639413014
+    },
+    "NIST_718_s175_bse2-om": {
+      "type": "IN718-BSE2-vs-OM",
+      "n": 6,
+      "median_target_px": 1321.9216521455676,
+      "max_target_px": 1809.2667216913148
+    },
+    "NIST_718_s275_bse2-bse1": {
+      "type": "IN718-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 15.9937423696485,
+      "max_target_px": 24.509603508656646
+    },
+    "NIST_718_s300_bse1-om": {
+      "type": "IN718-BSE1-vs-OM",
+      "n": 6,
+      "median_target_px": 10.931886178583355,
+      "max_target_px": 20.097854618636383
+    },
+    "NIST_718_s325_bse1-om": {
+      "type": "IN718-BSE1-vs-OM",
+      "n": 6,
+      "median_target_px": 14.783594067221697,
+      "max_target_px": 24.91565960338611
+    },
+    "NIST_718_s325_bse2-om": {
+      "type": "IN718-BSE2-vs-OM",
+      "n": 6,
+      "median_target_px": 13.619677062271531,
+      "max_target_px": 92.65269698317415
+    },
+    "NIST_718_s350_bse2-om": {
+      "type": "IN718-BSE2-vs-OM",
+      "n": 6,
+      "median_target_px": 25.39882572081053,
+      "max_target_px": 609.2745351508457
+    },
+    "NIST_718_s375_bse1-om": {
+      "type": "IN718-BSE1-vs-OM",
+      "n": 6,
+      "median_target_px": 17.626134081701334,
+      "max_target_px": 24.64249375779053
+    },
+    "NIST_718_s400_bse2-bse1": {
+      "type": "IN718-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 17.323036904344768,
+      "max_target_px": 134.58124875182813
+    },
+    "NIST_718_s425_bse2-om": {
+      "type": "IN718-BSE2-vs-OM",
+      "n": 6,
+      "median_target_px": 19.57552015596918,
+      "max_target_px": 30.39791389433167
+    },
+    "NIST_718_s475_bse1-om": {
+      "type": "IN718-BSE1-vs-OM",
+      "n": 6,
+      "median_target_px": 12.027507352655,
+      "max_target_px": 19.674422540835412
+    },
+    "NIST_718_s475_bse2-bse1": {
+      "type": "IN718-BSE2-vs-BSE1",
+      "n": 6,
+      "median_target_px": 10.305417795749898,
+      "max_target_px": 69.99635146878116
+    }
+  },
+  "passing_types": [
+    "IN625-BSE2-vs-BSE1",
+    "IN718-BSE2-vs-BSE1"
+  ],
+  "failing_types": [
+    "IN718-BSE1-vs-OM",
+    "IN718-BSE2-vs-OM"
+  ]
+}

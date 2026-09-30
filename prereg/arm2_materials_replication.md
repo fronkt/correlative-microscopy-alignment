@@ -123,3 +123,32 @@ candidate has been run, and no Arm 2 result file exists.
   BSE1-vs-OM 6, BSE2-vs-BSE1 5, BSE2-vs-OM 5, and IN625 BSE2-vs-BSE1 4. It was generated after all 81 pairs existed,
   and before any matcher run. The gate outcome goes in Addendum B, before `analyze_arm2.py` is run. The GPU run may
   go ahead before the gate, because the gate only decides which NIST types enter the analysis.
+
+## Addendum B: NIST GT gate outcome, written before `analyze_arm2.py` is run (2026-09-30)
+The Arm 2 candidate rows exist (3b724f7) but have NOT been analysed. This addendum records the gate, which was
+computed with `analyze_arm2.py --gate-only` (`results/arm2/gate_result.json`). That run reads only Frank's click file
+and the GT homographies.
+- **Hand-check.** Frank clicked 17 of the 20 listed pairs, 6 points each (102 points). He skipped 3 pairs, all with
+  optical images: IN718 s025 BSE2-vs-OM, s100 BSE1-vs-OM and s150 BSE1-vs-OM, each recorded as "no confident shared
+  features". He clicked blind: the GT was never drawn on the images.
+- **Gate result.** The measure is the pooled median, per pair type, of the target-px distance between the GT-mapped
+  click and the click. The limit is 10 px.
+
+  | Pair type | Pairs | Points | Median (target px) | Median (source px) | Verdict |
+  |---|---|---|---|---|---|
+  | IN625 BSE2-vs-BSE1 | 4 | 24 | 8.0 | 4.0 | **PASS** |
+  | IN718 BSE2-vs-BSE1 | 5 | 30 | 9.8 | 4.9 | **PASS** |
+  | IN718 BSE1-vs-OM | 4 | 24 | 12.5 | 7.8 | **EXCLUDED** |
+  | IN718 BSE2-vs-OM | 4 | 24 | 25.4 | 7.9 | **EXCLUDED** |
+- **Primary set.** It is P (14) ∪ IN625 BSE2-vs-BSE1 (21) ∪ IN718 BSE2-vs-BSE1 (20) = **55 pairs**. The 40 optical
+  pairs are excluded from every Arm 2 analysis, as pre-registered.
+- **Descriptive notes (these do not change any verdict):**
+  - IN718 s175 BSE2-vs-OM is off by about 400 source px in a consistent direction (mean offset 370 px). The same
+    section's BSE2-vs-BSE1 pair agrees within 4 px, and the optical fits have 0.07 px residuals. So this is most
+    likely a mislocated patch in the optical image, not a GT error. Without that pair, BSE2-vs-OM still fails (17.4
+    target px over 18 points).
+  - The gate is measured in target px, which scales source-px click scatter by the inverse of the pair's scale factor
+    (×2 for BSE2-vs-BSE1, ×1.6 for BSE1-vs-OM, ×3.2 for BSE2-vs-OM). So the optical exclusions partly reflect how
+    precisely clicks can be placed on low-contrast etched optical images. The rule was fixed in advance and is applied
+    as written.
+  - None of the clicks were redone after the error printout.
