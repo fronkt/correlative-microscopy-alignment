@@ -21,6 +21,15 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 - **The M&M banner implication is left to the M&M session.** This branch does not touch M&M.
 - **No target venue.**
 
+**Arm 1 DONE on 2026-09-30.** Pre-registered at 91c8b67 (addendum ae57397); results at 6ce17d9, reported in
+`results/arm1/arm1_report.md`. H-A1, H-A2 (primary) and H-A3 are all SUPPORTED:
+- Near-identity locks: 110 → 0.
+- MA-RoMa direct SR@20: 6 → 16 of 67 (one-sided p = 0.006).
+- S1 false accepts: 42 → 14 (p = 1e-7).
+The sham crop changed 8.8% of runs (rule: >10%), and the fresh runs reproduced the stored ones on 360/360. RoMa direct
+was not significant (14 → 16), and S1 AUROC on DislocationCharacterization did not improve (0.811 → 0.786). The box
+cost $0.50. Fordatis stalled at 47%, so the rest of the zip was uploaded from the laptop and checked by md5.
+
 **Order:**
 1. Arm 1 tooling → fill in the pre-registration → commit + push → rent box → run → analyse.
 2. Arm 2: assemble → GT-quality gate → Arm 2 pre-registration (after assembly, before any matcher run) → commit +

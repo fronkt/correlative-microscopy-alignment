@@ -1,0 +1,40 @@
+{
+ "n_pairs": 24,
+ "pairs_per_component": {
+  "NIST": 10,
+  "A": 11,
+  "D": 3
+ },
+ "clusters_per_component": {
+  "NIST": 4,
+  "A": 11,
+  "D": 1
+ },
+ "n_clusters": 16,
+ "licences": {
+  "NIST public data (https://www.nist.gov/open/license); attribution requested": 10,
+  "CC BY 4.0": 11,
+  "CC BY 4.0 (DataCite rightsList)": 3
+ },
+ "flagged_pairs": [
+  "defdap_14245480_Ti64_bulk#0",
+  "refodat86_site3#0",
+  "refodat86_site5#0"
+ ],
+ "n_flag_aff_loo_gt20": 3,
+ "n_flag_lt4pts": 0,
+ "overlay_detector": "cma.overlay present: ['ANCHOR_FRAC', 'CropRule', 'FLAT_FRAC', 'FREE_MIN_GLYPHS', 'GAP', 'GLYPH_CONTRAST', 'LABEL_CORNER', 'LABEL_MARGIN']",
+ "overlay_hits": [
+  {
+   "pair_id": "defdap_14245480_Ti64_bulk#0",
+   "src": "top:55",
+   "tgt": "none"
+  },
+  {
+   "pair_id": "defdap_16633511_Ti_CS1#0",
+   "src": "none",
+   "tgt": "bottom:106"
+  }
+ ],
+ "n_gt_points_total": 402
+}
