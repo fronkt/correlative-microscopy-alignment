@@ -1,0 +1,157 @@
+idx,file,match,overlay,exp_overlay,edges,exp_edges,labels,exp_labels,detect_overlay
+0,Laser_Slice160.tif,True,False,False,,,,,None
+1,Slice160BSE_resized.tiff,True,False,False,,,,,None
+2,FOV1_IQ_cleaned.tif,True,False,False,,,,,None
+3,FOV1_HighResSEM.tif,True,False,False,,,,,None
+4,FOV1_CI_cleaned.tif,True,False,False,,,,,None
+5,FOV1_IPF_cleaned.tif,True,False,False,,,,,None
+6,FOV2_IQ_cleaned.tif,True,False,False,,,,,None
+7,FOV2_HighResSEM.tif,True,False,False,,,,,None
+8,FOV2_CI_cleaned.tif,True,False,False,,,,,None
+9,FOV2_IPF_cleaned.tif,True,False,False,,,,,None
+10,FOV3_IQ_cleaned.tif,True,False,False,,,,,None
+11,FOV3_HighResSEM.tif,True,False,False,,,,,None
+12,FOV3_CI_cleaned.tif,True,False,False,,,,,None
+13,FOV3_IPF_cleaned.tif,True,False,False,,,,,None
+14,FOV4_HighResSEM.tif,True,False,False,,,,,None
+15,FOV4_IQ_cleaned.tif,True,False,False,,,,,None
+16,FOV4_CI_cleaned.tif,True,False,False,,,,,None
+17,FOV4_IPF_cleaned.tif,True,False,False,,,,,None
+18,FOV5_IQ_cleaned.tif,True,False,False,,,,,None
+19,FOV5_HighResSEM.tif,True,False,False,,,,,None
+20,FOV5_CI_cleaned.tif,True,False,False,,,,,None
+21,FOV5_IPF_cleaned.tif,True,False,False,,,,,None
+22,C103_sample7_fracture_surface_composition_resized.tif,True,True,True,,,bottom_right,bottom_right,"('bottom', 134)"
+23,C103_sample7_SE2.tif,True,True,True,bottom,bottom,,,"('bottom', 70)"
+24,C103_sample7_height_map_resized.tif,True,True,True,,,bottom_right,bottom_right,"('bottom', 227)"
+25,C103_sample11_SE2.tif,True,True,True,bottom,bottom,,,"('bottom', 70)"
+26,C103_sample11_fracture_surface_composition.tif,True,False,False,,,,,None
+27,C103_sample11_height_map.tif,True,True,True,,,bottom_left,bottom_left,"('bottom', 146)"
+28,C103_sample12_SE2.tif,True,True,True,bottom,bottom,bottom_left,bottom_left,"('bottom', 140)"
+29,C103_sample12_fracture_surface_composition_resized.tif,True,True,True,,,bottom_right,bottom_right,"('bottom', 111)"
+30,C103_sample12_height_map_resized.tif,True,True,True,,,bottom_left,bottom_left,"('bottom', 128)"
+31,CoNi67_BSE.tif,True,False,False,,,,,None
+32,CoNi67_high_OM.tif,True,False,False,,,,,None
+33,CoNi67_SE.tif,True,False,False,,,,,None
+34,CoNi67_mid_OM.tif,True,False,False,,,,,None
+35,BSE_000.tif,True,False,False,,,,,None
+36,EBSD_000_IQ.tiff,True,False,False,,,,,None
+37,EBSD_000_CI.tiff,True,False,False,,,,,None
+38,EBSD_000_PRIAS.tiff,True,False,False,,,,,None
+39,SE_000.tif,True,False,False,,,,,None
+40,BSE_101.tif,True,False,False,,,,,None
+41,EBSD_101_IQ.tiff,True,False,False,,,,,None
+42,EBSD_101_CI.tiff,True,False,False,,,,,None
+43,EBSD_101_PRIAS.tiff,True,False,False,,,,,None
+44,SE_101.tif,True,False,False,,,,,None
+45,BSE_202.tif,True,False,False,,,,,None
+46,EBSD_202_IQ.tiff,True,False,False,,,,,None
+47,EBSD_202_CI.tiff,True,False,False,,,,,None
+48,EBSD_202_PRIAS.tiff,True,False,False,,,,,None
+49,SE_202.tif,True,False,False,,,,,None
+50,CoNi90_BSE.tif,True,False,False,,,,,None
+51,CoNi90_mid_OM.tif,True,False,False,,,,,None
+52,CoNi90_high_OM.tif,True,False,False,,,,,None
+53,EBSD_IQ.tiff,True,False,False,,,,,None
+54,step0_se.tiff,True,False,False,,,,,None
+55,EBSD_CI.tiff,True,False,False,,,,,None
+56,EBSD_PRIAS.tiff,True,False,False,,,,,None
+57,step1_se.tiff,True,False,False,,,,,None
+58,step2_se.tiff,True,False,False,,,,,None
+59,step3_se.tiff,True,False,False,,,,,None
+60,step4_se.tiff,True,False,False,,,,,None
+61,step1_exx.tiff,True,False,False,,,,,None
+62,step2_exx.tiff,True,False,False,,,,,None
+63,step3_exx.tiff,True,False,False,,,,,None
+64,step4_exx.tiff,True,False,False,,,,,None
+65,EBSD_IQ.tiff,True,False,False,,,,,None
+66,BSE_SEM-grid.tiff,True,False,False,,,,,None
+67,EBSD_CI.tiff,True,False,False,,,,,None
+68,EBSD_PRIAS.tiff,True,False,False,,,,,None
+69,SE_SEM-grid.tiff,True,False,False,,,,,None
+70,Slice20BSE_resized.tiff,True,False,False,,,,,None
+71,Slice20.tif,True,False,False,,,,,None
+72,Slice30.tif,True,False,False,,,,,None
+73,CIMap30.tif,True,False,False,,,,,None
+74,Slice60.tif,True,False,False,,,,,None
+75,CIMap60.tif,True,False,False,,,,,None
+76,Slice90.tif,True,False,False,,,,,None
+77,CIMap90.tif,True,False,False,,,,,None
+78,Slice120.tif,True,False,False,,,,,None
+79,CIMap120.tif,True,False,False,,,,,None
+80,FeatureIDsClean_xz_projection.tiff,True,False,False,,,,,None
+81,E1_718_Exx_DF4px.tif,True,False,False,,,,,None
+82,E2_718_Exx_DF4px.tif,True,False,False,,,,,None
+83,E3_718_Exx_DF4px.tif,True,False,False,,,,,None
+84,E4_718_Exx_DF4px.tif,True,False,False,,,,,None
+85,Slice85BSE.tif,True,False,False,,,,,None
+86,Slice85.tif,True,False,False,,,,,None
+87,IQ_Slice85.tif,True,False,False,,,,,None
+88,CI_Slice85.tif,True,False,False,,,,,None
+89,IPF_Slice85.tif,True,False,False,,,,,None
+90,Slice0.tif,True,False,False,,,,,None
+91,CI_reindexed_Slice0.tif,True,False,False,,,,,None
+92,IPF_reindexed_Slice0.tif,True,False,False,,,,,None
+93,Slice91.tif,True,False,False,,,,,None
+94,CI_reindexed_Slice91.tif,True,False,False,,,,,None
+95,IPF_reindexed_Slice91.tif,True,False,False,,,,,None
+96,Slice181.tif,True,False,False,,,,,None
+97,CI_reindexed_Slice181.tif,True,False,False,,,,,None
+98,IPF_reindexed_Slice181.tif,True,False,False,,,,,None
+99,1647_46000x_HAADF-DF4-DF2-BF_STEM_DF4_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+100,1635_46000x_HAADF-DF4-DF2-BF_STEM_DF4_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+101,1635_46000x_HAADF-DF4-DF2-BF_STEM_DF2_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+102,1635_46000x_HAADF-DF4-DF2-BF_STEM_BF_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+103,1635_46000x_HAADF-DF4-DF2-BF_STEM_HAADF_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+104,1624_46000x_HAADF-DF4-DF2-BF_STEM_DF4_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+105,1624_46000x_HAADF-DF4-DF2-BF_STEM_DF2_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+106,1624_46000x_HAADF-DF4-DF2-BF_STEM_BF_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+107,1624_46000x_HAADF-DF4-DF2-BF_STEM_HAADF_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+108,1647_46000x_HAADF-DF4-DF2-BF STEM_DF2_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+109,1647_46000x_HAADF-DF4-DF2-BF_STEM_BF_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+110,1647_46000x_HAADF-DF4-DF2-BF_STEM_HAADF_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+111,1315_130_kx_HAADF-DF4-DF2-BF_STEM_HAADF_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+112,1402_130_kx_HAADF-DF4-DF2-BF_STEM_HAADF_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+113,1402_130_kx_HAADF-DF4-DF2-BF_STEM_DF4_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+114,1402_130_kx_HAADF-DF4-DF2-BF_STEM_DF2_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+115,1402_130_kx_HAADF-DF4-DF2-BF_STEM_BF_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+116,1315_130_kx_HAADF-DF4-DF2-BF_STEM_DF4_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+117,1315_130_kx_HAADF-DF4-DF2-BF_STEM_DF2_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+118,1315_130_kx_HAADF-DF4-DF2-BF_STEM_BF_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 144)"
+119,1227_60000x_1.66um_STEM_HAADF-DF-I-BF_HAADF_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+120,1234_60000x_1.66um_STEM HAADF-DF-I-BF_HAADF_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+121,1234_60000x_1.66um_STEM_HAADF-DF-I-BF_BF-S_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+122,1234_60000x_1.66um_STEM HAADF-DF-I-BF_DF-I_g1.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+123,1309_60000x_1.66um_STEM_HAADF-DF-I-BF_HAADF_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+124,1309_60000x_1.66um_STEM_HAADF-DF-I-BF_BF-S_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+125,1309_60000x_1.66um_STEM_HAADF-DF-I-BF_DF-I_g2.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+126,1227_60000x_1.66um_STEM_HAADF-DF-I-BF_BF-S_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+127,1227_60000x_1.66um_STEM_HAADF-DF-I-BF_DF-I_g3.tif,True,True,True,bottom,bottom,,,"('bottom', 287)"
+128,BSE_001.tif,True,False,False,,,,,None
+129,EBSD_001_IQ.tiff,True,False,False,,,,,None
+130,EBSD_001_CI.tiff,True,False,False,,,,,None
+131,EBSD_001_PRIAS.tiff,True,False,False,,,,,None
+132,BSE_450.tif,True,False,False,,,,,None
+133,EBSD_450_IQ.tiff,True,False,False,,,,,None
+134,EBSD_450_CI.tiff,True,False,False,,,,,None
+135,EBSD_450_PRIAS.tiff,True,False,False,,,,,None
+136,BSE_900.tif,True,False,False,,,,,None
+137,EBSD_900_IQ.tiff,True,False,False,,,,,None
+138,EBSD_900_CI.tiff,True,False,False,,,,,None
+139,EBSD_900_PRIAS.tiff,True,False,False,,,,,None
+140,WBDF-1-120_Ti3AlC2.tif,True,False,False,,,,,None
+141,WBDF2-1-10_Ti3AlC2.tif,True,False,False,,,,,None
+142,WBDF11-20_Ti3AlC2.tif,True,False,False,,,,,None
+143,WBDF30-30_Ti3AlC2.tif,True,False,False,,,,,None
+144,BSD_comb.tiff,True,False,False,,,,,None
+145,LOM_500x_comb.tiff,True,False,False,,,,,None
+146,InLens_comb.tiff,True,False,False,,,,,None
+147,SE_comb.tiff,True,False,False,,,,,None
+148,Band_contrast.tiff,True,False,False,,,,,None
+149,IPF_color_coding_thin_GB_resized.tiff,True,False,False,,,,,None
+150,parent_from_graph_voting_resized.tiff,True,False,False,,,,,None
+151,parent_from_graph_voting_merged_inclusion_resized.tiff,True,False,False,,,,,None
+152,SEM_after_resized.tiff,True,False,False,,,,,None
+153,SEM_before_resized.tiff,True,False,False,,,,,None
+154,Image_quality.tif,True,False,False,,,,,None
+155,Confidence_index.tif,True,False,False,,,,,None

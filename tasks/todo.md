@@ -5,7 +5,26 @@ Source docs: `docs/context.md`, `docs/research_plan.md`, `docs/task_plan.md`.
 
 ## Triage extension — follow-up paper (opened 2026-09-29, branch `triage-ext`, worktree `cma-triage-ext`)
 
-**Status (2026-09-29): Phase A is DONE, and the findings are in `results/phaseA/synthesis.md`. Waiting for Frank's decisions before Phase B.**
+**Status (2026-09-29): Phase A is DONE, and the findings are in `results/phaseA/synthesis.md`.**
+
+**Frank's decisions (2026-09-29): "Go ahead for all. Leave for M&M session. No target venue."**
+- **Arm 1 approved** (banner-crop GPU rerun on AmalgaMatch, about $1–3). The pre-registration draft is
+  `prereg/arm1_banner_crop.md`. Sonnet is building the tooling (`src/cma/overlay.py`, the runner flags, pair lists,
+  `scripts/box_arm1.sh`).
+- **Arm 2 approved**, materials only:
+  - The pooled multi-lab set is being assembled by Sonnet into `C:\Users\frank\Documents\materials-bench`, with no
+    matcher runs.
+  - NIST AM Bench: Sonnet is doing a feasibility study and building a hand-check tool (`tools/handcheck/`). Frank
+    will hand-check about 20 pairs.
+- **Data-request emails** are saved as Gmail DRAFTS; Frank sends them himself. They go to Weimar (Kleiner, cc
+  Rößler), Manchester/NPL (Gholinia) and NTNU (Ånes, asking to re-licence the GitHub control points).
+- **The M&M banner implication is left to the M&M session.** This branch does not touch M&M.
+- **No target venue.**
+
+**Order:**
+1. Arm 1 tooling → fill in the pre-registration → commit + push → rent box → run → analyse.
+2. Arm 2: assemble → GT-quality gate → Arm 2 pre-registration (after assembly, before any matcher run) → commit +
+   push → GPU.
 **Frank's decision: the replication benchmark must be MATERIALS ONLY.** That rules out the biology sets from the
 first scan (SuperCUT, Eliceiri SHG-BF, Lu et al.). A second, materials-only search of the places the first scan
 skipped is running and writes to `cma-cjsj/research/materials_benchmark_scan.md`.
