@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import csv
 import math
+import os
+import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +34,27 @@ from cma.data.amalgamatch import _read_image_float
 from cma.data.types import ImagePair, KeypointSet
 
 DEFAULT_ROOT = Path(r"C:\Users\frank\Documents\materials-bench")
+ROOT_ENV = "MATPOOL_ROOT"   # root override: the pool copy to load (e.g. /root/matpool on the box)
+_ABS_RE = re.compile(r"^([A-Za-z]:)?/")
+
+
+def resolve_path(root: Path, p: str, rebase_absolute: bool) -> Path:
+    """Resolve a manifest path against ``root``.
+
+    Relative paths (the packed manifest) are joined to ``root``. Absolute paths (the laptop manifest, Windows or
+    POSIX) are used as written unless ``rebase_absolute`` (a root override is active), in which case everything from
+    the last ``pairs`` / ``gt_points`` segment on is re-rooted under ``root``.
+    """
+    s = str(p).replace("\\", "/")
+    if not _ABS_RE.match(s):
+        return root / s
+    if not rebase_absolute:
+        return Path(p)
+    parts = s.split("/")
+    idx = max((i for i, seg in enumerate(parts) if seg in ("pairs", "gt_points")), default=None)
+    if idx is None:
+        raise ValueError(f"cannot re-root absolute manifest path {p!r} under {root}")
+    return root.joinpath(*parts[idx:])
 
 
 @dataclass(frozen=True)
@@ -74,8 +97,12 @@ class MaterialsPoolLoader:
     """Iterate over (ImagePair, MaterialsPoolRecord) tuples; ``root`` defaults to the materials-bench folder."""
 
     def __init__(self, root: str | Path | None = None) -> None:
-        self.root = Path(root) if root else DEFAULT_ROOT
+        override = os.environ.get(ROOT_ENV)
+        self._rebase = bool(override)
+        self.root = Path(override) if override else (Path(root) if root else DEFAULT_ROOT)
         man = self.root / "manifest.csv"
+        if not man.is_file() and override:
+            raise FileNotFoundError(f"{ROOT_ENV}={override} but {man} does not exist")
         if not man.is_file():
             # runner passes its AmalgaMatch default (data/AmalgaMatch); fall back to the pool folder
             man = DEFAULT_ROOT / "manifest.csv"
@@ -89,8 +116,9 @@ class MaterialsPoolLoader:
                 rec = MaterialsPoolRecord(
                     pair_id=r["pair_id"], group=r["group"], subclass=r["subclass"], cluster=r["cluster"],
                     component=r["component"], source_pixel_nm=_f(r["source_pixel_nm"]),
-                    target_pixel_nm=_f(r["target_pixel_nm"]), source_path=Path(r["source_path"]),
-                    target_path=Path(r["target_path"]), gt_path=Path(r["gt_path"]),
+                    target_pixel_nm=_f(r["target_pixel_nm"]), source_path=resolve_path(self.root, r["source_path"], self._rebase),
+                    target_path=resolve_path(self.root, r["target_path"], self._rebase),
+                    gt_path=resolve_path(self.root, r["gt_path"], self._rebase),
                     flipped=r["flipped"] in ("True", "true", "1"), licence=r["licence"])
                 self._records.append(rec)
                 self._gt[rec.pair_id] = _read_gt(rec.gt_path)
