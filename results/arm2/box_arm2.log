@@ -1,0 +1,15 @@
+commit f328135ecccf3c801783c77d09819cb77b4bd984
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable.It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable.It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable.It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+torch 2.5.1+cu124 cuda True NVIDIA GeForce RTX 4090
+expect size 762732961 sha256 cb5a6571249db410dc4f21891b5bee989bdb30e34d7e6ca42821a344070821c8 pairs 95
+waiting for pool: 249108480/762732961
+waiting for pool: 440770560/762732961
+waiting for pool: 687790080/762732961
+/root/matpool.tar.gz: OK
+......................                                                   [100%]
+pool loader OK: 95 pairs under /root/matpool
+run exit 0
+rows 1615 (expected 1615 = 95 pairs x (15 voting + 2 gt)) failed 7 MATCH
+ARM2 COMPLETE
