@@ -36,14 +36,15 @@ cost $0.50. Fordatis stalled at 47%, so the rest of the zip was uploaded from th
   - 81 of 81 NIST pairs are built and 102 of 102 fits pass. `runall.sh` ran twice at once, which did no harm; the
     two optical fits caught on a `.part` file were re-run.
   - The pool is 95 pairs. Addendum A is committed at f328135, and the pack sha256 is cb5a6571….
-  - The box is vast 53534141 (RTX 4090, Virginia, $0.45/h, `ssh -p 12602 root@ssh6.vast.ai`). It runs tmux `arm2` →
-    `/root/arm2.log`, writing to `/root/cma/results/arm2/`.
+  - The GPU run is DONE: results/arm2/candidates.csv (3b724f7) has 1,615 of 1,615 rows. The 7 matcher failures
+    (6 MatchAnything, 1 SIFT) each had fewer than 4 correspondences; they count as failures and are not rerun,
+    because they are not infrastructure errors. Box 53534141 is destroyed; it cost about $0.30 and credit is $16.97.
+  - The results are NOT analysed yet (gate first).
 - **LEFT:**
-  1. Pull the results and destroy the box.
-  2. Frank runs the hand-check (the 20-pair command in `tools/handcheck/README.md`, clicks to
+  1. Frank runs the hand-check (the 20-pair command in `tools/handcheck/README.md`, clicks to
      `materials-bench/nist/handcheck_clicks.csv`).
-  3. Write Addendum B with the gate outcome per NIST type.
-  4. Run `analyze_arm2.py`.
+  2. Write Addendum B with the gate outcome per NIST type.
+  3. Run `analyze_arm2.py`.
 
 **Order:**
 1. Arm 1 tooling → fill in the pre-registration → commit + push → rent box → run → analyse.
