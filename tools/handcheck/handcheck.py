@@ -6,7 +6,7 @@ Coordinates are stored in FULL-RESOLUTION pixels (pixel-centre convention, (0,0)
 top-left pixel), so they are directly comparable to a 3x3 homography H that maps left full-res
 pixels to right full-res pixels.
 
-Keys:  u undo last click | s skip pair (reason asked in the terminal) | n next pair | q save + quit
+Keys:  u undo last click | s skip pair (recorded as SKIP_REASON) | n next pair | q save + quit
 Toolbar: zoom/pan are ordinary matplotlib tools; clicks are ignored while a toolbar tool is active
 (press the magnifier/arrow button again to deactivate it before clicking).
 
@@ -29,6 +29,7 @@ import numpy as np
 
 N_POINTS = 6
 MAX_DISP = 1200  # longest display side in pixels
+SKIP_REASON = "no confident shared features"
 CSV_FIELDS = ["pair_id", "k", "x_left", "y_left", "x_right", "y_right", "timestamp"]
 
 
@@ -311,7 +312,9 @@ class HandCheckApp:
             self.redraw_marks()
             self.refresh_title()
         elif k == "s":
-            reason = input(f"Skip reason for {c['p']['pair_id']}: ").strip() or "unspecified"
+            # No terminal prompt: a blocking input() inside a GUI callback freezes the window while the prompt
+            # sits unseen behind it. One fixed reason covers the only skip case the protocol allows.
+            reason = SKIP_REASON
             save_skip(self.skip_csv, c["p"]["pair_id"], reason)
             print(f"  skipped ({reason})")
             self.next_pair()

@@ -50,18 +50,18 @@ python tools\handcheck\handcheck.py --pairs tools\handcheck\nist_handcheck_pairs
 
 (`--pairs` accepts the `.json` list or a `.csv`; there is also `nist_handcheck_pairs.csv`.) Pick features that are
 visible in BOTH modalities (large pores, inclusions, sample edge corners, scratches); the optical images have very low
-grain contrast, so expect to skip some pairs (`s`, give the reason).
+grain contrast, so expect to skip some pairs (`s`).
 
 ## Workflow per pair
 
 1. Click a feature in the LEFT image (cyan cross), then the same feature in the RIGHT image
    (red cross, numbered). Spread the 6 points over the field of view; use sharp, unambiguous
    features (grain-boundary triple points, pores, inclusions), not edges.
-2. Keys: `u` undo last click (also un-finishes a completed pair), `s` skip (the terminal asks for a
-   reason: type it and press Enter), `n` next pair (only after all points are recorded), `q` save and quit.
+2. Keys: `u` undo last click (also un-finishes a completed pair), `s` skip (recorded instantly as
+   "no confident shared features"; nothing to type), `n` next pair (only after all points are recorded),
+   `q` save and quit.
 3. Zoom/pan with the matplotlib toolbar; clicks are ignored while a toolbar tool is active, so
    press the magnifier/arrow button again to turn it off before clicking.
-4. Do not close the terminal while a skip prompt is waiting.
 
 ## Output
 

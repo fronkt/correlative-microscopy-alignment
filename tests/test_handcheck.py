@@ -100,13 +100,13 @@ def test_gui_click_flow_with_agg(tmp_path, monkeypatch):
     app.on_click(Ev(L, 150, 90))
     app.on_click(Ev(R, 75, 45))
     assert app.cur["finished"]
-    # n moves on; skip asks the terminal and records the reason
+    # n moves on; skip records the fixed reason without touching the terminal
     app.on_key(Ev(None, 0, 0, key="n"))
     assert app.cur["p"]["pair_id"] == "p1"
-    monkeypatch.setattr("builtins.input", lambda *_: "out of focus")
+    monkeypatch.setattr("builtins.input", lambda *_: pytest.fail("skip must not block on input()"))
     app.on_key(Ev(None, 0, 0, key="s"))
     sk = list(csv.DictReader(open(out + ".skips.csv")))
-    assert sk[0]["pair_id"] == "p1" and sk[0]["reason"] == "out of focus"
+    assert sk[0]["pair_id"] == "p1" and sk[0]["reason"] == hc.SKIP_REASON
     assert app.quit
     # resume: nothing pending
     assert hc.pending_pairs(pairs, out) == []
