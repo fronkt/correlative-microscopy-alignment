@@ -12,7 +12,7 @@ Royal Microscopical Society
 
 Dear Editors,
 
-I submit the manuscript "Burned-in data bars cause confident false registrations in correlative microscopy, and the retained-inlier fraction flags failures on new materials data: a pre-registered follow-up" for consideration as an Original Article.
+I submit the manuscript "Burned-in data bars cause confident false registrations in correlative microscopy, and the retained-inlier fraction flags failures on new materials data" for consideration as an Original Article.
 
 **What the paper shows.** Pretrained image matchers can now register correlative micrographs automatically, but they report a result for every pair whether or not it is correct. The paper makes two contributions to checking such results without ground truth.
 
@@ -22,10 +22,7 @@ Second, it tests a label-free quality score, the fraction of point matches that 
 
 I believe the work suits the *Journal of Microscopy* because its main practical message is aimed at microscopists rather than computer-vision specialists: remove burned-in annotation before automatic registration, and check confident results on any new kind of image pair. The pre-registrations, code and per-run results are public.
 
-**Related submissions, disclosed in full.**
-
-1. *Columbia Junior Science Journal* (submitted 30 September 2026, under consideration). "Which automatic image registrations can a microscopist trust? A label-free test on a correlative microscopy benchmark." That study introduced the label-free test on the AmalgaMatch benchmark and fixed the cut-off value (S1 = 0.1711) used here. The present manuscript does not re-report its results. It uses the cut-off as a fixed constant and cites the study as submitted. The new work consists of a causal intervention that the earlier study did not perform, and a replication on data the earlier study did not use, each with its own pre-registration.
-2. *Microscopy and Microanalysis*, manuscript MAM-26-277 (under review; editor assigned 2 October 2026). "Image tiling does not solve field-of-view mismatch in correlative microscopy registration." That paper uses the same benchmark and some of the same matchers, but asks a different question: how differences in field of view and image tiling affect registration accuracy. It does not examine label-free quality scores, burned-in overlays or any of the data in Arm 2 of this manuscript, and the text of the two manuscripts does not overlap. The present paper notes that benchmark success rates on overlay-bearing pairs, including those in MAM-26-277, partly reflect the overlay.
+**Related submission, disclosed in full.** *Microscopy and Microanalysis*, manuscript MAM-26-277 (under review; editor assigned 2 October 2026). "Image tiling does not solve field-of-view mismatch in correlative microscopy registration." That paper uses the same benchmark and some of the same matchers, but asks a different question: how differences in field of view and image tiling affect registration accuracy. It does not examine label-free quality scores, burned-in overlays or any of the data in Arm 2 of this manuscript, and the text of the two manuscripts does not overlap. The present paper notes that benchmark success rates on overlay-bearing pairs, including those in MAM-26-277, partly reflect the overlay.
 
 This manuscript has not been published and is not under consideration at any other journal. [FRANK: confirm preprint decision; if posted to arXiv before or during review, state it here with the identifier.]
 
