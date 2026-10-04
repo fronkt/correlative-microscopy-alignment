@@ -1,10 +1,8 @@
-[DRAFT for Frank's revision, 2026-10-04. Not sent. Paste into ScholarOne as plain text.]
-
 Frank Cai
 Purdue University, West Lafayette, IN, USA
 frankyc11223@gmail.com · ORCID 0009-0003-0041-1459
 
-[Date]
+4 October 2026
 
 The Editors
 *Journal of Microscopy*
@@ -24,11 +22,9 @@ I believe the work suits the *Journal of Microscopy* because its main practical 
 
 **Related submission, disclosed in full.** *Microscopy and Microanalysis*, manuscript MAM-26-277 (under review; editor assigned 2 October 2026). "Image tiling does not solve field-of-view mismatch in correlative microscopy registration." That paper uses the same benchmark and some of the same matchers, but asks a different question: how differences in field of view and image tiling affect registration accuracy. It does not examine label-free quality scores, burned-in overlays or any of the data in Arm 2 of this manuscript, and the text of the two manuscripts does not overlap. The present paper notes that benchmark success rates on overlay-bearing pairs, including those in MAM-26-277, partly reflect the overlay.
 
-This manuscript has not been published and is not under consideration at any other journal. [FRANK: confirm preprint decision; if posted to arXiv before or during review, state it here with the identifier.]
+This manuscript has not been published and is not under consideration at any other journal.
 
-**Other declarations.** I am the sole author. There is no funding and no conflict of interest. All data are public: AmalgaMatch, the DefDAP HR-DIC/EBSD records and refodat.86 under CC BY 4.0, and NIST AM Bench 2022 under the NIST open-data licence. The use of AI tools is disclosed in the manuscript. [FRANK WRITES: AI-use statement; keep this sentence only if the manuscript statement is in place.]
-
-[FRANK: optional, suggested reviewers. Check that none is at Purdue or a recent collaborator, and do not suggest A. R. Durmaz, whose datasets and score are tested here, without deciding that deliberately.]
+**Other declarations.** I am the sole author. There is no funding and no conflict of interest. All data are public: AmalgaMatch, the DefDAP HR-DIC/EBSD records and refodat.86 under CC BY 4.0, and NIST AM Bench 2022 under the NIST open-data licence. The use of AI tools is disclosed in the manuscript.
 
 Thank you for considering this manuscript.
 

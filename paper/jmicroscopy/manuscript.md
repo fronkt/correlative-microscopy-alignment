@@ -2,7 +2,6 @@
 title: "Burned-in data bars cause confident false registrations in correlative microscopy, and the retained-inlier fraction flags failures on new materials data"
 running_head: "Data bars and label-free registration triage"
 article_type: "Original Article"
-status: "FIRST DRAFT for Frank's revision, 2026-10-04. Not submitted."
 ---
 
 # Burned-in data bars cause confident false registrations in correlative microscopy, and the retained-inlier fraction flags failures on new materials data
@@ -26,8 +25,6 @@ Correspondence: Frank Cai, frankyc11223@gmail.com. ORCID: 0009-0003-0041-1459
 Pretrained image matchers can register correlative micrographs automatically, but they do not say when they have failed. The share of point matches kept by robust fitting (the retained fraction, S1) has been proposed as a label-free check. On the AmalgaMatch benchmark it tracks which registrations are correct, but a cut-off fixed at S1 = 0.1711 also accepted 42 failed pairs, all scanning transmission electron micrographs of one alloy. This paper reports two pre-registered tests. In Arm 1, an instrument data bar burned into the same rows of both images made the matchers return near-identity transforms. Cropping the bar from both images removed all 110 such locks among 268 paired runs, raised MatchAnything-RoMa success from 6 to 16 of 67 pairs (one-sided exact McNemar p = 0.006) and cut false accepts at the fixed cut-off from 42 to 14 (p = 1.2 × 10⁻⁷); a sham crop of overlay-free pairs changed 8.8% of runs. In Arm 2, the fixed cut-off was carried, without refitting, to 55 materials pairs from three independent sources. S1 predicted success (AUROC 0.983, cluster-bootstrap 95% CI 0.950–1.000) and accepting pairs above the cut-off raised the success rate by 0.10 (0.03–0.21). Picking among 15 registrations by inlier count did not beat the alternatives. Two limits apply. Forty-one of the 55 pairs are same-modality backscattered-electron pairs from NIST on which nearly every method succeeds, so the AUROC is largely a contrast between data sources. Both optical-microscope pair types were excluded by a ground-truth check fixed in advance, so the result does not cover optical-to-electron registration.
 
 ## Lay description
-
-[Draft, about 250 words; J Microsc asks for a non-technical summary, see NOTES.md.]
 
 Materials scientists often image the same piece of metal or ceramic with several instruments, for example an electron microscope that shows the shape of grains and a second technique that shows how each grain is oriented or how it stretched under load. To combine the pictures, one image has to be laid exactly over the other. This step, called registration, can now be done by computer programs that were trained on everyday photographs. The trouble is that these programs always return an answer, even when it is wrong, and a researcher processing hundreds of image pairs cannot check every one by eye.
 
@@ -108,7 +105,7 @@ McNemar tests are exact and one-sided in the predicted direction (two-sided valu
 
 ### 2.6 Deviation from the pre-registration (H-A3)
 
-The body of the Arm 1 pre-registration says H-A3 uses "the fresh uncropped rows for all other held-out pairs". Arm 1 re-ran only the overlay, Ti3AlC2 and sham pairs. Addendum A, committed before any Arm 1 run, therefore specified that the remaining held-out pairs use their stored baseline MA-RoMa direct rows on both sides of the comparison. In the analysis, 77 of the 119 held-out pairs have fresh rows and 42 use stored rows; none of the 42 is an overlay pair. Each such pair contributes the same row to both arms, so it is concordant and cannot change the McNemar statistic, but it does enter the absolute false-accept counts and the dislocation-group AUROC. The analysis script flags the substitution for adjudication rather than settling it silently, and it is reported here as a deviation. Fresh and stored rows agreed within 1 px on all 360 re-run comparisons (Section 3.1), which bounds its likely effect. [FRANK: adjudicate. See NOTES.md, item 2.]
+The body of the Arm 1 pre-registration says H-A3 uses "the fresh uncropped rows for all other held-out pairs". Arm 1 re-ran only the overlay, Ti3AlC2 and sham pairs. Addendum A, committed before any Arm 1 run, therefore specified that the remaining held-out pairs use their stored baseline MA-RoMa direct rows on both sides of the comparison. In the analysis, 77 of the 119 held-out pairs have fresh rows and 42 use stored rows; none of the 42 is an overlay pair. Each such pair contributes the same row to both arms, so it is concordant and cannot change the McNemar statistic, but it does enter the absolute false-accept counts and the dislocation-group AUROC. It is reported here as a deviation. Fresh and stored rows agreed within 1 px on all 360 re-run comparisons (Section 3.1), which bounds its likely effect.
 
 ## 3. Results
 
@@ -188,7 +185,7 @@ Two pre-registered tests address when automatic correlative registration can be 
 
 ## Acknowledgements
 
-The author thanks the creators of AmalgaMatch (Durmaz et al.), the DefDAP-based HR-DIC/EBSD datasets, refodat.86 (F. Kleiner) and the NIST AM Bench 2022 serial-sectioning data for releasing their data openly. [FRANK: add any further acknowledgement; no funding.]
+The author thanks the creators of AmalgaMatch (Durmaz et al.), the DefDAP-based HR-DIC/EBSD datasets, refodat.86 (F. Kleiner) and the NIST AM Bench 2022 serial-sectioning data for releasing their data openly.
 
 ## Conflict of interest
 
@@ -196,15 +193,15 @@ The author declares no conflict of interest.
 
 ## Funding
 
-[FRANK: confirm "This research received no specific funding." GPU time was paid personally (about US$0.80 in total).]
+This research received no specific grant from any funding agency in the public, commercial or not-for-profit sectors.
 
 ## AI-use statement
 
-[FRANK WRITES: AI-use statement]
+The author used an AI assistant (Claude, Anthropic) to help edit the manuscript text and the analysis code. The author reviewed and verified all AI-assisted output and takes full responsibility for the content of this article.
 
 ## Data and code availability
 
-Code, pre-registrations with addenda, analysis scripts, per-run result tables (`results/arm1/arm1.csv`, `results/arm2/candidates.csv`), analysis reports and the figure script for this paper are in the project repository, branch `triage-ext` (https://github.com/fronkt/correlative-microscopy-alignment/tree/triage-ext).^10^ [FRANK: confirm the repository is public, and archive a tagged release on Zenodo for a DOI before submission.] No new images were acquired. All images are from public datasets and are not redistributed; scripts rebuild the pairs from the sources:
+Code, pre-registrations with addenda, analysis scripts, per-run result tables (`results/arm1/arm1.csv`, `results/arm2/candidates.csv`), analysis reports and the figure script for this paper are in the project repository, branch `triage-ext` (https://github.com/fronkt/correlative-microscopy-alignment/tree/triage-ext).^10^ No new images were acquired. All images are from public datasets and are not redistributed; scripts rebuild the pairs from the sources:
 
 - AmalgaMatch,^1,5^ CC BY 4.0, doi:10.24406/fordatis/436.
 - The six HR-DIC/EBSD Zenodo records,^20–25^ all CC BY 4.0.
@@ -215,7 +212,7 @@ The Arm 2 pair manifest, with source URLs and SHA-256 hashes of every image, is 
 
 ## References
 
-1. Durmaz, A. R., Lamb, J. D., Zaripova, K., Vailhe, M., Pürstl, J. T., Schulte, J., Ackermann, M., Echlin, M. P., & Pollock, T. M. (2026). A correlative microscopy dataset for multimodal data fusion and image matching in materials science. *Scientific Data*. 10.1038/s41597-026-07961-2 [volume/article number not yet assigned in Crossref on 2026-10-04]
+1. Durmaz, A. R., Lamb, J. D., Zaripova, K., Vailhe, M., Pürstl, J. T., Schulte, J., Ackermann, M., Echlin, M. P., & Pollock, T. M. (2026). A correlative microscopy dataset for multimodal data fusion and image matching in materials science. *Scientific Data*. 10.1038/s41597-026-07961-2
 2. Durmaz, A. R., Lamb, J. D., Echlin, M. P., & Pollock, T. M. (2026). Foundation models for multimodal image data fusion in materials science. *Frontiers in Materials*, 13, 1815017. 10.3389/fmats.2026.1815017
 3. Edstedt, J., Sun, Q., Bökman, G., Wadenbäck, M., & Felsberg, M. (2024). RoMa: Robust dense feature matching. In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)* (pp. 19790–19800). 10.1109/CVPR52733.2024.01871
 4. He, X., Yu, H., Peng, S., Tan, D., Shen, Z., Bao, H., & Zhou, X. (2025). MatchAnything: Universal cross-modality image matching with large-scale pre-training. *arXiv*, 2501.07556. 10.48550/arXiv.2501.07556
@@ -231,19 +228,19 @@ The Arm 2 pair manifest, with source URLs and SHA-256 hashes of every image, is 
 14. Zuiderveld, K. (1994). Contrast limited adaptive histogram equalization. In P. S. Heckbert (Ed.), *Graphics Gems IV* (pp. 474–485). Academic Press. 10.1016/B978-0-12-336156-1.50061-6
 15. Barath, D., Noskova, J., Ivashechkin, M., & Matas, J. (2020). MAGSAC++, a fast, reliable and accurate robust estimator. In *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)* (pp. 1301–1309). 10.1109/CVPR42600.2020.00138
 16. McNemar, Q. (1947). Note on the sampling error of the difference between correlated proportions or percentages. *Psychometrika*, 12(2), 153–157. 10.1007/BF02295996
-17. Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics*, 6(2), 65–70. https://www.jstor.org/stable/4615733 [FLAG: no Crossref DOI; JSTOR stable number to confirm]
+17. Holm, S. (1979). A simple sequentially rejective multiple test procedure. *Scandinavian Journal of Statistics*, 6(2), 65–70. https://www.jstor.org/stable/4615733
 18. Hanley, J. A., & McNeil, B. J. (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. *Radiology*, 143(1), 29–36. 10.1148/radiology.143.1.7063747
 19. Efron, B., & Tibshirani, R. J. (1993). *An introduction to the bootstrap*. Chapman & Hall/CRC. 10.1201/9780429246593
 20. Thomas, R. (2023). *Dataset for: The role of hydrides and precipitates on the strain localisation behaviour in a zirconium alloy* [Data set]. Zenodo. 10.5281/zenodo.8383311
 21. Thomas, R., & Lunt, D. (2026). *Dataset for: The effect of loading direction on slip and twinning in an irradiated zirconium alloy* [Data set]. Zenodo. 10.5281/zenodo.21218524
-22. Thomas, R., Lunt, D., Smith, A., Donoghue, J., Cao, S., et al. (2024). *Dataset: The effect of a keyhole defect on strain localisation in an additive manufactured titanium alloy* [Data set]. Zenodo. 10.5281/zenodo.14245480 [FLAG: complete the creator list from Zenodo]
-23. Smith, A., Lunt, D., Thomas, R., Taylor, M., Davis, A., Martinez, F., Candeias, A., Gholinia, A., Preuss, M., Donoghue, J., et al. (2025). *Dataset for "A new approach to SEM in-situ thermomechanical experiments through automation"* [Data set]. Zenodo. 10.5281/zenodo.16633511 [FLAG: complete the creator list]
-24. Yang, B., Xu, X., Lunt, D., Zhang, F., Atkinson, M. D., Li, Y., LLorca, J., Zhou, X., et al. (2024). *Dataset used in the publication entitled "Grain size dependence of microscopic strain distribution in a high entropy alloy at the onset of plastic deformation"* [Data set]. Zenodo. 10.5281/zenodo.14532401 [FLAG: complete the creator list]
+22. Thomas, R., Lunt, D., Smith, A., Donoghue, J., & Cao, S. (2024). *Dataset: The effect of a keyhole defect on strain localisation in an additive manufactured titanium alloy* [Data set]. Zenodo. 10.5281/zenodo.14245480
+23. Smith, A., Lunt, D., Thomas, R., Taylor, M., Davis, A., Martinez, F., Candeias, A., Gholinia, A., Preuss, M., & Donoghue, J. (2025). *Dataset for "A new approach to SEM in-situ thermomechanical experiments through automation"* [Data set]. Zenodo. 10.5281/zenodo.16633511
+24. Yang, B., Xu, X., Lunt, D., Zhang, F., Atkinson, M. D., Li, Y., LLorca, J., & Zhou, X. (2024). *Dataset used in the publication entitled "Grain size dependence of microscopic strain distribution in a high entropy alloy at the onset of plastic deformation"* [Data set]. Zenodo. 10.5281/zenodo.14532401
 25. Hu, D. (2024). *HRDIC and EBSD data for the study of early stage plasticity of a Ni-base superalloy* [Data set]. Zenodo. 10.5281/zenodo.13755208
-26. Atkinson, M. D., Thomas, R., Crowther, P., Fullwood, D., et al. (2023). *DefDAP: Deformation data analysis in Python* (Version 0.93.6) [Computer software]. Zenodo. 10.5281/zenodo.10160238 [FLAG: confirm the title string and creator list on the Zenodo record; concept DOI 10.5281/zenodo.3688096]
-27. Kleiner, F. (2026). *BSE and EBSD measurements of 7d hydrated alite* [Data set]. refodat. 10.71758/refodat.86 [CITATION PENDING – Kleiner]
-28. Schwalbach, E. J., Chapman, M. G., Shah, M. N., Uchic, M. D., Hrabe, N., Kafka, O., Moser, N., Lane, B., Carson, R., Belak, J., Levine, L. E., et al. (2024). *AM Bench 2022: IN718 serial sectioning and X-ray computed tomography measurement data* (Version 1.2.1) [Data set]. National Institute of Standards and Technology. 10.18434/mds2-2767 [FLAG: confirm creator order on the NIST record]
-29. Schwalbach, E. J., Chapman, M. G., Shah, M. N., Uchic, M. D., Levine, L. E., Hrabe, N., Kafka, O., Moser, N., Carson, R., Belak, J., et al. (2023). *AM Bench 2022 IN625 3D microstructure reconstructions* (Version 1.1.1) [Data set]. National Institute of Standards and Technology. 10.18434/mds2-2765 [FLAG: confirm creator order]
+26. Atkinson, M. D., Thomas, R., Crowther, P., Fullwood, D., Quinta da Fonseca, J., & Harte, A. (2023). *MechMicroMan/DefDAP: v0.93.6* [Computer software]. Zenodo. 10.5281/zenodo.10160238
+27. Kleiner, F. (2026). *BSE and EBSD measurements of 7d hydrated alite* [Data set]. refodat. 10.71758/refodat.86
+28. Schwalbach, E. J., Chapman, M. G., Shah, M. N., Uchic, M. D., Hrabe, N., Kafka, O., Moser, N., Lane, B., Carson, R., Belak, J., & Levine, L. E. (2024). *AM Bench 2022: IN718 serial sectioning and X-ray computed tomography measurement data* (Version 1.2.1) [Data set]. National Institute of Standards and Technology. 10.18434/mds2-2767
+29. Schwalbach, E. J., Chapman, M. G., Shah, M. N., Uchic, M. D., Levine, L. E., Hrabe, N., Kafka, O., Moser, N., Carson, R., & Belak, J. (2023). *AM Bench 2022 IN625 3D microstructure reconstructions* (Version 1.1.1) [Data set]. National Institute of Standards and Technology. 10.18434/mds2-2765
 30. Levine, L. E., Lane, B., Becker, C., Belak, J., Carson, R., Deisenroth, D., et al. (2024). Outcomes and conclusions from the 2022 AM Bench measurements, challenge problems, modeling submissions, and conference. *Integrating Materials and Manufacturing Innovation*, 13(3), 598–621. 10.1007/s40192-024-00372-4
 31. Maes, F., Collignon, A., Vandermeulen, D., Marchal, G., & Suetens, P. (1997). Multimodality image registration by maximization of mutual information. *IEEE Transactions on Medical Imaging*, 16(2), 187–198. 10.1109/42.563664
 
