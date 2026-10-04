@@ -107,6 +107,10 @@ McNemar tests are exact and one-sided in the predicted direction (two-sided valu
 
 The body of the Arm 1 pre-registration says H-A3 uses "the fresh uncropped rows for all other held-out pairs". Arm 1 re-ran only the overlay, Ti3AlC2 and sham pairs. Addendum A, committed before any Arm 1 run, therefore specified that the remaining held-out pairs use their stored baseline MA-RoMa direct rows on both sides of the comparison. In the analysis, 77 of the 119 held-out pairs have fresh rows and 42 use stored rows; none of the 42 is an overlay pair. Each such pair contributes the same row to both arms, so it is concordant and cannot change the McNemar statistic, but it does enter the absolute false-accept counts and the dislocation-group AUROC. It is reported here as a deviation. Fresh and stored rows agreed within 1 px on all 360 re-run comparisons (Section 3.1), which bounds its likely effect.
 
+### 2.7 Use of AI tools
+
+The author used an AI assistant (Claude, Anthropic) to help edit the manuscript text and the analysis code. The author reviewed and verified all AI-assisted output and takes full responsibility for the content of this article.
+
 ## 3. Results
 
 ### 3.1 Validity checks (Arm 1)
@@ -197,7 +201,7 @@ This research received no specific grant from any funding agency in the public, 
 
 ## AI-use statement
 
-The author used an AI assistant (Claude, Anthropic) to help edit the manuscript text and the analysis code. The author reviewed and verified all AI-assisted output and takes full responsibility for the content of this article.
+AI tool use is declared in Section 2.7.
 
 ## Data and code availability
 
